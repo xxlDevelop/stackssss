@@ -1,0 +1,158 @@
+syntax = "proto3";
+package org.yx.hoststack.protocol.ws.server;
+
+message HostReset {
+  repeated HostTarget target = 1;
+}
+message HostTarget {
+  string hostId = 1;
+  string jobDetailId = 2;
+}
+
+message HostUpdateConfig {
+  repeated HostToUpdateConfigDetail config = 1;
+  repeated HostTarget target = 2;
+}
+message HostToUpdateConfigDetail {
+  string type = 1;
+  map<string, string> context = 2;
+}
+
+message HostExecCmd {
+  string script = 1;
+  repeated HostTarget target = 2;
+}
+
+message ImageCreate {
+  string imageId = 1;
+  string imageName = 2;
+  string imageVer = 3;
+  string downloadUrl = 4;
+}
+
+message ImageDelete {
+  repeated ImageDeleteTarget target = 1;
+}
+message ImageDeleteTarget {
+  string imageId = 1;
+  string jobDetailId = 2;
+}
+
+message VolumeCreate {
+  uint32 volumeSize = 1;
+  string volumeType = 2;
+  string diskType = 3;
+  string sourceUrl = 4;
+  string hostId = 5;
+  repeated VolumeTarget target = 6;
+}
+message VolumeTarget {
+  string volumeId = 1;
+  string jobDetailId = 2;
+}
+
+message VolumeDelete {
+  string hostId = 1;
+  repeated VolumeTarget target = 2;
+}
+
+message VolumeMount {
+  string hostId = 1;
+  repeated MountInfo target = 2;
+}
+message MountInfo {
+  string volumeId = 1;
+  string baseVolumeId = 2;
+  string cid = 3;
+  string mountType = 4;
+  string jobDetailId = 5;
+}
+
+message VolumeUnMount {
+  string hostId = 1;
+  repeated UnMountInfo target = 3;
+}
+message UnMountInfo {
+  string volumeId = 1;
+  string cid = 2;
+  string jobDetailId = 3;
+}
+
+message VolumeUpgrade {
+  string hostId = 1;
+  string sourceUrl = 2;
+  repeated VolumeUpgradeDetail target = 3;
+}
+message VolumeUpgradeDetail {
+  string originVolumeId = 1;
+  string newVolumeId = 2;
+  bool keepOrigin = 3;
+  string jobDetailId = 4;
+}
+
+message ContainerCreate {
+  string hostId = 1;
+  string vmType = 2;
+  ImageOfContainerCreate image = 3;
+  string profileTemplate = 4;
+  repeated ContainerProfileTarget target = 5;
+}
+message ImageOfContainerCreate {
+  string id = 1;
+  string url = 2;
+  string ver = 3;
+  string md5 = 4;
+  string user = 5;
+  string pwd = 6;
+  string sourceType = 7;
+}
+message ContainerProfileTarget {
+  string cid = 1;
+  string profile = 2;
+  string jobDetailId = 3;
+}
+
+message ContainerUpdateProfile {
+  string hostId = 1;
+  repeated ContainerProfileTarget target = 2;
+}
+
+message ContainerUpgrade {
+  string hostId = 1;
+  string containerType = 2;
+  ImageOfContainerCreate image = 3;
+  repeated ContainerTarget target = 4;
+}
+
+message ContainerCtrl {
+  string hostId = 1;
+  string ctrl = 2;
+  repeated ContainerTarget target = 3;
+}
+message ContainerTarget {
+  string cid = 1;
+  string jobDetailId = 2;
+}
+
+message ContainerExecCmd {
+  string script = 1;
+  repeated ContainerTarget target = 2;
+}
+
+message ModuleCreate {
+  string version = 1;
+  string downloadUrl = 2;
+  string md5 = 3;
+  string jobDetailId = 4;
+}
+
+message ModuleUpgrade {
+  string version = 1;
+  string downloadUrl = 2;
+  string md5 = 3;
+  repeated ModuleTarget target = 4;
+}
+message ModuleTarget {
+  string moduleId = 1;
+  string jobDetailId = 2;
+}

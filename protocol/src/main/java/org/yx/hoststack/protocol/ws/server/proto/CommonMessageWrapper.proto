@@ -1,0 +1,39 @@
+syntax = "proto3";
+package org.yx.hoststack.protocol.ws.server;
+
+enum ENUM_LINK_SIDE
+{
+  CENTER_TO_EDGE = 0; //Center -> Edge
+  EDGE_TO_CENTER = 1; //Edge -> Center
+}
+
+enum ENUM_PROTOCOL_VER
+{
+  PROTOCOL_V1 = 0;
+}
+
+message Header
+{
+  uint32 linkSide = 1;
+  string traceId = 2;
+  uint32 protocolVer = 3;
+  string zone = 4;
+  string region = 5;
+  string relaySid = 6;
+  string idcSid = 7;
+  uint64 tenantId = 8;
+  uint32 methId = 9;
+  uint64 timestamp = 10;
+}
+message Body //[NEnum]
+{
+  uint32 code = 1;
+  string msg = 2;
+  bytes payload = 3;
+}
+
+message CommonMessage
+{
+  Header header = 1;
+  Body body = 2;
+}

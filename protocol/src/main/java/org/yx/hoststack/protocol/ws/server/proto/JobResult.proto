@@ -1,0 +1,15 @@
+syntax = "proto3";
+package org.yx.hoststack.protocol.ws.server;
+
+message TargetResult {
+  string jobDetailId = 1;
+  string status = 2;
+  uint32 code = 3;
+  string msg = 4;
+  uint32 progress = 5;
+  string output = 6;
+}
+
+message JobTargetResult {
+  repeated TargetResult targetResult = 1;
+}

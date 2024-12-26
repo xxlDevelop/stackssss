@@ -1,0 +1,95 @@
+syntax = "proto3";
+package org.yx.hoststack.protocol.ws.server;
+
+//EdgeRegister Req
+message E2C_EdgeRegisterReq {
+  string serviceIp = 1;
+  string version = 2;
+}
+
+//HostInitialize Req
+message E2C_HostInitializeReq {
+  uint64 agentStartTs = 1;
+  string agentType = 2;
+  string resourcePool = 3;
+  uint64 osStartTs = 4;
+  string devSn = 5;
+  string osType = 6;
+  string osVersion = 7;
+  string agentVersion = 8;
+  uint32 osMem = 9;
+  string localIp = 10;
+  string disk = 11;
+  CpuInfo cpuSpec = 12;
+  repeated GpuInfo gpuList = 13;
+  repeated NetCardInfo netCardList = 14;
+  string runtimeEnv = 15;
+  string ak = 16;
+  string hostId = 17;
+  string detailedId = 18;
+  uint32 proxy = 19;
+  string registerMode = 20;
+}
+message CpuInfo {
+  uint32 cpuNum = 1;
+  string cpuType = 2;
+  string cpuManufacturer = 3;
+  string cpuArchitecture = 4;
+  uint32 cpuCores = 5;
+  uint32 cpuThreads = 6;
+  string cpuBaseSpeed = 7;
+}
+message GpuInfo {
+  string gpuType = 1;
+  string gpuManufacturer = 2;
+  uint32 gpuMem = 3;
+  string gpuBusType = 4;
+  string gpuDeviceId = 5;
+  string gpuBusId = 6;
+}
+message NetCardInfo {
+  string netCardName = 1;
+  string netCardType = 2;
+  float netCardLinkSpeed = 3;
+}
+
+//HostHeartbeat Req
+message E2C_HostHeartbeatReq {
+  repeated HostHbData hbData = 1;
+}
+message HostHbData {
+  string hostId = 1;
+  string agentType = 2;
+  HostStatus hostStatus = 3;
+  repeated VmStatus vmStatus = 4;
+}
+message HostStatus {
+  uint32 cpuUsage = 1;
+  uint32 memoryUsage = 2;
+  uint32 gpuUsage = 3;
+  uint32 gpuTemperature = 4;
+  uint32 gpuFanSpeed = 5;
+}
+message VmStatus {
+  string vmName = 1;
+  string imageVer = 2;
+  string cid = 3;
+  bool running = 4;
+}
+
+//HostExit Req
+message E2C_HostExitReq {
+  string hostId = 1;
+  string agentType = 2;
+}
+
+//JobReport Req
+message E2C_JobReportReq {
+  string jobId = 1;
+  string jobType = 2;
+  string jobSubType = 3;
+  //string jobStatus = 4;
+  //uint32 progress = 5;
+  bytes jobResult = 4;
+}
+

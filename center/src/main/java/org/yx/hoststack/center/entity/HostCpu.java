@@ -1,0 +1,75 @@
+package org.yx.hoststack.center.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * AGENT CPU信息
+ *
+ * @author lyc
+ * @since 2024-12-12 18:09:53
+ */
+@Data
+@TableName("t_host_cpu")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class HostCpu implements Serializable{
+
+    private static final long serialVersionUID=1L;
+
+    /**
+     *  主键ID
+     */
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /**
+     *  HOSTID
+     */
+    private String hostId;
+
+    /**
+     *  CPU数量
+     */
+    private Integer cpuNum;
+
+    /**
+     *  CPU类型
+     */
+    private String cpuType;
+
+    /**
+     *  CPU厂商
+     */
+    private String cpuManufacturer;
+
+    /**
+     *  CPU架构
+     */
+    private String cpuArchitecture;
+
+    /**
+     *  CPU核心
+     */
+    private String cpuCores;
+
+    /**
+     *  CPU线程
+     */
+    private String cpuThreads;
+
+    /**
+     *  CPU速率
+     */
+    private String cpuBaseSpeed;
+
+}

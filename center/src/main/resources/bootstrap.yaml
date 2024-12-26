@@ -1,0 +1,35 @@
+# bootstrap.yml
+spring:
+  profiles:
+    active: local
+  cloud:
+    config:
+      allow-override: true
+      override-none: true
+    # Nacos documentation: https://nacos.io/en-us/docs/concepts.html
+    nacos:
+        metadata:
+          -app-name: ${project.name}
+          -app-version: ${project.version}
+          -app-build-time: ${build.time}
+
+
+# Health testing configuration
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    jmx:
+      exposure:
+        include: env,health
+    web:
+      exposure:
+        include: env
+      base-path: /ops
+      path-mapping:
+        env: /config
+      discovery:
+        enabled: false
+
+LogPath: ${LogDir:logs}

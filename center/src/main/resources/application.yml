@@ -1,0 +1,71 @@
+LogPath: ${LogDir:logs}
+app-version: @project.version@
+
+server:
+  port: 8800
+  servlet:
+    context-path: /hs-core
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 20480 # 20KB
+  shutdown: graceful
+
+spring:
+  cloud:
+    config:
+      allow-override: true
+      override-none: true
+    nacos:
+      config:
+        import-check:
+          enabled: false
+  application:
+    name: center
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://192.168.51.231:6446/host_stack_center?useSSL=false&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+          username: root
+          password: Root
+        slave:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://192.168.51.231:6446/host_stack_center?useSSL=false&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+          username: root
+          password: Root
+#  data:
+#    redis:
+#      host: 192.168.51.233
+#      port: 7006
+#      connect-timeout: 5s
+#      client-name: host_stack_cli
+#      client-type: lettuce
+#      database: 0
+#      lettuce:
+#        pool:
+#          max-active: 100
+#          max-wait: -1
+#          max-idle: 50
+#          min-idle: 50
+
+logging:
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: DEBUG
+      mybatis:
+        plus: DEBUG
+    com:
+      alibaba:
+        druid: DEBUG
+    root: debug
+    org.yx.lib.utils.logger.KvLogger: debug
+

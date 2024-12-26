@@ -1,0 +1,84 @@
+syntax = "proto3";
+package org.yx.hoststack.protocol.ws.server;
+
+// EdgeRegister Resp
+message C2E_EdgeRegisterResp {
+  string id = 1;
+  uint32 hbInterval = 2;
+}
+
+// EdgeConfigSync Req
+message C2E_EdgeConfigSyncReq {
+  EdgeBasicConfig basic = 1;
+  repeated EdgeNetConfig net = 2;
+}
+message EdgeBasicConfig {
+  string localShareStorageHttpSvc = 1;
+  string shareStorageUser = 2;
+  string shareStoragePwd = 3;
+  string localLogSvcHttpSvc = 4;
+  string netLogSvcHttpsSvc = 5;
+  string speedTestSvc = 6;
+  string location = 7;
+}
+message EdgeNetConfig {
+  string localIp = 1;
+  uint32 localPort = 2;
+  string mappingIp = 3;
+  string mappingPort = 4;
+  string netProtocol = 5;
+  uint32 bandwidthInLimit = 6;
+  uint32 bandwidthOutLimit = 7;
+  string netIspType = 8;
+  string ipType = 9;
+}
+
+//RegionConfigSync Req
+message C2E_RegionConfigSyncReq {
+  Storage storage = 1;
+  Coturn coturn = 2;
+}
+message Storage {
+  string type = 1;
+  string config = 2;
+}
+message Coturn {
+  string serverSvc = 1;
+  string serverUser = 2;
+  string serverPwd = 3;
+}
+
+//HostInitialize Resp
+message C2E_HostInitializeResp {
+  string hostId = 1;
+  string hostIp = 2;
+  string agentType = 3;
+  string devSn = 4;
+  string version = 5;
+  string resourcePool = 6;
+  string runtimeEnv = 7;
+}
+
+//HostReset
+message HostResetReq {
+  repeated string hostId = 1;
+}
+
+//GetHostConfig Req
+message C2E_GetHostConfigReq {
+  string hostId = 1;
+}
+
+//GetContainerConfig Req
+message C2E_GetContainerConfigReq {
+  string hostId = 1;
+  string cid = 2;
+}
+
+//DoJob Req
+message C2E_DoJobReq {
+  string jobId = 1;
+  string jobType = 2;
+  string jobSubType = 3;
+  bytes jobParams = 4;
+}

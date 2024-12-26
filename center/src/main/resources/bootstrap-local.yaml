@@ -1,0 +1,35 @@
+# bootstrap.yml
+spring:
+  cloud:
+    # Nacos documentation: https://nacos.io/en-us/docs/concepts.html
+    nacos:
+      discovery:
+        # Nacos service discovery and registration configuration, where the sub-property server-addr specifies the Nacos server host and port
+        server-addr: 192.168.51.212:12015
+        username: nacos
+        password: nacos
+        # Registers to the specified namespace in Nacos, default is public
+        namespace: local
+        group: local
+        #ip: 127.0.0.1
+      config:
+#        name: test.yml
+#        group: DEFAULT_GROUP
+        # Sets the address of the configuration center service
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        username: ${spring.cloud.nacos.discovery.username}
+        password: ${spring.cloud.nacos.discovery.password}
+        # Nacos configuration center namespace. Needs attention, if using public namespace, do not fill in this value, leave it empty
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        group:  ${spring.cloud.nacos.discovery.group}
+        file-extension: yaml
+        extension-configs:
+          - data-id: common.yaml
+            group: ${spring.cloud.nacos.discovery.group}
+            refresh: true
+          - data-id: host-stack-center.yaml
+            group: ${spring.cloud.nacos.discovery.group}
+            refresh: true
+          - data-id: host-stack-center-redisson.yaml
+            group: ${spring.cloud.nacos.discovery.group}
+            refresh: true

@@ -1,0 +1,2 @@
+    org.yx.lib.utils.GlobalValidationExceptionHandler
+    org.yx.hoststack.center.common.exception.GlobalExceptionHandler
