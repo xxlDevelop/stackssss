@@ -34,6 +34,7 @@ import org.yx.hoststack.protocol.ws.server.E2CMessage;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -85,7 +86,8 @@ public class EdgeController {
                 sendErrorResponse(ctx, message, x00000407.getValue(), x00000407.getMsg());
                 return;
             }
-            Long nodeId = checkAndRegisterNode(ctx,message.getHeader(), serviceIp, region);
+            EdgeController bean = SpringContextHolder.getBean(EdgeController.class);
+            Long nodeId = bean.checkAndRegisterNode(ctx,message.getHeader(), serviceIp, region);
 
             ConnectionManager.addConnection(ProtoMethodId.EdgeRegister + "" + nodeId, ctx.channel());
 

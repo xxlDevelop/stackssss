@@ -54,6 +54,14 @@ spring:
 #          max-wait: -1
 #          max-idle: 50
 #          min-idle: 50
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath*:mappers/**/*.xml,classpath*:mappers/*.xml
+  global-config:
+    # Close the mybatis plus startup icon
+    banner: false
 
 logging:
   level:

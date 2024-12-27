@@ -38,6 +38,28 @@ public class ContainerPageReqDTO implements Serializable {
      */
     private String osType;
     /**
+     * The business types applicable to the image, render/ai
+     */
+    private String bizType;
+    /**
+     * Mirror virtualization type: docker/kvm
+     */
+    private String containerType;
+    /**
+     * label
+     */
+    private String label;
+    /**
+     * Is it an official image? Default false
+     */
+    private Boolean isOfficial;
+    /**
+     * Is the image available? Default is false
+     */
+    private Boolean isEnabled;
+
+
+    /**
      * Current page index, default 1
      */
     private Long current;

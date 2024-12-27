@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.yx.hoststack.center.mapper.ContainerMapper">
+
+    <select id="getPageList" resultType="org.yx.hoststack.center.common.resp.comtainer.ContainerPageDBVO">
+        SELECT c.container_id   AS cid,
+               c.host_id        AS hostId,
+               c.zone           AS `zone`,
+               c.region         AS region,
+               c.image_id       AS imageId,
+               c.image_ver      AS imageVer,
+               i.image_name     AS imageName,
+               c.resource_pool  AS resourcePool,
+               i.biz_type       AS bizType,
+               i.contianer_type AS containerType,
+               c.dev_sn         AS devSn,
+               c.os_type        AS osType,
+               c.os_mem         AS osMem,
+               c.runtime_env    AS runtimeEnv,
+               i.label          AS label,
+               c.create_at      AS createAt
+        FROM t_container AS c
+                 LEFT JOIN t_image_info AS i
+                           ON c.image_id = i.image_id
+        <where>
+            <if test="dto != null and dto.zone != null and dto.zone != ''">
+                AND c.zone = #{dto.zone}
+            </if>
+            <if test="dto != null and dto.region != null and dto.region != ''">
+                AND c.region = #{dto.region}
+            </if>
+            <if test="dto != null and dto.resourcePool != null and dto.resourcePool != ''">
+                AND c.resource_pool = #{dto.resourcePool}
+            </if>
+            <if test="dto != null and dto.osType != null and dto.osType != ''">
+                AND c.os_type = #{dto.osType}
+            </if>
+            <if test="dto != null and dto.bizType != null and dto.bizType != ''">
+                AND i.biz_type = #{dto.bizType}
+            </if>
+            <if test="dto != null and dto.containerType != null and dto.containerType != ''">
+                AND i.contianer_type = #{dto.containerType}
+            </if>
+            <if test="dto != null and dto.label != null and dto.label != ''">
+                AND i.label = #{dto.label}
+            </if>
+            <if test="dto != null and dto.isEnabled != null and dto.isEnabled != ''">
+                AND i.is_enabled = #{dto.isEnabled}
+            </if>
+            <if test="dto != null and dto.isOfficial != null and dto.isOfficial != ''">
+                AND i.is_official = #{dto.isOfficial}
+            </if>
+        </where>
+    </select>
+
+</mapper>

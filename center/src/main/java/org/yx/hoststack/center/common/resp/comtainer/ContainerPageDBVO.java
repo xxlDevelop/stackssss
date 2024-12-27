@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Description : Simple container profile template VO
@@ -17,10 +18,10 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class ContainerSimpleVO implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 5465807485886316781L;
+public class ContainerPageDBVO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = -7455040693462310398L;
     /**
      * Container ID
      */
@@ -88,6 +89,6 @@ public class ContainerSimpleVO implements Serializable {
     /**
      * Creation timestamp
      */
-    private Long createAt;
+    private Date createAt;
 
 }

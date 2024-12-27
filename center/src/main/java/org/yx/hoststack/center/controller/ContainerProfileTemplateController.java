@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2024-12-09 15:15:18
  */
 @RestController
-@RequestMapping("/v1/container")
+@RequestMapping("/v1/container/profile")
 @RequiredArgsConstructor
 public class ContainerProfileTemplateController {
 
@@ -33,7 +33,7 @@ public class ContainerProfileTemplateController {
      * @param params request
      * @return result
      */
-    @PostMapping("/profile/list")
+    @PostMapping("/list")
     public R<IPage<ContainerProfileTemplateSimpleVO>> findPage(@Valid @Validated @RequestBody ContainerProfileTemplatePageReqDTO params) {
         return R.ok(ContainerProfileTemplateSimpleVOWrapper.build().pageVO(containerProfileTemplateService.findPage(params)));
     }

@@ -1,18 +1,20 @@
 package org.yx.hoststack.center.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.yx.hoststack.center.common.req.container.ContainerCreateReqDTO;
 import org.yx.hoststack.center.common.req.container.ContainerPageReqDTO;
 import org.yx.hoststack.center.common.resp.comtainer.ContainerCreateRespVO;
-import org.yx.lib.utils.util.R;
-import org.springframework.web.bind.annotation.*;
-import org.yx.hoststack.center.entity.Container;
+import org.yx.hoststack.center.common.resp.comtainer.ContainerSimpleVO;
+import org.yx.hoststack.center.common.resp.comtainer.wrappers.ContainerSimpleVOWrapper;
 import org.yx.hoststack.center.service.ContainerService;
-
-import java.util.List;
+import org.yx.lib.utils.util.R;
 
 /**
  * 容器信息
@@ -20,7 +22,8 @@ import java.util.List;
  * @author lyc
  * @since 2024-12-09 15:15:18
  */
-@RestController("/v1/container")
+@RestController
+@RequestMapping("/v1/container")
 @RequiredArgsConstructor
 public class ContainerController {
 
@@ -29,26 +32,14 @@ public class ContainerController {
     /**
      * query container page list v1
      *
-     * @param params request
+     * @param dto request
      * @return result
      */
     @PostMapping("/list")
-    public R<Page<Container>> findPage(@Valid @Validated @RequestBody ContainerPageReqDTO params) {
-        Page<Container> result = containerService.findPage(params);
-        return R.ok(result);
+    public R<IPage<ContainerSimpleVO>> findPage(@Valid @Validated @RequestBody ContainerPageReqDTO dto) {
+        return R.ok(ContainerSimpleVOWrapper.build().pageVO(containerService.findPage(dto)));
     }
 
-    /**
-     * 列表查询
-     *
-     * @param params
-     * @return
-     */
-    @PostMapping("/findList")
-    public R<List<Container>> findList(@RequestBody Container params) {
-        List<Container> result = containerService.findList(params);
-        return R.ok(result);
-    }
 
 //    /**
 //     * 查询
@@ -73,17 +64,17 @@ public class ContainerController {
         return R.ok(containerService.insert(dto));
     }
 
-    /**
-     * 修改
-     *
-     * @param container
-     * @return
-     */
-    @PutMapping
-    public R<Boolean> update(@RequestBody Container container) {
-        boolean result = containerService.update(container);
-        return R.ok(result);
-    }
+//    /**
+//     * 修改
+//     *
+//     * @param container
+//     * @return
+//     */
+//    @PutMapping
+//    public R<Boolean> update(@RequestBody Container container) {
+//        boolean result = containerService.update(container);
+//        return R.ok(result);
+//    }
 //
 //    /**
 //     * 删除

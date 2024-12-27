@@ -1,5 +1,6 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImageInfo implements Serializable{
 
+    @Serial
     private static final long serialVersionUID=1L;
 
     /**
@@ -39,7 +41,7 @@ public class ImageInfo implements Serializable{
     private String imageVer;
 
     /**
-     *  镜像适用的业务类型, RENDER/AI
+     *   The business types applicable to the image, render/ai
      */
     private String bizType;
 
@@ -79,19 +81,19 @@ public class ImageInfo implements Serializable{
     private String label;
 
     /**
-     *  镜像所属租户ID, 如果是管理员上传, TID则是10000
+     * If the tenant ID to which the image belongs is uploaded by the administrator, TID is 10000
      */
     private Long tenantId;
 
     /**
      *  是否是官方镜像
      */
-    private String isOfficial;
+    private Boolean isOfficial;
 
     /**
      *  是否启用
      */
-    private String isEnabled;
+    private Boolean isEnabled;
 
     /**
      *  创建时间戳

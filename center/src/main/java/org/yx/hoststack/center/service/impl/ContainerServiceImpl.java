@@ -1,16 +1,16 @@
 package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.yx.hoststack.center.common.req.container.ContainerCreateReqDTO;
 import org.yx.hoststack.center.common.req.container.ContainerPageReqDTO;
 import org.yx.hoststack.center.common.resp.comtainer.ContainerCreateRespVO;
+import org.yx.hoststack.center.common.resp.comtainer.ContainerPageDBVO;
 import org.yx.hoststack.center.entity.Container;
 import org.yx.hoststack.center.mapper.ContainerMapper;
 import org.yx.hoststack.center.service.ContainerService;
@@ -23,33 +23,31 @@ import java.util.List;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ContainerServiceImpl extends ServiceImpl<ContainerMapper, Container> implements ContainerService {
-
 
     private final ContainerMapper containerMapper;
 
+    public ContainerServiceImpl(ContainerMapper containerMapper) {
+        this.containerMapper = containerMapper;
+    }
+
     @Override
-    public Page<Container> findPage(ContainerPageReqDTO params) {
-        return page(Page.of(params.getCurrent() == null || params.getCurrent() <= 0L ? 1L : params.getCurrent()
-                        , params.getSize() == null || params.getSize() <= 0L ? 10L : params.getSize())
-                , Wrappers.<Container>lambdaQuery()
-                        .eq(StringUtils.hasLength(params.getZone()), Container::getZone, params.getZone())
-                        .eq(StringUtils.hasLength(params.getRegion()), Container::getRegion, params.getRegion())
-                        .eq(StringUtils.hasLength(params.getResourcePool()), Container::getResourcePool, params.getResourcePool())
-                        .eq(StringUtils.hasLength(params.getOsType()), Container::getOsType, params.getOsType())
-        );
+    public IPage<ContainerPageDBVO> findPage(ContainerPageReqDTO dto) {
+
+        return containerMapper.getPageList(dto, Page.of(dto == null || dto.getCurrent() == null || dto.getCurrent() <= 0L ? 1L : dto.getCurrent()
+                , dto == null || dto.getSize() == null || dto.getSize() <= 0L ? 10L : dto.getSize()));
+
     }
 
     @Override
     public List<Container> findList(Container params) {
         LambdaQueryWrapper<Container> query = Wrappers.lambdaQuery(Container.class);
-        return containerMapper.selectList(query);
+        return baseMapper.selectList(query);
     }
 
     @Override
     public Container findById(Long id) {
-        return containerMapper.selectById(id);
+        return baseMapper.selectById(id);
     }
 
     @Override
@@ -65,7 +63,7 @@ public class ContainerServiceImpl extends ServiceImpl<ContainerMapper, Container
 
     @Override
     public int delete(Long id) {
-        return containerMapper.deleteById(id);
+        return baseMapper.deleteById(id);
     }
 
 }

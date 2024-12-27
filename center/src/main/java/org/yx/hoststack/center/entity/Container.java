@@ -30,7 +30,7 @@ public class Container implements Serializable{
     /**
      * containerId
      */
-    @TableId
+    @TableId(value = "container_id")
     private String containerId;
 
     /**
