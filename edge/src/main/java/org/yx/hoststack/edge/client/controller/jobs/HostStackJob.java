@@ -6,7 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.common.EdgeEvent;
-import org.yx.hoststack.edge.common.UnknownJobException;
+import org.yx.hoststack.edge.common.exception.UnknownJobException;
 import org.yx.hoststack.edge.server.ws.session.Session;
 import org.yx.hoststack.edge.server.ws.session.SessionAttrKeys;
 import org.yx.hoststack.edge.server.ws.session.SessionManager;

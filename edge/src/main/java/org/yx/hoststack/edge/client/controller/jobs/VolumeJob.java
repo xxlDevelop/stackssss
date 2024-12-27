@@ -5,7 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.edge.common.JobType;
-import org.yx.hoststack.edge.common.UnknownJobException;
+import org.yx.hoststack.edge.common.exception.UnknownJobException;
 import org.yx.hoststack.edge.server.ws.session.Session;
 import org.yx.hoststack.edge.server.ws.session.SessionManager;
 import org.yx.hoststack.edge.server.ws.session.SessionType;

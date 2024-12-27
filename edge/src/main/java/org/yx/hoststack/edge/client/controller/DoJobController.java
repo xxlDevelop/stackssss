@@ -10,7 +10,7 @@ import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.client.controller.jobs.JobFactory;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
 import org.yx.hoststack.edge.common.EdgeEvent;
-import org.yx.hoststack.edge.common.UnknownJobException;
+import org.yx.hoststack.edge.common.exception.UnknownJobException;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.common.syscode.EdgeSysCode;

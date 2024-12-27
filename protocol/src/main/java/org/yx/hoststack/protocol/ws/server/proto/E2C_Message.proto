@@ -85,11 +85,11 @@ message E2C_HostExitReq {
 
 //JobReport Req
 message E2C_JobReportReq {
-  string jobId = 1;
-  string jobType = 2;
-  string jobSubType = 3;
-  //string jobStatus = 4;
-  //uint32 progress = 5;
-  bytes jobResult = 4;
+  repeated JobReportItem items = 1;
+}
+message JobReportItem {
+  string traceId = 1;
+  string jobId = 2;
+  bytes jobResult = 3;
 }
 

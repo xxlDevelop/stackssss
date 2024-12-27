@@ -52,38 +52,38 @@ public class TransferNodeMgr {
                         }
                         AtomicInteger retry = new AtomicInteger(resendMessage.getRetry());
                         if (retry.get() < edgeServerConfig.getRetryNumber()) {
-                            resendChannel.eventLoop().execute(() -> {
-                                CommonMessageWrapper.CommonMessage reSendCommonMessage = resendMessage.getData();
-                                ChannelFuture reSendChannelFuture = resendChannel.writeAndFlush(new TextWebSocketFrame(reSendCommonMessage.toString()));
-                                resendMessage.setRetry(retry.incrementAndGet());
-                                reSendChannelFuture.addListener(retryFuture -> {
-                                    if (retryFuture.isDone() && retryFuture.cause() != null) {
-                                        KvLogger.instance(this)
-                                                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
-                                                .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
-                                                .p(LogFieldConstants.ReqData, reSendCommonMessage.toString())
-                                                .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
-                                                .p(HostStackConstants.METH_ID, reSendCommonMessage.getHeader().getMethId())
-                                                .p(HostStackConstants.TRACE_ID, reSendCommonMessage.getHeader().getTraceId())
-                                                .p("ReSendId", resendMessage.getReSendId())
-                                                .p("RetryTimes", retry.get())
-                                                .e(retryFuture.cause());
-                                    } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
-                                        TransferReSendMap.remove(resendMessageId);
-                                        KvLogger kvLogger = KvLogger.instance(this)
-                                                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgSuccessful)
-                                                .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
-                                                .p(HostStackConstants.METH_ID, reSendCommonMessage.getHeader().getMethId())
-                                                .p(HostStackConstants.TRACE_ID, reSendCommonMessage.getHeader().getTraceId())
-                                                .p("ReSendId", resendMessage.getReSendId())
-                                                .p("RetryTimes", retry.get());
-                                        kvLogger.i();
-                                        kvLogger.p(LogFieldConstants.ReqData, reSendCommonMessage.toString()).d();
-                                    }
-                                });
+//                            resendChannel.eventLoop().execute(() -> {
+                            CommonMessageWrapper.CommonMessage reSendCommonMessage = resendMessage.getData();
+                            ChannelFuture reSendChannelFuture = resendChannel.writeAndFlush(new TextWebSocketFrame(reSendCommonMessage.toString()));
+                            resendMessage.setRetry(retry.incrementAndGet());
+                            reSendChannelFuture.addListener(retryFuture -> {
+                                if (retryFuture.isDone() && retryFuture.cause() != null) {
+                                    KvLogger.instance(this)
+                                            .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
+                                            .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
+                                            .p(LogFieldConstants.ReqData, reSendCommonMessage.toString())
+                                            .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
+                                            .p(HostStackConstants.METH_ID, reSendCommonMessage.getHeader().getMethId())
+                                            .p(HostStackConstants.TRACE_ID, reSendCommonMessage.getHeader().getTraceId())
+                                            .p("ReSendId", resendMessage.getReSendId())
+                                            .p("RetryTimes", retry.get())
+                                            .e(retryFuture.cause());
+                                } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
+                                    TransferReSendMap.remove(resendMessageId);
+                                    KvLogger kvLogger = KvLogger.instance(this)
+                                            .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgSuccessful)
+                                            .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
+                                            .p(HostStackConstants.METH_ID, reSendCommonMessage.getHeader().getMethId())
+                                            .p(HostStackConstants.TRACE_ID, reSendCommonMessage.getHeader().getTraceId())
+                                            .p("ReSendId", resendMessage.getReSendId())
+                                            .p("RetryTimes", retry.get());
+                                    kvLogger.i();
+                                    kvLogger.p(LogFieldConstants.ReqData, reSendCommonMessage.toString()).d();
+                                }
                             });
+//                            });
                         } else {
                             TransferReSendMap.remove(resendMessageId);
                         }

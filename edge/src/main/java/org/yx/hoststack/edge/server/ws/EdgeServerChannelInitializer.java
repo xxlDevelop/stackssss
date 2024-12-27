@@ -11,14 +11,14 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.edge.config.EdgeServerConfig;
-import org.yx.hoststack.edge.server.ws.handler.EdgeServerProcessHandler;
+import org.yx.hoststack.edge.server.ws.handler.EdgeServerMsgDistributeHandler;
 
 @Component
 @RequiredArgsConstructor
 public class EdgeServerChannelInitializer extends ChannelInitializer<Channel> {
     private final EdgeServerConfig edgeServerConfig;
 
-    private final EdgeServerProcessHandler edgeServerProcessHandler;
+    private final EdgeServerMsgDistributeHandler edgeServerMsgDistributeHandler;
 
     @Override
     protected void initChannel(Channel channel) {
@@ -30,6 +30,6 @@ public class EdgeServerChannelInitializer extends ChannelInitializer<Channel> {
         p.addLast(new ChunkedWriteHandler());
         p.addLast(new HttpObjectAggregator(8192));
         p.addLast(new WebSocketServerCompressionHandler());
-        p.addLast(edgeServerProcessHandler);
+        p.addLast(edgeServerMsgDistributeHandler);
     }
 }

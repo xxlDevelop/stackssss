@@ -1,17 +1,24 @@
 package org.yx.hoststack.edge.client.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
+import org.yx.hoststack.edge.client.EdgeClient;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
+import org.yx.hoststack.edge.common.CacheKeyConstants;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
+import org.yx.hoststack.edge.config.IdcBasicConfig;
+import org.yx.hoststack.edge.config.IdcConfigManager;
+import org.yx.hoststack.edge.config.RegionConfigManager;
 import org.yx.hoststack.edge.server.RunMode;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
@@ -19,6 +26,9 @@ import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
+import org.yx.lib.utils.util.SpringContextHolder;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Process Center Basic Message
@@ -34,6 +44,8 @@ public class EdgeBasicMessageController {
     }
 
     private final EdgeCommonConfig edgeCommonConfig;
+    private final IdcConfigManager idcConfigManager;
+    private final RegionConfigManager regionConfigManager;
 
     /**
      * Edge Register Center Success Result
@@ -85,6 +97,11 @@ public class EdgeBasicMessageController {
                     .p(LogFieldConstants.ERR_MSG, message.getBody().getMsg())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                     .e();
+            try {
+                TimeUnit.SECONDS.sleep(5);
+                SpringContextHolder.getBean(EdgeClient.class).reConnect();
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -110,17 +127,27 @@ public class EdgeBasicMessageController {
      * @param message CommonMessage
      */
     private void edgeConfigSync(ChannelHandlerContext context, CommonMessageWrapper.CommonMessage message) {
-//        C2E_EdgeConfigSync c2e_EdgeConfigSync = JSON.parseObject(message.getBody().getPayload(), C2E_EdgeConfigSync.class);
-//        KvLogger.instance(this).p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-//                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeWsClient_ReceiveMsg)
-//                .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
-//                .p(EdgeConstants.MSG_ID, message.getBody().getMsgId())
-//                .p(EdgeConstants.Meth_ID, message.getHeader().getMethId())
-//                .p("Config", message.toString())
-//                .i();
-//        redissonClient.getBucket(String.format(CacheKeyConstants.IdcBasicConfig, message.getHeader().getIdc())).set(c2e_EdgeConfigSync.getBasic());
-//        redissonClient.getBucket(String.format(CacheKeyConstants.IdcNetConfig, message.getHeader().getIdc())).set(c2e_EdgeConfigSync.getNet());
-//        EdgeClientConnector.getInstance().sendResult(message.getHeader().getMethId(), 0, "", message.getHeader().getTraceId());
+        KvLogger kvLogger = KvLogger.instance(this)
+                .p(LogFieldConstants.EVENT, EdgeEvent.Business)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeConfigSync)
+                .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
+                .p(HostStackConstants.CHANNEL_ID, context.channel().id())
+                .p(HostStackConstants.METH_ID, message.getHeader().getMethId());
+        C2EMessage.C2E_EdgeConfigSyncReq eEdgeConfigSyncReq;
+        try {
+            eEdgeConfigSyncReq = C2EMessage.C2E_EdgeConfigSyncReq.parseFrom(message.getBody().getPayload());
+        } catch (InvalidProtocolBufferException e) {
+            kvLogger.p(LogFieldConstants.ERR_MSG, e.getMessage())
+                    .e(e);
+            EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(),
+                    EdgeSysCode.PortoParseException.getValue(), EdgeSysCode.PortoParseException.getMsg(), ByteString.EMPTY, message.getHeader().getTraceId());
+            return;
+        }
+        kvLogger.p("Config", eEdgeConfigSyncReq.toString())
+                .i();
+        idcConfigManager.setIdcBasicConfig(eEdgeConfigSyncReq.getBasic());
+        idcConfigManager.setIdcNetConfig(eEdgeConfigSyncReq.getNetList());
+        EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(), 0, "", ByteString.empty(), message.getHeader().getTraceId());
     }
 
     /**
@@ -130,16 +157,23 @@ public class EdgeBasicMessageController {
      * @param message CommonMessage
      */
     private void regionConfigSync(ChannelHandlerContext context, CommonMessageWrapper.CommonMessage message) {
-//        C2E_RegionConfigSync c2e_RegionConfigSync = JSON.parseObject(message.getBody().getPayload(), C2E_RegionConfigSync.class);
-//        KvLogger.instance(this).p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-//                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeWsClient_ReceiveMsg)
-//                .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
-//                .p(EdgeConstants.MSG_ID, message.getBody().getMsgId())
-//                .p(EdgeConstants.Meth_ID, message.getHeader().getMethId())
-//                .p("Config", message.toString())
-//                .i();
-//        redissonClient.getBucket(CacheKeyConstants.OssConfig).set(c2e_RegionConfigSync.getOss());
-//        redissonClient.getBucket(CacheKeyConstants.CoturnConfig).set(c2e_RegionConfigSync.getCoturn());
-//        EdgeClientConnector.getInstance().sendResult(message.getHeader().getMethId(), 0, "", message.getHeader().getTraceId());
+        KvLogger kvLogger = KvLogger.instance(this)
+                .p(LogFieldConstants.EVENT, EdgeEvent.Business)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.RegionConfigSync)
+                .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
+                .p(HostStackConstants.CHANNEL_ID, context.channel().id())
+                .p(HostStackConstants.METH_ID, message.getHeader().getMethId());
+        C2EMessage.C2E_RegionConfigSyncReq regionConfigSyncReq;
+        try {
+            regionConfigSyncReq = C2EMessage.C2E_RegionConfigSyncReq.parseFrom(message.getBody().getPayload());
+        } catch (InvalidProtocolBufferException e) {
+            kvLogger.p(LogFieldConstants.ERR_MSG, e.getMessage())
+                    .e(e);
+            EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(),
+                    EdgeSysCode.PortoParseException.getValue(), EdgeSysCode.PortoParseException.getMsg(), ByteString.EMPTY, message.getHeader().getTraceId());
+            return;
+        }
+        regionConfigManager.setRegionConfig(regionConfigSyncReq);
+        EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(), 0, "", ByteString.empty(), message.getHeader().getTraceId());
     }
 }

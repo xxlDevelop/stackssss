@@ -112,25 +112,25 @@ public class HostController {
                     break;
                 case CONTAINER, BENCHMARK:
                     if (ObjectUtils.isEmpty(containerCurrentMap.get(hostInit.getDevSn()))) {
-                        Container container = Container.builder()
-                                .containerId(convertToHex(regionInfo.getRegionId()) + DigestUtils.md5Hex(hostInit.getDevSn()))
-//                                .name("")
-//                                .label("customer")
-//                                .status("normal")
-//                                .hostId(hostInit.getHostId())
-//                                .bizType(hostInit.getAgentType())
-//                                .resourcePool(hostInit.getResourcePool())
-//                                .osType(hostInit.getOsType())
-//                                .vGpu(hostInit.getGpuListCount())
-//                                .memory(hostInit.getOsMem())
-//                                .zone(message.getHeader().getZone())
-//                                .region(message.getHeader().getRegion())
-//                                .idc(message.getHeader().getIdcSid())
-//                                .contianerType(hostInit.getRuntimeEnv())
-                                .lastHbAt(new Date())
-                                .build();
-//                        containerService.insert(container);
-                        containerCurrentMap.put(hostInit.getDevSn(), container);
+//                        Container container = Container.builder()
+//                                .containerId(convertToHex(regionInfo.getRegionId()) + DigestUtils.md5Hex(hostInit.getDevSn()))
+////                                .name("")
+////                                .label("customer")
+////                                .status("normal")
+////                                .hostId(hostInit.getHostId())
+////                                .bizType(hostInit.getAgentType())
+////                                .resourcePool(hostInit.getResourcePool())
+////                                .osType(hostInit.getOsType())
+////                                .vGpu(hostInit.getGpuListCount())
+////                                .memory(hostInit.getOsMem())
+////                                .zone(message.getHeader().getZone())
+////                                .region(message.getHeader().getRegion())
+////                                .idc(message.getHeader().getIdcSid())
+////                                .contianerType(hostInit.getRuntimeEnv())
+//                                .lastHbAt(new Date())
+//                                .build();
+////                        containerService.insert(container);
+//                        containerCurrentMap.put(hostInit.getDevSn(), container);
                     }
                     break;
             }

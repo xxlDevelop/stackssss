@@ -12,6 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Getter
 public class MessageQueues {
     private final BlockingQueue<HostHeartMessage> hostHbQueue = new LinkedBlockingQueue<>();
-
-    private final BlockingQueue<AgentCommonMessage<?>> jobNotifyNotSendQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<AgentCommonMessage> jobNotifyToDiskQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<AgentCommonMessage> jobNotifyToCenterQueue = new LinkedBlockingQueue<>();
 }

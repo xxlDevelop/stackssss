@@ -185,7 +185,7 @@ public class EdgeServer implements Runnable {
                                         EdgeSysCode.SendAgentFailByLimit.getValue(), EdgeSysCode.SendAgentFailByLimit.getMsg(), ByteString.EMPTY, reSendAgentCommonMessage.getTraceId());
                                 return;
                             }
-                            resendChannel.eventLoop().execute(() -> {
+//                            resendChannel.eventLoop().execute(() -> {
                                 ChannelFuture reSendChannelFuture = resendChannel.writeAndFlush(new TextWebSocketFrame(reSendAgentCommonMessage.toString()));
                                 resendMessage.setRetry(retry.incrementAndGet());
                                 reSendChannelFuture.addListener(retryFuture -> {
@@ -202,7 +202,7 @@ public class EdgeServer implements Runnable {
                                                 .d();
                                     }
                                 });
-                            });
+//                            });
                         } catch (Exception ex) {
                             KvLogger.instance(this)
                                     .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)

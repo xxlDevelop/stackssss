@@ -1,6 +1,7 @@
 package org.yx.hoststack.edge.server.ws.controller;
 
 import cn.hutool.core.lang.UUID;
+import com.google.common.collect.Lists;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,6 @@ import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.hoststack.protocol.ws.agent.common.AgentMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
-
-import java.nio.file.Files;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class JobNotifyController extends BaseController {
                 .p(LogFieldConstants.Code, agentReport.getCode())
                 .p(LogFieldConstants.ERR_MSG, agentReport.getMsg())
                 .i();
-        EdgeClientConnector.getInstance().sendJobNotifyReport(agentReport, UUID.fastUUID().toString(), null,
-                () -> messageQueues.getJobNotifyNotSendQueue().add(agentReport));
+        EdgeClientConnector.getInstance().sendJobNotifyReport(Lists.newArrayList(agentReport), UUID.fastUUID().toString(), null,
+                () -> messageQueues.getJobNotifyToDiskQueue().add(agentReport));
     }
 }

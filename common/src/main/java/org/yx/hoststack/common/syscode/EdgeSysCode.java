@@ -8,13 +8,17 @@ import lombok.Getter;
 public enum EdgeSysCode {
     Success("Success", 0),
     SendAgentFailByChannelNotActive("SendAgentFailByChannelNotActive", 121001),
+    IdcSidMismatched("IdcSid not mismatched", 121002),
+    RelaySidMismatched("RelaySid not mismatched", 121002),
+    LinkSideError("LinkSide not match, Not ServerToClient", 121003),
     SendAgentFailByLimit("SendAgentFailByLimit", 121002),
     UnknownJob("UnknownJob", 121003),
     NotFoundAgentSession("NotFoundAgentSession", 121004),
     UpstreamServiceNotAvailable("UpstreamServiceNotAvailable", 121401),
     DownloadStreamServiceNotAvailable("DownloadStreamServiceNotAvailable", 121402),
-    PortoParseException("PortoParseException", 121500),
-    DoJobException("DoJobException", 121501),
+    Exception("Exception", 121500),
+    PortoParseException("PortoParseException", 121501),
+    DoJobException("DoJobException", 121502),
     ;
     private final String msg;
     private final int value;

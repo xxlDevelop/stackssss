@@ -22,6 +22,7 @@ import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.SpringContextHolder;
+import org.yx.lib.utils.util.StringUtil;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -46,7 +47,7 @@ abstract class EdgeClientConnectorBase {
         edgeCommonConfig = SpringContextHolder.getBean(EdgeCommonConfig.class);
     }
 
-    public void create(ChannelFuture channelFuture) {
+    protected void create(ChannelFuture channelFuture) {
         this.channelFuture = channelFuture;
         this.channel = channelFuture.channel();
         startRetrySend();
@@ -62,7 +63,7 @@ abstract class EdgeClientConnectorBase {
     }
 
     public boolean isAlive() {
-        return channel == null || !channel.isOpen() || !channel.isActive() || !channel.isWritable();
+        return channel != null && channel.isOpen() && channel.isActive();
     }
 
     public void sendMsg(CommonMessageWrapper.CommonMessage msg,
@@ -114,47 +115,49 @@ abstract class EdgeClientConnectorBase {
                 .setBody(CommonMessageWrapper.CommonMessage.newBuilder().getBodyBuilder()
                         .setPayload(payload)
                         .setCode(code)
-                        .setMsg(msg))
+                        .setMsg(StringUtil.isBlank(msg) ? "" : msg))
                 .build();
     }
 
     private void sendMsg0(CommonMessageWrapper.CommonMessage message, SendMsgCallback successCallback, SendMsgCallback failCallback) {
         KvLogger kvLogger = KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                .p(HostStackConstants.CHANNEL_ID, channel.id())
+                .p(HostStackConstants.CHANNEL_ID, channel == null ? "" : channel.id())
                 .p(HostStackConstants.TRACE_ID, message.getHeader().getTraceId())
                 .p(HostStackConstants.METH_ID, message.getHeader().getMethId())
                 .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
                 .p(HostStackConstants.RELAY_SID, EdgeContext.RelayId)
                 .p(HostStackConstants.REGION, EdgeContext.Region)
                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode);
-        if (isAlive()) {
+        if (!isAlive()) {
             kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgFailed)
                     .p(LogFieldConstants.ERR_MSG, channel == null ? "Channel is null" : "Channel is not active")
                     .e();
             Optional.ofNullable(failCallback).ifPresent(SendMsgCallback::callback);
             return;
         }
-        channel.eventLoop().execute(() -> {
-            byte[] protobufMessage = message.toByteArray();
-            ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
-            ChannelFuture channelFuture = channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
-            channelFuture.addListener(future -> {
-                if (future.isDone() && future.cause() != null) {
-                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgFailed)
-                            .p(LogFieldConstants.ERR_MSG, future.cause().getMessage())
-                            .p(LogFieldConstants.ReqData, message.toString())
-                            .e(future.cause());
-                    putResendMessage(message);
-                } else if (future.isDone() && future.isSuccess()) {
-                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgSuccessful)
-                            .i();
-                    kvLogger.p(LogFieldConstants.ReqData, message.toString())
-                            .d();
-                    Optional.ofNullable(successCallback).ifPresent(SendMsgCallback::callback);
-                }
-            });
+
+//        channel.eventLoop().execute(() -> {
+        byte[] protobufMessage = message.toByteArray();
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
+        ChannelFuture channelFuture = channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
+        channelFuture.addListener(future -> {
+            if (future.isDone() && future.cause() != null) {
+                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgFailed)
+                        .p(LogFieldConstants.ERR_MSG, future.cause().getMessage())
+                        .p(LogFieldConstants.ReqData, message.toString())
+                        .e(future.cause());
+                putResendMessage(message);
+            } else if (future.isDone() && future.isSuccess()) {
+                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgSuccessful)
+                        .i();
+                kvLogger.p(LogFieldConstants.ReqData, message.toString())
+                        .d();
+                Optional.ofNullable(successCallback).ifPresent(SendMsgCallback::callback);
+            }
         });
+
+//        });
     }
 
     private void putResendMessage(CommonMessageWrapper.CommonMessage msg) {
@@ -184,7 +187,7 @@ abstract class EdgeClientConnectorBase {
                                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                                 .p("RetryTimes", retry.get())
                                 .p("ReSendId", resendMessage.getReSendId());
-                        if (isAlive()) {
+                        if (!isAlive()) {
                             ClientReSendMap.remove(resendMessageId);
                             kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
                                     .p(LogFieldConstants.ERR_MSG, "Channel is not alive")
@@ -198,26 +201,26 @@ abstract class EdgeClientConnectorBase {
                                         .w();
                                 return;
                             }
-                            channel.eventLoop().execute(() -> {
-                                byte[] protobufMessage = reSendProto.toByteArray();
-                                ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
-                                ChannelFuture reSendChannelFuture = channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
-                                resendMessage.setRetry(retry.incrementAndGet());
-                                reSendChannelFuture.addListener(retryFuture -> {
-                                    if (retryFuture.isDone() && retryFuture.cause() != null) {
-                                        kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
-                                                .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
-                                                .p(LogFieldConstants.ReqData, reSendProto.toString())
-                                                .e(retryFuture.cause());
-                                    } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
-                                        kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgSuccessful)
-                                                .i();
-                                        kvLogger.p(LogFieldConstants.ReqData, resendMessage.getData())
-                                                .d();
-                                        ClientReSendMap.remove(resendMessageId);
-                                    }
-                                });
+//                            channel.eventLoop().execute(() -> {
+                            byte[] protobufMessage = reSendProto.toByteArray();
+                            ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
+                            ChannelFuture reSendChannelFuture = channel.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
+                            resendMessage.setRetry(retry.incrementAndGet());
+                            reSendChannelFuture.addListener(retryFuture -> {
+                                if (retryFuture.isDone() && retryFuture.cause() != null) {
+                                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
+                                            .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
+                                            .p(LogFieldConstants.ReqData, reSendProto.toString())
+                                            .e(retryFuture.cause());
+                                } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
+                                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgSuccessful)
+                                            .i();
+                                    kvLogger.p(LogFieldConstants.ReqData, resendMessage.getData())
+                                            .d();
+                                    ClientReSendMap.remove(resendMessageId);
+                                }
                             });
+//                            });
                         } catch (Exception ex) {
                             KvLogger.instance(this)
                                     .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)

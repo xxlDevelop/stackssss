@@ -13,6 +13,7 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.edge.client.jobrenotify.JobReNotifyService;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeClientConfig;
@@ -31,18 +32,16 @@ public class EdgeClient implements Runnable {
     private EventLoopGroup eventLoopGroup;
     private Bootstrap bootstrap;
     private final EdgeClientConfig edgeClientConfig;
-    private final EdgeCommonConfig edgeCommonConfig;
     private final EdgeClientChannelInitializer edgeClientChannelInitializer;
     private final ScheduledExecutorService reSendJobNotifyScheduler;
     private URI webSocketUri;
 
     public EdgeClient(@Value("${upWsAddr}") String upWsAddr,
                       EdgeClientConfig edgeClientConfig,
-                      EdgeCommonConfig edgeCommonConfig,
-                      EdgeClientChannelInitializer edgeClientChannelInitializer) {
+                      EdgeClientChannelInitializer edgeClientChannelInitializer,
+                      JobReNotifyService jobReNotifyService) {
         this.upWsAddr = upWsAddr;
         this.edgeClientConfig = edgeClientConfig;
-        this.edgeCommonConfig = edgeCommonConfig;
         this.edgeClientChannelInitializer = edgeClientChannelInitializer;
         try {
             webSocketUri = new URI(upWsAddr);
@@ -59,7 +58,7 @@ public class EdgeClient implements Runnable {
         }
         reSendJobNotifyScheduler = Executors.newScheduledThreadPool(1,
                 ThreadFactoryBuilder.create().setNamePrefix("resend-job-notify").build());
-        reSendJobNotifyScheduler.scheduleAtFixedRate(this::reSendJobNotify, 10, 10, TimeUnit.SECONDS);
+        reSendJobNotifyScheduler.scheduleAtFixedRate(jobReNotifyService::reSendJobNotify, 10, 10, TimeUnit.SECONDS);
     }
 
     private EventLoopGroup buildEventLoopGroup() {
@@ -153,7 +152,6 @@ public class EdgeClient implements Runnable {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException ignored) {
-
             }
             reConnect();
         } finally {
@@ -162,6 +160,14 @@ public class EdgeClient implements Runnable {
     }
 
     public void reConnect() {
+        KvLogger.instance(this)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
+                .p(LogFieldConstants.EVENT, EdgeEvent.Action.EdgeWsClient_ReConnectToServer)
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                .p(HostStackConstants.REGION, EdgeContext.Region)
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .i();
         init();
     }
 
@@ -183,19 +189,6 @@ public class EdgeClient implements Runnable {
                         .e(ex);
             }
         });
-    }
-
-    private void reSendJobNotify() {
-        String[] files = new File(edgeCommonConfig.getNotSendJobNotifySavePath()).list();
-        KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
-                .p(LogFieldConstants.ACTION, "StartScanToSend")
-                .p("FileCount", files == null ? 0 : files.length)
-                .i();
-        if (files != null) {
-
-        }
-
     }
 
     @PreDestroy

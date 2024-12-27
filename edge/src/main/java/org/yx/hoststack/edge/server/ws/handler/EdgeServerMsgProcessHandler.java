@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.common.utils.NetUtils;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
@@ -36,7 +37,7 @@ public class EdgeServerMsgProcessHandler implements ChannelHandler {
     @Override
     public void doHandle(ChannelHandlerContext ctx, Object msg) {
         try {
-            Object channelClientId = "";
+//            Object channelClientId = "";
 //            if (channelClientId == null) {
 //                log.warn("channelClientId is null, channelId:{}, remoteAddr:{}, to closed", ctx.channel().id(), ctx.channel().remoteAddress());
 //                channelManager.closeChannel(ctx);
@@ -86,12 +87,13 @@ public class EdgeServerMsgProcessHandler implements ChannelHandler {
                         .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                         .p(HostStackConstants.REGION, EdgeContext.Region)
                         .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
-                        .e();
+                        .w();
             }
         } catch (Exception e) {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
                     .p(LogFieldConstants.ACTION, EdgeEvent.Action.ProcessMsg)
+                    .p(LogFieldConstants.Code, EdgeSysCode.Exception.getValue())
                     .p(LogFieldConstants.ERR_MSG, e.getMessage())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                     .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)

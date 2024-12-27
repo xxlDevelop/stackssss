@@ -18,6 +18,7 @@ public interface EdgeEvent {
         String ReSendMsgFailed = "ReSendMsgFailed";
         String ReSendMsgFailedLimit = "ReSendMsgFailedLimit";
         String ReSendMsgSuccessful = "ReSendMsgSuccessful";
+        String Statis = "Statis";
         String ReceiveMsg = "ReceiveMsg";
         String ProcessMsg = "ProcessMsg";
         String ClearTempContextMapping = "ClearTempContextMapping";
@@ -34,11 +35,14 @@ public interface EdgeEvent {
         String EdgeWsClient_HandshakeSuccessful = "HandshakeSuccessful";
         String EdgeWsClient_HandshakeTimeout = "HandshakeTimeout";
         String EdgeWsClient_CloseByServer = "CloseByServer";
+        String EdgeWsClient_ReConnectToServer = "ReConnectToServe";
 
         // business
         String CenterPont = "CenterPont";
         String EdgeRegisterSuccessful = "EdgeRegisterSuccessful";
         String EdgeRegisterFailed = "EdgeRegisterFailed";
+        String EdgeConfigSync= "EdgeConfigSync";
+        String RegionConfigSync= "RegionConfigSync";
         String PrepareHandshake = "PrepareHandshake";
         String HandshakeSuccessful = "HandshakeSuccessful";
         String HostActiveClose = "HostActiveClose";
