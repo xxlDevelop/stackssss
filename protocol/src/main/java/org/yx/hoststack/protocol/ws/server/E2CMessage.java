@@ -691,6 +691,516 @@ public final class E2CMessage {
 
   }
 
+  public interface E2C_IdcExitOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string idcSid = 1;</code>
+     * @return The idcSid.
+     */
+    java.lang.String getIdcSid();
+    /**
+     * <code>string idcSid = 1;</code>
+     * @return The bytes for idcSid.
+     */
+    com.google.protobuf.ByteString
+        getIdcSidBytes();
+  }
+  /**
+   * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExit}
+   */
+  public static final class E2C_IdcExit extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+      E2C_IdcExitOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 29,
+        /* patch= */ 1,
+        /* suffix= */ "",
+        E2C_IdcExit.class.getName());
+    }
+    // Use E2C_IdcExit.newBuilder() to construct.
+    private E2C_IdcExit(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private E2C_IdcExit() {
+      idcSid_ = "";
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.Builder.class);
+    }
+
+    public static final int IDCSID_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object idcSid_ = "";
+    /**
+     * <code>string idcSid = 1;</code>
+     * @return The idcSid.
+     */
+    @java.lang.Override
+    public java.lang.String getIdcSid() {
+      java.lang.Object ref = idcSid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        idcSid_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string idcSid = 1;</code>
+     * @return The bytes for idcSid.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getIdcSidBytes() {
+      java.lang.Object ref = idcSid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        idcSid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(idcSid_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, idcSid_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(idcSid_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, idcSid_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit)) {
+        return super.equals(obj);
+      }
+      org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit other = (org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit) obj;
+
+      if (!getIdcSid()
+          .equals(other.getIdcSid())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + IDCSID_FIELD_NUMBER;
+      hash = (53 * hash) + getIdcSid().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExit}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.Builder.class);
+      }
+
+      // Construct using org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        idcSid_ = "";
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstanceForType() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit build() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit buildPartial() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.idcSid_ = idcSid_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit) {
+          return mergeFrom((org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit other) {
+        if (other == org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.getDefaultInstance()) return this;
+        if (!other.getIdcSid().isEmpty()) {
+          idcSid_ = other.idcSid_;
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                idcSid_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object idcSid_ = "";
+      /**
+       * <code>string idcSid = 1;</code>
+       * @return The idcSid.
+       */
+      public java.lang.String getIdcSid() {
+        java.lang.Object ref = idcSid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          idcSid_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string idcSid = 1;</code>
+       * @return The bytes for idcSid.
+       */
+      public com.google.protobuf.ByteString
+          getIdcSidBytes() {
+        java.lang.Object ref = idcSid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          idcSid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string idcSid = 1;</code>
+       * @param value The idcSid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIdcSid(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        idcSid_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string idcSid = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIdcSid() {
+        idcSid_ = getDefaultInstance().getIdcSid();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string idcSid = 1;</code>
+       * @param value The bytes for idcSid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIdcSidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        idcSid_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+    }
+
+    // @@protoc_insertion_point(class_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+    private static final org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit();
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<E2C_IdcExit>
+        PARSER = new com.google.protobuf.AbstractParser<E2C_IdcExit>() {
+      @java.lang.Override
+      public E2C_IdcExit parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<E2C_IdcExit> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<E2C_IdcExit> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface E2C_HostInitializeReqOrBuilder extends
       // @@protoc_insertion_point(interface_extends:org.yx.hoststack.protocol.ws.server.E2C_HostInitializeReq)
       com.google.protobuf.MessageOrBuilder {
@@ -937,6 +1447,18 @@ public final class E2CMessage {
      */
     com.google.protobuf.ByteString
         getRegisterModeBytes();
+
+    /**
+     * <code>string xToken = 21;</code>
+     * @return The xToken.
+     */
+    java.lang.String getXToken();
+    /**
+     * <code>string xToken = 21;</code>
+     * @return The bytes for xToken.
+     */
+    com.google.protobuf.ByteString
+        getXTokenBytes();
   }
   /**
    * <pre>
@@ -979,6 +1501,7 @@ public final class E2CMessage {
       hostId_ = "";
       detailedId_ = "";
       registerMode_ = "";
+      xToken_ = "";
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
@@ -1654,6 +2177,45 @@ public final class E2CMessage {
       }
     }
 
+    public static final int XTOKEN_FIELD_NUMBER = 21;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object xToken_ = "";
+    /**
+     * <code>string xToken = 21;</code>
+     * @return The xToken.
+     */
+    @java.lang.Override
+    public java.lang.String getXToken() {
+      java.lang.Object ref = xToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        xToken_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string xToken = 21;</code>
+     * @return The bytes for xToken.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getXTokenBytes() {
+      java.lang.Object ref = xToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        xToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1727,6 +2289,9 @@ public final class E2CMessage {
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(registerMode_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 20, registerMode_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(xToken_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 21, xToken_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1804,6 +2369,9 @@ public final class E2CMessage {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(registerMode_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(20, registerMode_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(xToken_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(21, xToken_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -1862,6 +2430,8 @@ public final class E2CMessage {
           != other.getProxy()) return false;
       if (!getRegisterMode()
           .equals(other.getRegisterMode())) return false;
+      if (!getXToken()
+          .equals(other.getXToken())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1921,6 +2491,8 @@ public final class E2CMessage {
       hash = (53 * hash) + getProxy();
       hash = (37 * hash) + REGISTERMODE_FIELD_NUMBER;
       hash = (53 * hash) + getRegisterMode().hashCode();
+      hash = (37 * hash) + XTOKEN_FIELD_NUMBER;
+      hash = (53 * hash) + getXToken().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2100,6 +2672,7 @@ public final class E2CMessage {
         detailedId_ = "";
         proxy_ = 0;
         registerMode_ = "";
+        xToken_ = "";
         return this;
       }
 
@@ -2212,6 +2785,9 @@ public final class E2CMessage {
         }
         if (((from_bitField0_ & 0x00080000) != 0)) {
           result.registerMode_ = registerMode_;
+        }
+        if (((from_bitField0_ & 0x00100000) != 0)) {
+          result.xToken_ = xToken_;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -2360,6 +2936,11 @@ public final class E2CMessage {
           bitField0_ |= 0x00080000;
           onChanged();
         }
+        if (!other.getXToken().isEmpty()) {
+          xToken_ = other.xToken_;
+          bitField0_ |= 0x00100000;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -2504,6 +3085,11 @@ public final class E2CMessage {
                 bitField0_ |= 0x00080000;
                 break;
               } // case 162
+              case 170: {
+                xToken_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00100000;
+                break;
+              } // case 170
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -4182,6 +4768,78 @@ public final class E2CMessage {
         checkByteStringIsUtf8(value);
         registerMode_ = value;
         bitField0_ |= 0x00080000;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object xToken_ = "";
+      /**
+       * <code>string xToken = 21;</code>
+       * @return The xToken.
+       */
+      public java.lang.String getXToken() {
+        java.lang.Object ref = xToken_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          xToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string xToken = 21;</code>
+       * @return The bytes for xToken.
+       */
+      public com.google.protobuf.ByteString
+          getXTokenBytes() {
+        java.lang.Object ref = xToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          xToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string xToken = 21;</code>
+       * @param value The xToken to set.
+       * @return This builder for chaining.
+       */
+      public Builder setXToken(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        xToken_ = value;
+        bitField0_ |= 0x00100000;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string xToken = 21;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearXToken() {
+        xToken_ = getDefaultInstance().getXToken();
+        bitField0_ = (bitField0_ & ~0x00100000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string xToken = 21;</code>
+       * @param value The bytes for xToken to set.
+       * @return This builder for chaining.
+       */
+      public Builder setXTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        xToken_ = value;
+        bitField0_ |= 0x00100000;
         onChanged();
         return this;
       }
@@ -13058,6 +13716,11 @@ public final class E2CMessage {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_org_yx_hoststack_protocol_ws_server_E2C_EdgeRegisterReq_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -13123,47 +13786,48 @@ public final class E2CMessage {
     java.lang.String[] descriptorData = {
       "\n\021E2C_Message.proto\022#org.yx.hoststack.pr" +
       "otocol.ws.server\"9\n\023E2C_EdgeRegisterReq\022" +
-      "\021\n\tserviceIp\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\"\215\004\n\025" +
-      "E2C_HostInitializeReq\022\024\n\014agentStartTs\030\001 " +
-      "\001(\004\022\021\n\tagentType\030\002 \001(\t\022\024\n\014resourcePool\030\003" +
-      " \001(\t\022\021\n\tosStartTs\030\004 \001(\004\022\r\n\005devSn\030\005 \001(\t\022\016" +
-      "\n\006osType\030\006 \001(\t\022\021\n\tosVersion\030\007 \001(\t\022\024\n\014age" +
-      "ntVersion\030\010 \001(\t\022\r\n\005osMem\030\t \001(\r\022\017\n\007localI" +
-      "p\030\n \001(\t\022\014\n\004disk\030\013 \001(\t\022=\n\007cpuSpec\030\014 \001(\0132," +
-      ".org.yx.hoststack.protocol.ws.server.Cpu" +
-      "Info\022=\n\007gpuList\030\r \003(\0132,.org.yx.hoststack" +
-      ".protocol.ws.server.GpuInfo\022E\n\013netCardLi" +
-      "st\030\016 \003(\01320.org.yx.hoststack.protocol.ws." +
-      "server.NetCardInfo\022\022\n\nruntimeEnv\030\017 \001(\t\022\n" +
-      "\n\002ak\030\020 \001(\t\022\016\n\006hostId\030\021 \001(\t\022\022\n\ndetailedId" +
-      "\030\022 \001(\t\022\r\n\005proxy\030\023 \001(\r\022\024\n\014registerMode\030\024 " +
-      "\001(\t\"\230\001\n\007CpuInfo\022\016\n\006cpuNum\030\001 \001(\r\022\017\n\007cpuTy" +
-      "pe\030\002 \001(\t\022\027\n\017cpuManufacturer\030\003 \001(\t\022\027\n\017cpu" +
-      "Architecture\030\004 \001(\t\022\020\n\010cpuCores\030\005 \001(\r\022\022\n\n" +
-      "cpuThreads\030\006 \001(\r\022\024\n\014cpuBaseSpeed\030\007 \001(\t\"~" +
-      "\n\007GpuInfo\022\017\n\007gpuType\030\001 \001(\t\022\027\n\017gpuManufac" +
-      "turer\030\002 \001(\t\022\016\n\006gpuMem\030\003 \001(\r\022\022\n\ngpuBusTyp" +
-      "e\030\004 \001(\t\022\023\n\013gpuDeviceId\030\005 \001(\t\022\020\n\010gpuBusId" +
-      "\030\006 \001(\t\"Q\n\013NetCardInfo\022\023\n\013netCardName\030\001 \001" +
-      "(\t\022\023\n\013netCardType\030\002 \001(\t\022\030\n\020netCardLinkSp" +
-      "eed\030\003 \001(\002\"W\n\024E2C_HostHeartbeatReq\022?\n\006hbD" +
-      "ata\030\001 \003(\0132/.org.yx.hoststack.protocol.ws" +
-      ".server.HostHbData\"\265\001\n\nHostHbData\022\016\n\006hos" +
-      "tId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\022C\n\nhostStat" +
-      "us\030\003 \001(\0132/.org.yx.hoststack.protocol.ws." +
-      "server.HostStatus\022?\n\010vmStatus\030\004 \003(\0132-.or" +
-      "g.yx.hoststack.protocol.ws.server.VmStat" +
-      "us\"r\n\nHostStatus\022\020\n\010cpuUsage\030\001 \001(\r\022\023\n\013me" +
-      "moryUsage\030\002 \001(\r\022\020\n\010gpuUsage\030\003 \001(\r\022\026\n\016gpu" +
-      "Temperature\030\004 \001(\r\022\023\n\013gpuFanSpeed\030\005 \001(\r\"J" +
-      "\n\010VmStatus\022\016\n\006vmName\030\001 \001(\t\022\020\n\010imageVer\030\002" +
-      " \001(\t\022\013\n\003cid\030\003 \001(\t\022\017\n\007running\030\004 \001(\010\"4\n\017E2" +
-      "C_HostExitReq\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentTy" +
-      "pe\030\002 \001(\t\"U\n\020E2C_JobReportReq\022A\n\005items\030\001 " +
-      "\003(\01322.org.yx.hoststack.protocol.ws.serve" +
-      "r.JobReportItem\"B\n\rJobReportItem\022\017\n\007trac" +
-      "eId\030\001 \001(\t\022\r\n\005jobId\030\002 \001(\t\022\021\n\tjobResult\030\003 " +
-      "\001(\014b\006proto3"
+      "\021\n\tserviceIp\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\"\035\n\013E" +
+      "2C_IdcExit\022\016\n\006idcSid\030\001 \001(\t\"\235\004\n\025E2C_HostI" +
+      "nitializeReq\022\024\n\014agentStartTs\030\001 \001(\004\022\021\n\tag" +
+      "entType\030\002 \001(\t\022\024\n\014resourcePool\030\003 \001(\t\022\021\n\to" +
+      "sStartTs\030\004 \001(\004\022\r\n\005devSn\030\005 \001(\t\022\016\n\006osType\030" +
+      "\006 \001(\t\022\021\n\tosVersion\030\007 \001(\t\022\024\n\014agentVersion" +
+      "\030\010 \001(\t\022\r\n\005osMem\030\t \001(\r\022\017\n\007localIp\030\n \001(\t\022\014" +
+      "\n\004disk\030\013 \001(\t\022=\n\007cpuSpec\030\014 \001(\0132,.org.yx.h" +
+      "oststack.protocol.ws.server.CpuInfo\022=\n\007g" +
+      "puList\030\r \003(\0132,.org.yx.hoststack.protocol" +
+      ".ws.server.GpuInfo\022E\n\013netCardList\030\016 \003(\0132" +
+      "0.org.yx.hoststack.protocol.ws.server.Ne" +
+      "tCardInfo\022\022\n\nruntimeEnv\030\017 \001(\t\022\n\n\002ak\030\020 \001(" +
+      "\t\022\016\n\006hostId\030\021 \001(\t\022\022\n\ndetailedId\030\022 \001(\t\022\r\n" +
+      "\005proxy\030\023 \001(\r\022\024\n\014registerMode\030\024 \001(\t\022\016\n\006xT" +
+      "oken\030\025 \001(\t\"\230\001\n\007CpuInfo\022\016\n\006cpuNum\030\001 \001(\r\022\017" +
+      "\n\007cpuType\030\002 \001(\t\022\027\n\017cpuManufacturer\030\003 \001(\t" +
+      "\022\027\n\017cpuArchitecture\030\004 \001(\t\022\020\n\010cpuCores\030\005 " +
+      "\001(\r\022\022\n\ncpuThreads\030\006 \001(\r\022\024\n\014cpuBaseSpeed\030" +
+      "\007 \001(\t\"~\n\007GpuInfo\022\017\n\007gpuType\030\001 \001(\t\022\027\n\017gpu" +
+      "Manufacturer\030\002 \001(\t\022\016\n\006gpuMem\030\003 \001(\r\022\022\n\ngp" +
+      "uBusType\030\004 \001(\t\022\023\n\013gpuDeviceId\030\005 \001(\t\022\020\n\010g" +
+      "puBusId\030\006 \001(\t\"Q\n\013NetCardInfo\022\023\n\013netCardN" +
+      "ame\030\001 \001(\t\022\023\n\013netCardType\030\002 \001(\t\022\030\n\020netCar" +
+      "dLinkSpeed\030\003 \001(\002\"W\n\024E2C_HostHeartbeatReq" +
+      "\022?\n\006hbData\030\001 \003(\0132/.org.yx.hoststack.prot" +
+      "ocol.ws.server.HostHbData\"\265\001\n\nHostHbData" +
+      "\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\022C\n\nh" +
+      "ostStatus\030\003 \001(\0132/.org.yx.hoststack.proto" +
+      "col.ws.server.HostStatus\022?\n\010vmStatus\030\004 \003" +
+      "(\0132-.org.yx.hoststack.protocol.ws.server" +
+      ".VmStatus\"r\n\nHostStatus\022\020\n\010cpuUsage\030\001 \001(" +
+      "\r\022\023\n\013memoryUsage\030\002 \001(\r\022\020\n\010gpuUsage\030\003 \001(\r" +
+      "\022\026\n\016gpuTemperature\030\004 \001(\r\022\023\n\013gpuFanSpeed\030" +
+      "\005 \001(\r\"J\n\010VmStatus\022\016\n\006vmName\030\001 \001(\t\022\020\n\010ima" +
+      "geVer\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\017\n\007running\030\004 \001(" +
+      "\010\"4\n\017E2C_HostExitReq\022\016\n\006hostId\030\001 \001(\t\022\021\n\t" +
+      "agentType\030\002 \001(\t\"U\n\020E2C_JobReportReq\022A\n\005i" +
+      "tems\030\001 \003(\01322.org.yx.hoststack.protocol.w" +
+      "s.server.JobReportItem\"B\n\rJobReportItem\022" +
+      "\017\n\007traceId\030\001 \001(\t\022\r\n\005jobId\030\002 \001(\t\022\021\n\tjobRe" +
+      "sult\030\003 \001(\014b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -13175,68 +13839,74 @@ public final class E2CMessage {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_EdgeRegisterReq_descriptor,
         new java.lang.String[] { "ServiceIp", "Version", });
-    internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor =
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor,
+        new java.lang.String[] { "IdcSid", });
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor,
-        new java.lang.String[] { "AgentStartTs", "AgentType", "ResourcePool", "OsStartTs", "DevSn", "OsType", "OsVersion", "AgentVersion", "OsMem", "LocalIp", "Disk", "CpuSpec", "GpuList", "NetCardList", "RuntimeEnv", "Ak", "HostId", "DetailedId", "Proxy", "RegisterMode", });
+        new java.lang.String[] { "AgentStartTs", "AgentType", "ResourcePool", "OsStartTs", "DevSn", "OsType", "OsVersion", "AgentVersion", "OsMem", "LocalIp", "Disk", "CpuSpec", "GpuList", "NetCardList", "RuntimeEnv", "Ak", "HostId", "DetailedId", "Proxy", "RegisterMode", "XToken", });
     internal_static_org_yx_hoststack_protocol_ws_server_CpuInfo_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_org_yx_hoststack_protocol_ws_server_CpuInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_CpuInfo_descriptor,
         new java.lang.String[] { "CpuNum", "CpuType", "CpuManufacturer", "CpuArchitecture", "CpuCores", "CpuThreads", "CpuBaseSpeed", });
     internal_static_org_yx_hoststack_protocol_ws_server_GpuInfo_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_org_yx_hoststack_protocol_ws_server_GpuInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_GpuInfo_descriptor,
         new java.lang.String[] { "GpuType", "GpuManufacturer", "GpuMem", "GpuBusType", "GpuDeviceId", "GpuBusId", });
     internal_static_org_yx_hoststack_protocol_ws_server_NetCardInfo_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_org_yx_hoststack_protocol_ws_server_NetCardInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_NetCardInfo_descriptor,
         new java.lang.String[] { "NetCardName", "NetCardType", "NetCardLinkSpeed", });
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostHeartbeatReq_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostHeartbeatReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostHeartbeatReq_descriptor,
         new java.lang.String[] { "HbData", });
     internal_static_org_yx_hoststack_protocol_ws_server_HostHbData_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_org_yx_hoststack_protocol_ws_server_HostHbData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_HostHbData_descriptor,
         new java.lang.String[] { "HostId", "AgentType", "HostStatus", "VmStatus", });
     internal_static_org_yx_hoststack_protocol_ws_server_HostStatus_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_org_yx_hoststack_protocol_ws_server_HostStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_HostStatus_descriptor,
         new java.lang.String[] { "CpuUsage", "MemoryUsage", "GpuUsage", "GpuTemperature", "GpuFanSpeed", });
     internal_static_org_yx_hoststack_protocol_ws_server_VmStatus_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_org_yx_hoststack_protocol_ws_server_VmStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_VmStatus_descriptor,
         new java.lang.String[] { "VmName", "ImageVer", "Cid", "Running", });
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostExitReq_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostExitReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostExitReq_descriptor,
         new java.lang.String[] { "HostId", "AgentType", });
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_JobReportReq_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_JobReportReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_JobReportReq_descriptor,
         new java.lang.String[] { "Items", });
     internal_static_org_yx_hoststack_protocol_ws_server_JobReportItem_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_org_yx_hoststack_protocol_ws_server_JobReportItem_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_JobReportItem_descriptor,

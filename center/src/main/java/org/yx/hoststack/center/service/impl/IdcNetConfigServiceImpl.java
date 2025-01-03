@@ -6,8 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.yx.hoststack.center.common.constant.CenterEvent;
+import org.yx.hoststack.center.common.enums.SysCode;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
-import org.yx.hoststack.center.entity.IdcInfo;
 import org.yx.hoststack.center.mapper.IdcNetConfigMapper;
 import org.yx.hoststack.center.entity.IdcNetConfig;
 import org.yx.hoststack.center.service.IdcInfoService;
@@ -15,8 +16,14 @@ import org.yx.hoststack.center.service.IdcNetConfigService;
 
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-import java.util.Optional;
+import org.yx.hoststack.common.HostStackConstants;
+import org.yx.lib.utils.logger.KvLogger;
+import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.R;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 /**
  * @author lyc
@@ -64,37 +71,122 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
         return idcNetConfigMapper.deleteById(id);
     }
 
+    /**
+     * Save IDC network configurations
+     *
+     * @param configReqList Configuration request list
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean saveConfig(List<IdcNetConfigReq> idcNetConfigList) {
-        for (IdcNetConfigReq idcNetConfigReq : idcNetConfigList){
-
-            Optional<IdcInfo> oneOpt = idcInfoService.getOneOpt(Wrappers.lambdaQuery(IdcInfo.class).eq(IdcInfo::getIdc, idcNetConfigReq.getIdc()));
-            /*
-
-
-            LambdaUpdateWrapper<IdcInfo> query = Wrappers.lambdaUpdate(IdcNetConfigReq.class)
-                    .eq(IdcNetConfig::getIdcId, idcNetConfigReq.getIdc())
-                    .set(IdcInfo::getLocalHsIdcHttpSvc, idcNetConfigReq.getLocalHsIdcHttpSvc())
-                    .set(IdcInfo::getNetHsIdcHttpsSvc, idcUpdateReq.getNetHsIdcHttpsSvc())
-                    .set(IdcInfo::getLocalHsIdcWsSvc, idcUpdateReq.getLocalHsIdcWsSvc())
-                    .set(IdcInfo::getLocalShareStorageHttpSvc, idcUpdateReq.getLocalShareStorageHttpSvc())
-                    .set(IdcInfo::getShareStorageUser, idcUpdateReq.getShareStorageUser())
-                    .set(IdcInfo::getShareStoragePwd, idcUpdateReq.getShareStoragePwd())
-                    .set(IdcInfo::getLocalLogSvcHttpSvc, idcUpdateReq.getLocalLogSvcHttpSvc())
-                    .set(IdcInfo::getNetLogSvcHttpsSvc, idcUpdateReq.getNetLogSvcHttpsSvc())
-                    .set(IdcInfo::getSpeedTestSvc, idcUpdateReq.getSpeedTestSvc())
-                    .set(IdcInfo::getLocation, idcUpdateReq.getLocation());
-            if (!update(query)){
-                KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
-                        .p(LogFieldConstants.ACTION, CenterEvent.Action.Update_IdcInfo_Failed)
-                        .p("idcInfo", JSON.toJSONString(idcUpdateReq))
-                        .i();
-                throw new RuntimeException("更新IdcInfo失败！IdcInfo" + JSON.toJSONString(idcUpdateReq));
-            }*/
+    public R<?> saveConfig(List<IdcNetConfigReq> configReqList) {
+        // Validate network address uniqueness
+        R<?> validationResult = validateNetworkAddressUniqueness(configReqList);
+        if (!(validationResult.getCode() == R.ok().getCode())) {
+            return validationResult;
         }
-        return true;
+
+        try {
+            List<IdcNetConfig> configList = configReqList.stream()
+                    .map(this::convertToEntity)
+                    .collect(Collectors.toList());
+
+            // Batch save or update
+            boolean saved = saveOrUpdateBatch(configList);
+            return saved ? R.ok() : R.failed(SysCode.x00000400.getValue(), SysCode.x00000400.getMsg());
+        } catch (Exception e) {
+            KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, CenterEvent.IDC_NET_CONFIG_SAVE_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.IDC_NET_CONFIG_SAVE_FAILED)
+                    .p(LogFieldConstants.ERR_MSG, e.getMessage())
+                    .e(e);
+            return R.failed(SysCode.x00030006.getValue(), SysCode.x00030006.getMsg());
+        }
+    }
+
+    /**
+     * Validate network address uniqueness
+     */
+    private R<?> validateNetworkAddressUniqueness(List<IdcNetConfigReq> configReqList) {
+        // Sets to store IP:Port combinations
+        Set<String> localCombinations = new HashSet<>();
+        Set<String> mappingCombinations = new HashSet<>();
+
+        // Validate uniqueness within the request list
+        for (IdcNetConfigReq req : configReqList) {
+            // Split local network address
+            String[] localParts = req.getLocalNet().split(":");
+            if (localParts.length != 2) {
+                return R.failed(SysCode.x00030003.getValue(), SysCode.x00030003.getMsg());
+            }
+
+            // Split mapping network address
+            String[] mappingParts = req.getMappingNet().split(":");
+            if (mappingParts.length != 2) {
+                return R.failed(SysCode.x00030004.getValue(), SysCode.x00030004.getMsg());
+            }
+
+            // Create combinations for checking
+            String localCombination = localParts[0] + ":" + localParts[1];
+            String mappingCombination = mappingParts[0] + ":" + mappingParts[1];
+
+            // Check for duplicates in current request list
+            if (!localCombinations.add(localCombination)) {
+                return R.failed(SysCode.x00030001.getValue(), SysCode.x00030001.getMsg());
+            }
+            if (!mappingCombinations.add(mappingCombination)) {
+                return R.failed(SysCode.x00030002.getValue(), SysCode.x00030002.getMsg());
+            }
+        }
+
+        // Check for existing combinations in database
+        List<IdcNetConfig> existingConfigs = list(new LambdaQueryWrapper<IdcNetConfig>()
+                .exists("SELECT 1 FROM t_idc_net_config WHERE " +
+                        "CONCAT(local_ip, ':', local_port) IN (" +
+                        String.join(",", localCombinations.stream()
+                                .map(s -> "'" + s + "'")
+                                .collect(Collectors.toList())) + ") " +
+                        "OR CONCAT(mapping_ip, ':', mapping_port) IN (" +
+                        String.join(",", mappingCombinations.stream()
+                                .map(s -> "'" + s + "'")
+                                .collect(Collectors.toList())) + ")"
+                ));
+
+        if (!existingConfigs.isEmpty()) {
+            return R.failed(SysCode.x00030005.getValue(), SysCode.x00030005.getMsg());
+        }
+
+        return R.ok();
+    }
+    /**
+     * Convert IP:Port string to IdcNetConfig entity
+     */
+    private IdcNetConfig convertToEntity(IdcNetConfigReq req) {
+        // Split local network address
+        String[] localParts = req.getLocalNet().split(":");
+        String localIp = localParts[0];
+        Integer localPort = Integer.parseInt(localParts[1]);
+
+        // Split mapping network address
+        String[] mappingParts = req.getMappingNet().split(":");
+        String mappingIp = mappingParts[0];
+        Integer mappingPort = Integer.parseInt(mappingParts[1]);
+
+        return IdcNetConfig.builder()
+                .localIp(localIp)
+                .localPort(localPort)
+                .mappingIp(mappingIp)
+                .mappingPort(mappingPort)
+                .mask(req.getMask())
+                .gateway(req.getGateway())
+                .dns1(req.getDns1())
+                .dns2(req.getDns2())
+                .netProtocol(req.getNetProtocol())
+                .bandwidthInLimit(req.getBandwidthInLimit())
+                .bandwidthOutLimit(req.getBandwidthOutLimit())
+                .netIspType(req.getNetIspType())
+                .ipType(req.getIpType())
+                .mappingName(req.getMappingName())
+                .build();
     }
 
 }

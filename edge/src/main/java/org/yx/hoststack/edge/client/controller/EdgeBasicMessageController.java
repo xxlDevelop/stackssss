@@ -1,24 +1,20 @@
 package org.yx.hoststack.edge.client.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.edge.client.EdgeClient;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
-import org.yx.hoststack.edge.common.CacheKeyConstants;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
-import org.yx.hoststack.edge.config.IdcBasicConfig;
-import org.yx.hoststack.edge.config.IdcConfigManager;
-import org.yx.hoststack.edge.config.RegionConfigManager;
+import org.yx.hoststack.edge.cache.IdcConfigCacheManager;
+import org.yx.hoststack.edge.cache.RegionConfigCacheManager;
 import org.yx.hoststack.edge.server.RunMode;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
@@ -44,8 +40,8 @@ public class EdgeBasicMessageController {
     }
 
     private final EdgeCommonConfig edgeCommonConfig;
-    private final IdcConfigManager idcConfigManager;
-    private final RegionConfigManager regionConfigManager;
+    private final IdcConfigCacheManager idcConfigCacheManager;
+    private final RegionConfigCacheManager regionConfigCacheManager;
 
     /**
      * Edge Register Center Success Result
@@ -145,8 +141,8 @@ public class EdgeBasicMessageController {
         }
         kvLogger.p("Config", eEdgeConfigSyncReq.toString())
                 .i();
-        idcConfigManager.setIdcBasicConfig(eEdgeConfigSyncReq.getBasic());
-        idcConfigManager.setIdcNetConfig(eEdgeConfigSyncReq.getNetList());
+        idcConfigCacheManager.setIdcBasicConfig(eEdgeConfigSyncReq.getBasic());
+        idcConfigCacheManager.setIdcNetConfig(eEdgeConfigSyncReq.getNetList());
         EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(), 0, "", ByteString.empty(), message.getHeader().getTraceId());
     }
 
@@ -173,7 +169,7 @@ public class EdgeBasicMessageController {
                     EdgeSysCode.PortoParseException.getValue(), EdgeSysCode.PortoParseException.getMsg(), ByteString.EMPTY, message.getHeader().getTraceId());
             return;
         }
-        regionConfigManager.setRegionConfig(regionConfigSyncReq);
+        regionConfigCacheManager.setRegionConfig(regionConfigSyncReq);
         EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(), 0, "", ByteString.empty(), message.getHeader().getTraceId());
     }
 }

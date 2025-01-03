@@ -20,7 +20,7 @@ import java.util.List;
  * @since 2024-12-09 15:15:18
  */
 @RestController
-@RequestMapping(RequestMappingBase.admin + RequestMappingBase.idc)
+@RequestMapping(RequestMappingBase.admin + RequestMappingBase.idc_net)
 @RequiredArgsConstructor
 public class IdcNetConfigController {
 
@@ -28,11 +28,10 @@ public class IdcNetConfigController {
 
 
     @PostMapping("/config")
-    public R<Boolean> config(@RequestBody
+    public R<?> config(@RequestBody
                                  @Valid
                                  @NotEmpty(message = "The idcNetConfigList must not be empty.") List<@Valid IdcNetConfigReq> idcNetConfigReqList) {
-        idcNetConfigService.saveConfig(idcNetConfigReqList);
-        return R.ok(true);
+        return idcNetConfigService.saveConfig(idcNetConfigReqList);
     }
 
     /**

@@ -57,7 +57,7 @@ abstract class EdgeClientConnectorBase {
         if (edgeClientHbScheduler != null && !edgeClientHbScheduler.isShutdown()) {
             edgeClientHbScheduler.shutdown();
         }
-        if (channel.isOpen() || channel.isActive()) {
+        if (channel != null && (channel.isOpen() || channel.isActive())) {
             channel.close();
         }
     }

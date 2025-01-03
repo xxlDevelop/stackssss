@@ -32,7 +32,7 @@ public class RelayTransferController {
         RelayControllerManager.add(ProtoMethodId.TransferToIdc, this::transferToIdc);
     }
 
-    @Value("${idc.sessionTimeout:10}")
+    @Value("${sessionTimeout.idc:10}")
     private int idcSessionTimeout;
 
     private final KvMappingChannelContextTempData kvMappingChannelContextTempData;
@@ -56,7 +56,7 @@ public class RelayTransferController {
                         .p(HostStackConstants.IDC_SID, message.getHeader().getIdcSid())
                         .p(HostStackConstants.METH_ID, message.getHeader().getMethId())
                         .w();
-                sendRelayTransferFailMsg(message, EdgeSysCode.UpstreamServiceNotAvailable.getValue(),
+                    sendRelayTransferFailMsg(message, EdgeSysCode.UpstreamServiceNotAvailable.getValue(),
                         EdgeSysCode.UpstreamServiceNotAvailable.getMsg(), context, CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE);
             });
         }

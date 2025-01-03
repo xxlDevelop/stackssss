@@ -3,6 +3,7 @@ package org.yx.hoststack.edge.client.controller.jobs;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.yx.hoststack.edge.common.JobType;
 import org.yx.hoststack.edge.common.exception.UnknownJobException;
 import org.yx.hoststack.edge.server.ws.session.SessionManager;
@@ -31,6 +32,5 @@ public class ImageJob extends HostStackJob {
             default:
                 throw new UnknownJobException();
         }
-
     }
 }

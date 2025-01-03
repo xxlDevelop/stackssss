@@ -35,7 +35,7 @@ public interface EdgeEvent {
         String EdgeWsClient_HandshakeSuccessful = "HandshakeSuccessful";
         String EdgeWsClient_HandshakeTimeout = "HandshakeTimeout";
         String EdgeWsClient_CloseByServer = "CloseByServer";
-        String EdgeWsClient_ReConnectToServer = "ReConnectToServe";
+        String EdgeWsClient_ReConnectToServer = "ReConnectToServer";
 
         // business
         String CenterPont = "CenterPont";
@@ -61,6 +61,7 @@ public interface EdgeEvent {
 
         String WorkQueueConsumer_ConsumerHostHb = "ConsumerHostHb";
         String WorkQueueConsumer_ConsumerNotSendJobNotify = "ConsumerNotSendJobNotify";
+        String WorkQueueConsumer_ConsumerHostExit = "ConsumerHostExit";
     }
 
 }

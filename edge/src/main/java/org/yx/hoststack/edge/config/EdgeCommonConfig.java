@@ -9,8 +9,12 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class EdgeCommonConfig {
+    @Value("${server.port:8080}")
+    private Integer serverPort;
+
     @Value("${runMode}")
     private String runMode;
+
     @Value("${localIp}")
     private String localIp;
 

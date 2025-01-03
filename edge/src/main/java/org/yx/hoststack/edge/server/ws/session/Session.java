@@ -1,11 +1,13 @@
 package org.yx.hoststack.edge.server.ws.session;
 
-import cn.hutool.core.thread.ThreadFactoryBuilder;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import lombok.Getter;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.edge.common.EdgeContext;
@@ -20,63 +22,61 @@ import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public abstract class Session {
-
-    private final ScheduledExecutorService checkHbScheduler;
     private final SessionEventPublisher eventPublisher;
     protected final Map<String, Object> attrs;
-    protected String sessionId;
-    protected SessionType sessionType;
-    protected int sessionTimeout;
-    protected String zone;
-    protected String region;
-    protected long createTime;
-    protected AtomicLong lastUpdateHbAt;
-    protected int hbInterval = 60;
-    protected ChannelHandlerContext context;
+    protected final String sessionId;
+    protected final SessionType sessionType;
+    protected final int sessionTimeout;
+    protected final String zone;
+    protected final String region;
+    protected final long createTime;
+    protected final AtomicLong lastUpdateHbAt;
+    protected final ChannelHandlerContext context;
+    protected final HashedWheelTimer hashedWheelTimer;
+    private Timeout timeout;
 
-    public Session(ChannelHandlerContext context, int sessionTimeout, int sessionHbInterval, SessionType sessionType) {
+    public Session(ChannelHandlerContext context, String sessionId, int sessionTimeout,
+                   SessionType sessionType, HashedWheelTimer hashedWheelTimer) {
         this.createTime = System.currentTimeMillis();
         this.lastUpdateHbAt = new AtomicLong(createTime);
+        this.sessionId = sessionId;
         this.context = context;
         this.sessionTimeout = sessionTimeout;
-        this.hbInterval = sessionHbInterval;
         this.sessionType = sessionType;
+
+        this.hashedWheelTimer = hashedWheelTimer;
 
         this.zone = EdgeContext.Zone;
         this.region = EdgeContext.Region;
 
-        checkHbScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("agentHb-check-" + context.channel().id()).build());
         eventPublisher = SpringContextHolder.getBean(SessionEventPublisher.class);
         attrs = Maps.newConcurrentMap();
     }
 
     public void tick() {
         lastUpdateHbAt.set(System.currentTimeMillis());
+        timeout.cancel();
+        timeout = hashedWheelTimer.newTimeout(new SessionTimeoutTask(this), sessionTimeout, TimeUnit.SECONDS);
     }
 
     protected void startTimeoutCheck() {
-        checkHbScheduler.scheduleAtFixedRate(() -> {
-            long diff = System.currentTimeMillis() - lastUpdateHbAt.get();
-            if (diff > sessionTimeout * 1000L) {
-                eventPublisher.publishCustomEvent(new SessionTimeoutEvent(getSource(), null));
-            }
-        }, 5, hbInterval, TimeUnit.SECONDS);
+        if (timeout != null) {
+            timeout.cancel();
+        }
+        timeout = hashedWheelTimer.newTimeout(new SessionTimeoutTask(this), sessionTimeout, TimeUnit.SECONDS);
     }
 
     public void destroy() {
-        if (context.channel().isActive()) {
+        if (context != null && context.channel() != null && context.channel().isActive()) {
             context.channel().close();
         }
-        if (checkHbScheduler != null && !checkHbScheduler.isShutdown()) {
-            checkHbScheduler.shutdown();
+        if (timeout != null) {
+            timeout.cancel();
         }
         attrs.clear();
     }
@@ -144,5 +144,18 @@ public abstract class Session {
 
     public void setAttrs(Map<String, Object> attrs) {
         attrs.putAll(attrs);
+    }
+
+    private class SessionTimeoutTask implements TimerTask {
+        private final Session session;
+
+        public SessionTimeoutTask(Session session) {
+            this.session = session;
+        }
+
+        @Override
+        public void run(Timeout timeout) {
+            eventPublisher.publishCustomEvent(new SessionTimeoutEvent(session.getSource(), null));
+        }
     }
 }

@@ -12,19 +12,20 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.edge.client.jobrenotify.JobReNotifyService;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeClientConfig;
-import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.SpringContextHolder;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class EdgeClient implements Runnable {
@@ -35,6 +36,7 @@ public class EdgeClient implements Runnable {
     private final EdgeClientChannelInitializer edgeClientChannelInitializer;
     private final ScheduledExecutorService reSendJobNotifyScheduler;
     private URI webSocketUri;
+    private AtomicBoolean isShundown = new AtomicBoolean(false);
 
     public EdgeClient(@Value("${upWsAddr}") String upWsAddr,
                       EdgeClientConfig edgeClientConfig,
@@ -115,6 +117,7 @@ public class EdgeClient implements Runnable {
                     .handler(edgeClientChannelInitializer);
         }
         try {
+            EdgeClientConnector edgeClientConnector = EdgeClientConnector.getInstance();
             ChannelFuture channelFuture = bootstrap.connect(webSocketUri.getHost(), webSocketUri.getPort()).sync();
             ClientWaitConnectSignal.reset();
             boolean result = ClientWaitConnectSignal.await(edgeClientConfig.getConnectTimeout(), TimeUnit.SECONDS);
@@ -129,7 +132,7 @@ public class EdgeClient implements Runnable {
                         .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                         .p("TargetUrl", upWsAddr)
                         .i();
-                EdgeClientConnector.getInstance().create(channelFuture);
+                edgeClientConnector.create(channelFuture);
                 sendEdgeRegister(channelFuture);
             } else {
                 if (channelFuture.channel().isActive() || channelFuture.channel().isOpen()) {
@@ -160,9 +163,12 @@ public class EdgeClient implements Runnable {
     }
 
     public void reConnect() {
+        if (isShundown.get()) {
+            return;
+        }
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                .p(LogFieldConstants.EVENT, EdgeEvent.Action.EdgeWsClient_ReConnectToServer)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeWsClient_ReConnectToServer)
                 .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
                 .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                 .p(HostStackConstants.REGION, EdgeContext.Region)
@@ -191,8 +197,8 @@ public class EdgeClient implements Runnable {
         });
     }
 
-    @PreDestroy
     public void destroy() {
+        isShundown.set(true);
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
                 .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeWsClient_PrepareDestroy)

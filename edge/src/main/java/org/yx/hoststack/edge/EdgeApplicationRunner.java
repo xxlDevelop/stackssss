@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.hoststack.edge.queue.MessageQueues;
+import org.yx.hoststack.edge.queue.consumers.HostExitConsumer;
 import org.yx.hoststack.edge.queue.consumers.HostHbConsumer;
 import org.yx.hoststack.edge.queue.consumers.JobNotifyToLocalDiskConsumer;
 import org.yx.hoststack.edge.queue.consumers.JobNotifyToCenterConsumer;
@@ -17,6 +18,7 @@ import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.io.File;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -24,17 +26,19 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EdgeApplicationRunner implements org.springframework.boot.ApplicationRunner {
 
-    private final @Qualifier("edgeExecutor") Executor executor;
     private final HostHbConsumer hostHbConsumer;
     private final JobNotifyToLocalDiskConsumer jobNotifyToLocalDiskConsumer;
     private final JobNotifyToCenterConsumer jobNotifyToCenterConsumer;
+    private final HostExitConsumer hostExitConsumer;
     private final EdgeCommonConfig edgeCommonConfig;
 
     @Override
     public void run(ApplicationArguments args) {
-        executor.execute(hostHbConsumer);
-        executor.execute(jobNotifyToLocalDiskConsumer);
-        executor.execute(jobNotifyToCenterConsumer);
+        ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+        forkJoinPool.execute(hostHbConsumer);
+        forkJoinPool.execute(jobNotifyToLocalDiskConsumer);
+        forkJoinPool.execute(jobNotifyToCenterConsumer);
+        forkJoinPool.execute(hostExitConsumer);
 
         File notSendJobNotifySavePath = new File(edgeCommonConfig.getNotSendJobNotifySavePath());
         if (!notSendJobNotifySavePath.exists()) {

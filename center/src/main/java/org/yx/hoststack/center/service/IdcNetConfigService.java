@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
 import org.yx.hoststack.center.entity.IdcNetConfig;
+import org.yx.lib.utils.util.R;
 
 import java.util.List;
 
@@ -25,6 +26,6 @@ public interface IdcNetConfigService extends IService<IdcNetConfig> {
 
     int delete(Long id);
 
-    boolean saveConfig(List<IdcNetConfigReq> IdcNetConfigReqList);
+    R<?> saveConfig(List<IdcNetConfigReq> IdcNetConfigReqList);
 
 }

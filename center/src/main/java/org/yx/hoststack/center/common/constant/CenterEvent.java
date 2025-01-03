@@ -3,6 +3,7 @@ package org.yx.hoststack.center.common.constant;
 public interface CenterEvent {
     String CenterWsServer = "CenterWsServer";
     String ENCRYPTABLE_PROPERTY_RESOLVER_EVENT = "EncryptablePropertyResolverEvent";
+    String IDC_NET_CONFIG_SAVE_EVENT = "IDC_NET_CONFIG_SAVE_EVENT";
 
     public interface Action {
         String CenterWsServer_StartInit = "StartInit";
@@ -25,6 +26,7 @@ public interface CenterEvent {
 
 
         String Update_IdcInfo_Failed = "Update_IdcInfo_Failed";
+        String IDC_NET_CONFIG_SAVE_FAILED = "IDC_NET_CONFIG_SAVE_FAILED";
     }
 
 }

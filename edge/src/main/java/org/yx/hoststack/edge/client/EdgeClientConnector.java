@@ -179,7 +179,6 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
     public void sendJobFailedToUpstream(String jobId, String jobDetailId,
                                         int code, String errorMsg, String traceId) {
         E2CMessage.E2C_JobReportReq.Builder jobReportReqBuilder = E2CMessage.E2C_JobReportReq.newBuilder();
-
         if (StringUtil.isNotBlank(jobDetailId)) {
             jobReportReqBuilder.addItems(
                     E2CMessage.JobReportItem.newBuilder()

@@ -1,0 +1,23 @@
+server:
+  port: 8099
+  shutdown: graceful
+spring:
+  application:
+    name: edge
+  data:
+    redis:
+      host: 192.168.51.233
+      port: 7006
+      connect-timeout: 5s
+      client-name: host_stack_edge_cli
+      database: 0
+  threads:
+    virtual:
+      enabled: true
+      warmUp: false
+      warmUpThread: 10000
+
+logging:
+  level:
+    root: DEBUG
+    org.yx.lib.utils.logger.KvLogger: DEBUG

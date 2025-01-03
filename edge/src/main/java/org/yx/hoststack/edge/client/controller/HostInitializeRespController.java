@@ -36,7 +36,7 @@ public class HostInitializeRespController {
         EdgeClientControllerManager.add(ProtoMethodId.HostInitialize, this::hostInitializeResult);
     }
 
-    @Value("${agent.sessionTimeout:120}")
+    @Value("${sessionTimeout.agent:120}")
     private int sessionTimeout;
     private final SessionManager sessionManager;
     private final KvMappingChannelContextTempData kvMappingChannelContextTempData;
@@ -73,7 +73,7 @@ public class HostInitializeRespController {
                     .i();
             // host initialize success, create host/container agent session
             if (hostChannelContext != null) {
-                Session session = sessionManager.createSession(hostChannelContext, SessionType.from(hostInitializeResult.getAgentType()), sessionTimeout, 60);
+                Session session = sessionManager.createSession(hostChannelContext, SessionType.from(hostInitializeResult.getAgentType()), sessionTimeout);
                 session.setAttr(SessionAttrKeys.AgentId, hostInitializeResult.getHostId());
                 session.setAttr(SessionAttrKeys.AgentType, hostInitializeResult.getAgentType());
                 KvLogger.instance(this)

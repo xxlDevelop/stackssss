@@ -7,6 +7,10 @@ message E2C_EdgeRegisterReq {
   string version = 2;
 }
 
+message E2C_IdcExit {
+  string idcSid = 1;
+}
+
 //HostInitialize Req
 message E2C_HostInitializeReq {
   uint64 agentStartTs = 1;
@@ -29,6 +33,7 @@ message E2C_HostInitializeReq {
   string detailedId = 18;
   uint32 proxy = 19;
   string registerMode = 20;
+  string xToken = 21;
 }
 message CpuInfo {
   uint32 cpuNum = 1;

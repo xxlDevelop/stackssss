@@ -11,4 +11,5 @@ public class EdgeContext {
     public static String RelayServiceId = "";
     public static String RunMode;
     public static String ProjectVersion = "";
+    public static String HttpHost = "";
 }

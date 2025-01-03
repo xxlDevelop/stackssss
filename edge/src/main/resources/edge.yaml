@@ -1,0 +1,54 @@
+# 公共配置
+# 运行模式: idc/relay
+runMode: idc
+# runMode等于idc时upWsAddr填写区域relay公网wss接入地址
+# runMode等于relay时upWsAddr填写host-stack中心wss接入地址
+upWsAddr: ws://192.168.33.248:8761
+# 本机IP
+localIp: 192.168.33.218
+# 未发出的job通知本地落盘目录
+notSendJobNotifySavePath: /data/host-stack/edge/notify
+# 未发出的job通知本地落盘文件占用最大磁盘空间(MB)，超过该配置，文件进行切分
+notSendJobNotifyFileMaxSize: 2
+
+webSocket:
+  # webSocket服务端配置
+  server:
+    wsPort: 1234
+    bossThreadCount: 1
+    workThreadCount: 3
+    soBacklog: 1024
+    recBuf: 524288
+    sendBuf: 524288
+    allIdle: 120
+    retryNumber: 3
+  # webSocket客户端配置
+  client:
+    soBacklog: 1024
+    recBuf: 524288
+    sendBuf: 524288
+    retryNumber: 3
+    connectTimeout: 5
+
+# 会话超时配置,单位秒
+sessionTimeout:
+  # 配置agent会话超时时间
+  agent: 120
+  # relay配置idc会话超时时间
+  idc: 10
+
+# 线程配置
+executor:
+  core-size: 4
+  max-size: 15
+  capacity: 2048
+  keep-alive: 60
+
+# http配置
+httpClient:
+  maxConnections: 500
+  maxIdleTime: 3
+  connectTimeout: 5
+  responseTimeout: 5
+  readTimeout: 5
+  writeTimeout: 5

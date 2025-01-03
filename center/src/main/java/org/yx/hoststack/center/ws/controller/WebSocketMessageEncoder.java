@@ -13,13 +13,11 @@ public class WebSocketMessageEncoder {
     public static void main(String[] args) throws Exception {
         // 创建 Header
         Header header = Header.newBuilder()
-                .setLinkSide(0)
-                .setMethId(10001)
-                .setTraceId("test-trace-id")
-                .setIdcSid("North-China-IDC-001")
+                .setLinkSide(1)
+                .setMethId(10000)
                 .build();
 
-        E2CMessage.E2C_EdgeRegisterReq edgeRegisterReq = E2CMessage.E2C_EdgeRegisterReq.newBuilder().setServiceIp("192.168.1.100").build();
+        E2CMessage.E2C_EdgeRegisterReq edgeRegisterReq = E2CMessage.E2C_EdgeRegisterReq.newBuilder().setServiceIp("192.168.33.218").build();
 
         // 创建 Body
         Body body = Body.newBuilder()

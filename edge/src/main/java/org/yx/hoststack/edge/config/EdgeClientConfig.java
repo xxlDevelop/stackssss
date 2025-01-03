@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class EdgeClientConfig {
-    @Value("${client.soBacklog:1024}")
+    @Value("${webSocket.client.soBacklog:1024}")
     private int backlog;
-    @Value("${client.recBuf:524288}")//512KB
+    @Value("${webSocket.client.recBuf:524288}")//512KB
     private int recBuf;
-    @Value("${client.sendBuf:524288}")//512KB
+    @Value("${webSocket.client.sendBuf:524288}")//512KB
     private int sendBuf;
-    @Value("${client.retryNumber:3}")
+    @Value("${webSocket.client.retryNumber:3}")
     private int retryNumber;
-    @Value("${client.connectTimeout:5}")
+    @Value("${webSocket.client.connectTimeout:5}")
     private int connectTimeout;
 }

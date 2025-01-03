@@ -53,7 +53,6 @@ public class KvMappingChannelContextTempData {
         return TEMP_DATA.get(key);
     }
 
-    @PreDestroy
     public void destroy() {
         if (checkContextTimeoutData != null && !checkContextTimeoutData.isShutdown()) {
             checkContextTimeoutData.shutdown();

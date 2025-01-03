@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeServerConfig;
@@ -23,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Service
+@Component
 public class TransferNodeMgr {
     @Value("${idc.sessionTimeout:10}")
     private int idcSessionTimeout;
@@ -123,7 +123,6 @@ public class TransferNodeMgr {
         removeTransferNode(transferNode.getNodeId());
     }
 
-    @PreDestroy
     public void destroy() {
         if (reSendScheduler != null && !reSendScheduler.isShutdown()) {
             reSendScheduler.shutdown();
