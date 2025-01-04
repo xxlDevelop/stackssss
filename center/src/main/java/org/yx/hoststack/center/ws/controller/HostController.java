@@ -10,7 +10,6 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -187,7 +186,7 @@ public class HostController {
         }
     }
 
-    @NotNull
+//    @NotNull
     private static List<HostGpu> getHostGpus(E2CMessage.E2C_HostInitializeReq hostInit, Host host) {
         List<E2CMessage.GpuInfo> gpuInfos = hostInit.getGpuListList();
         List<HostGpu> hostGpus = new ArrayList<>(gpuInfos.size());

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,7 @@ public class ExecutorConfig {
     private static final String TASK_NAME = "edge-executor-";
 
     @Bean("centerExecutor")
+    @Primary
     public Executor edgeExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(getCorePoolSize() * 2);
@@ -73,6 +75,25 @@ public class ExecutorConfig {
         executor.setKeepAliveSeconds(getKeepAlive());
         executor.initialize();
         executor.setWaitForTasksToCompleteOnShutdown(true);
+        return executor;
+    }
+
+    /**
+     * Asynchronous thread pool configuration class
+     * @author zhangyijian
+     */
+
+    @Bean("AsyncThreadExecutor")
+    public Executor asyncThreadExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize((getCorePoolSize() * 2) - 1);
+        executor.setMaxPoolSize(getMaxPoolSize() * 3);
+        executor.setQueueCapacity(getQueueCapacity());
+        executor.setKeepAliveSeconds(getKeepAlive());
+        executor.setThreadNamePrefix("async-threadExecutor-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.initialize();
         return executor;
     }
 }

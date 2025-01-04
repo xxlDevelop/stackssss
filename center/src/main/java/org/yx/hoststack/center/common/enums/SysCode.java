@@ -29,6 +29,11 @@ public enum SysCode {
     x00030006("Network address configurations already exist", 12230006),
 
 
+    x00000420("Image data not found", 143420),
+    x00000430("Host data not found", 143430),
+    x00000440("Host session data not found", 143440),
+
+
     x00000500("Internal server error", 143500),
 
 

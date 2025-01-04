@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.SysCode;
+import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
+import org.yx.hoststack.center.common.resp.idc.net.IdcNetConfigListResp;
 import org.yx.hoststack.center.mapper.IdcNetConfigMapper;
 import org.yx.hoststack.center.entity.IdcNetConfig;
 import org.yx.hoststack.center.service.IdcInfoService;
@@ -186,6 +188,45 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
                 .netIspType(req.getNetIspType())
                 .ipType(req.getIpType())
                 .mappingName(req.getMappingName())
+                .build();
+    }
+
+    @Override
+    public R<?> list(IdcNetConfigListReq req) {
+        try {
+            // Query network configurations
+            List<IdcNetConfig> configs = list(new LambdaQueryWrapper<IdcNetConfig>()
+                    .eq(IdcNetConfig::getIdcId, req.getIdcId()));
+
+            // Convert to response objects
+            List<IdcNetConfigListResp> respList = configs.stream()
+                    .map(this::convertToResponse)
+                    .collect(Collectors.toList());
+
+            return R.ok(respList);
+        } catch (Exception e) {
+            log.error("Failed to query IDC network configurations", e);
+            return R.failed(SysCode.x00000400.getValue(), SysCode.x00000400.getMsg());
+        }
+    }
+
+    /**
+     * Convert entity to response object
+     */
+    private IdcNetConfigListResp convertToResponse(IdcNetConfig config) {
+        return IdcNetConfigListResp.builder()
+                .localNet(config.getLocalIp() + ":" + config.getLocalPort())
+                .mappingNet(config.getMappingIp() + ":" + config.getMappingPort())
+                .mask(config.getMask())
+                .gateway(config.getGateway())
+                .dns1(config.getDns1())
+                .dns2(config.getDns2())
+                .netProtocol(config.getNetProtocol())
+                .bandwidthInLimit(config.getBandwidthInLimit())
+                .bandwidthOutLimit(config.getBandwidthOutLimit())
+                .netIspType(config.getNetIspType())
+                .ipType(config.getIpType())
+                .mappingName(config.getMappingName())
                 .build();
     }
 

@@ -1,12 +1,13 @@
 package org.yx.hoststack.center.ws.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import org.apache.commons.codec.binary.Base64;
+import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper.Body;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper.CommonMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper.Header;
-import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper.Body;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
+
+import java.util.UUID;
 
 public class WebSocketMessageEncoder {
 
@@ -15,9 +16,10 @@ public class WebSocketMessageEncoder {
         Header header = Header.newBuilder()
                 .setLinkSide(1)
                 .setMethId(10000)
+                .setIdcSid(UUID.randomUUID().toString())
                 .build();
 
-        E2CMessage.E2C_EdgeRegisterReq edgeRegisterReq = E2CMessage.E2C_EdgeRegisterReq.newBuilder().setServiceIp("192.168.33.218").build();
+        E2CMessage.E2C_EdgeRegisterReq edgeRegisterReq = E2CMessage.E2C_EdgeRegisterReq.newBuilder().setServiceIp("192.168.33.248").build();
 
         // 创建 Body
         Body body = Body.newBuilder()

@@ -1,5 +1,6 @@
 package org.yx.hoststack.center;
 
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.center.common.constant.CenterEvent;
+import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
 import org.yx.hoststack.center.entity.RegionInfo;
 import org.yx.hoststack.center.service.RegionInfoService;
 import org.yx.hoststack.center.ws.common.Node;
@@ -31,7 +33,13 @@ public class CenterApplicationRunner implements ApplicationRunner {
     public static final ConcurrentHashMap<String, List<RegionInfo>> regionInfoCacheMap = new ConcurrentHashMap<>();
 
     private final RegionInfoService regionInfoService;
+    private final NacosDiscoveryProperties nacosDiscoveryProperties;
+
     public static String address;
+    public static String hostName;
+    public static int port;
+    public static Node centerNode;
+
     @Override
     public void run(ApplicationArguments args) {
         try {
@@ -45,6 +53,7 @@ public class CenterApplicationRunner implements ApplicationRunner {
                     .i();
             initRegionInfo();
             getIp();
+            centerNode = new Node(hostName, RegisterNodeEnum.CENTER, null);
         } catch (Exception ex) {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
@@ -59,14 +68,9 @@ public class CenterApplicationRunner implements ApplicationRunner {
         regionInfoCacheMap.put(REGION_CACHE_KEY, regionInfos);
     }
 
-    private String getIp() {
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            address = inetAddress.getHostAddress();
-            return address;
-        } catch (UnknownHostException e) {
-            KvLogger.instance(this).p(LogFieldConstants.ERR_MSG, "Error in obtaining server intranet IP address:" + e.getMessage()).e();
-        }
-        return address;
+    private void getIp() {
+        hostName = nacosDiscoveryProperties.getUsername();
+        address = nacosDiscoveryProperties.getIp();
+        port = nacosDiscoveryProperties.getPort();
     }
 }

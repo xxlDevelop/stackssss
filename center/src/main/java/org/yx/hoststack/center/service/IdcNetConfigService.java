@@ -2,6 +2,7 @@ package org.yx.hoststack.center.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
 import org.yx.hoststack.center.entity.IdcNetConfig;
 import org.yx.lib.utils.util.R;
@@ -28,4 +29,11 @@ public interface IdcNetConfigService extends IService<IdcNetConfig> {
 
     R<?> saveConfig(List<IdcNetConfigReq> IdcNetConfigReqList);
 
+    /**
+     * List IDC network configurations
+     *
+     * @param req query parameters
+     * @return R<?> with list of network configurations
+     */
+    R<?> list(IdcNetConfigListReq req);
 }

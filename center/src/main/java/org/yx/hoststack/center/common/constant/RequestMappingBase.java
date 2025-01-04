@@ -8,4 +8,5 @@ public class RequestMappingBase {
     public static final String region_coturn = "/region/coturn";
     public static final String idc = "/idc";
     public static final String idc_net = "/idc/net";
+    public static final String idc_config = "/idc/config";
 }

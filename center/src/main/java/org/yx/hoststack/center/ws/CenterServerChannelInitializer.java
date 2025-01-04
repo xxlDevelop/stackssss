@@ -13,6 +13,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.yx.hoststack.center.ws.common.WebSocketHandler;
 import org.yx.hoststack.center.ws.config.CenterServerConfig;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 
@@ -22,6 +23,7 @@ public class CenterServerChannelInitializer extends ChannelInitializer<Channel> 
     private final CenterServerConfig edgeServerConfig;
 
     private final WebSocketServerHandler webSocketServerHandler;
+    private final WebSocketHandler webSocketHandler;
 
     @Override
     protected void initChannel(Channel channel) {
@@ -33,9 +35,11 @@ public class CenterServerChannelInitializer extends ChannelInitializer<Channel> 
         p.addLast(new HttpObjectAggregator(65536));
         p.addLast(new ChunkedWriteHandler());
         p.addLast(new WebSocketServerProtocolHandler("/"));
+        p.addLast(webSocketHandler);
         p.addLast(new WebSocketServerCompressionHandler());
         p.addLast(new ProtobufDecoder(CommonMessageWrapper.CommonMessage.getDefaultInstance()));
         p.addLast(new ProtobufEncoder());
         p.addLast(webSocketServerHandler);
+
     }
 }
