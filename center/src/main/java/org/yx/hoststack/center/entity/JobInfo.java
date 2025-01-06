@@ -8,8 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * 任务信息表
@@ -24,6 +25,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class JobInfo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -54,6 +56,11 @@ public class JobInfo implements Serializable {
      * 任务执行状态, WAIT: 等待执行, PROCESSING: 执行中, FAIL:执行失败, SUCCESS:执行成功
      */
     private String jobStatus;
+
+    /**
+     * 任务执行顺序
+     */
+    private Integer runOrder;
 
     /**
      * 任务执行进度, 范围:[0,100]
@@ -108,11 +115,11 @@ public class JobInfo implements Serializable {
     /**
      * 创建时间
      */
-    private Date createAt;
+    private Timestamp createAt;
 
     /**
      * 最后修改时间
      */
-    private Date lastUpdateAt;
+    private Timestamp lastUpdateAt;
 
 }

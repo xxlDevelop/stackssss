@@ -18,7 +18,6 @@ import static org.yx.hoststack.center.common.enums.SysCode.x00000400;
 @ControllerAdvice
 @Order(990)
 public class GlobalExceptionHandler {
-    
 
     @ExceptionHandler(value = BindException.class)
     @ResponseBody
@@ -43,5 +42,11 @@ public class GlobalExceptionHandler {
     public R<Object> MissingServletRequestParameterException(MissingServletRequestParameterException e) {
         String error = "Parameter '" + e.getParameterName() + "' is missing.";
         return R.failed(x00000400.getValue(), error);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public R<Object> handleException(Exception e) {
+        return R.failed(x00000400.getValue(), "An unexpected error occurred: " + e.getMessage());
     }
 }

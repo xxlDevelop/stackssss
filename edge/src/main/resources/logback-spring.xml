@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_PATH" value="/data/logs/host-stack/edge"/>
+    <property name="LW_MN" value="HostStack-Edge"/>
+    <property name="SPAN_ID" value="HostStack-Edge"/>
+    <property name="MAX_HISTORY" value="14"/>
+    <property name="MAX_FILE_SIZE" value="200MB"/>
+    <property name="TOTAL_SIZE_CAP" value="2GB"/>
+    <property name="STD_LOG_PATTERN" value="Hh&amp; T:'%d{yyyy_MM_dd_HH_mm_ss_SSS}' L:'%-5level' MN:'${LW_MN}' TraceID:'%X{traceId}' SpanID:'%X{spanId}' Thread:'%thread' %replace(%customMsg){'[\r\n]+',' '} Err:'%replace(%xException){'[\r\n]+', '###'}%nopex'%n"/>
+    <property name="STD_LOG_LEVEL" value="DEBUG"/>
+    <include resource="org/yx/lib/utils/logger/logback.xml"/>
+</configuration>

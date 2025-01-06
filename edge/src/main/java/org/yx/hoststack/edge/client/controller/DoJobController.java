@@ -33,8 +33,8 @@ public class DoJobController {
             doJobReq = C2EMessage.C2E_DoJobReq.parseFrom(message.getBody().getPayload());
         } catch (InvalidProtocolBufferException e) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Job)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.ProcessJob)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PROCESS_JOB)
                     .p(LogFieldConstants.ERR_MSG, e.getMessage())
                     .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                     .p(HostStackConstants.METH_ID, message.getHeader().getMethId())
@@ -48,8 +48,8 @@ public class DoJobController {
             jobFactory.get(doJobReq.getJobType().toLowerCase()).doJob(context, message.getHeader(), doJobReq);
         } catch (UnknownJobException unknownJobException) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Job)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.ProcessJob)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PROCESS_JOB)
                     .p(LogFieldConstants.ERR_MSG, "UnknownJob")
                     .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                     .p(HostStackConstants.METH_ID, ProtoMethodId.DoJob)
@@ -61,8 +61,8 @@ public class DoJobController {
                     "", EdgeSysCode.UnknownJob.getValue(), EdgeSysCode.UnknownJob.getMsg(), message.getHeader().getTraceId());
         } catch (Exception ex) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Job)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.ProcessJob)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PROCESS_JOB)
                     .p(LogFieldConstants.ERR_MSG, ex.getMessage())
                     .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                     .p(HostStackConstants.METH_ID, ProtoMethodId.DoJob)

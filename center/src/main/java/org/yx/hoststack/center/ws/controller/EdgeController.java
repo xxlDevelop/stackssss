@@ -309,21 +309,21 @@ public class EdgeController {
     public void offline(String serviceId, Long id, RegisterNodeEnum type) {
         KvLogger.instance(this).p(LogFieldConstants.ACTION, String.format("%-HeatBeat Timeout", type));
 //        CompletableFuture.runAsync(() -> {
-            try {
-                ServiceDetail detail = serverDetailCacheMap.get(serviceId);
-                detail.setHealthy(NumberUtils.BYTE_ZERO);
-                serverDetailCacheMap.put(serviceId, detail);
+        try {
+            ServiceDetail detail = serverDetailCacheMap.get(serviceId);
+            detail.setHealthy(NumberUtils.BYTE_ZERO);
+            serverDetailCacheMap.put(serviceId, detail);
 
-                Node node = findNodeByServiceId(serviceId);
-                if (node != null) {
-                    node.removeNodeRecursively(node);
-                }
-                serviceDetailService.update(new LambdaUpdateWrapper<ServiceDetail>().set(ServiceDetail::getHealthy, NumberUtils.INTEGER_ZERO).eq(ServiceDetail::getId, id));
-
-                centerNode.printNodeInfo(2);
-            } catch (Exception e) {
-                e.printStackTrace();
+            Node node = findNodeByServiceId(serviceId);
+            if (node != null) {
+                node.removeNodeRecursively(node);
             }
+            serviceDetailService.update(new LambdaUpdateWrapper<ServiceDetail>().set(ServiceDetail::getHealthy, NumberUtils.INTEGER_ZERO).eq(ServiceDetail::getId, id));
+
+            centerNode.printNodeInfo(2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        }, executor);
 
 

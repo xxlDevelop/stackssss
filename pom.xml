@@ -47,7 +47,7 @@
         <yx.lib.data.version>21.0.3-8998a2f8</yx.lib.data.version>
         <yx.lib.datasource.version>21.0.3-8998a2f8</yx.lib.datasource.version>
         <yx.lib.job.version>21.0.3-8998a2f8</yx.lib.job.version>
-        <yx.lib.utils.version>21.0.3-8998a2f8</yx.lib.utils.version>
+        <yx.lib.utils.version>21.0.4-40918143</yx.lib.utils.version>
         <org.yx.hoststack.version>1.0.0</org.yx.hoststack.version>
     </properties>
 

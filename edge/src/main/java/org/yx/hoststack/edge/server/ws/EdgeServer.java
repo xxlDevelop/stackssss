@@ -1,6 +1,7 @@
 package org.yx.hoststack.edge.server.ws;
 
 import cn.hutool.core.thread.ThreadFactoryBuilder;
+import cn.hutool.core.thread.ThreadUtil;
 import com.google.protobuf.ByteString;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -53,12 +54,12 @@ public class EdgeServer implements Runnable {
     }
 
     public EventLoopGroup buildBossGroup() {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNamePrefix("edge-boss-%d").build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNamePrefix("eventLoop-boss-%d").build();
         return Epoll.isAvailable() ? new EpollEventLoopGroup(bossThreadCount(), threadFactory) : new NioEventLoopGroup(bossThreadCount(), threadFactory);
     }
 
     public EventLoopGroup buildWorkerGroup() {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNamePrefix("edge-worker-%d").build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNamePrefix("eventLoop-worker-%d").build();
         return Epoll.isAvailable() ? new EpollEventLoopGroup(workThreadCount(), threadFactory) : new NioEventLoopGroup(workThreadCount(), threadFactory);
     }
 
@@ -67,23 +68,21 @@ public class EdgeServer implements Runnable {
     }
 
     public void start() {
-        try (ForkJoinPool forkJoinPool = ForkJoinPool.commonPool()) {
-            forkJoinPool.execute(this);
-        }
+        ThreadUtil.execute(this);
     }
 
     @Override
     public void run() {
         try {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                     .p(LogFieldConstants.ACTION, "StartInit")
                     .i();
             this.init();
         } catch (Exception ex) {
             destroy();
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                     .p(LogFieldConstants.ACTION, "InitError")
                     .e(ex);
             System.exit(0);
@@ -109,7 +108,7 @@ public class EdgeServer implements Runnable {
         ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
         if (channelFuture.isSuccess()) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                     .p(LogFieldConstants.ACTION, "InitSuccessfully")
                     .p("ListenerPort", port)
                     .p("BossThreadCount", bossThreadCount())
@@ -124,7 +123,7 @@ public class EdgeServer implements Runnable {
             channelFuture.channel().closeFuture().sync();
         } else {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                     .p(LogFieldConstants.ACTION, "ChannelRegisterFailed")
                     .i();
             destroy();
@@ -145,7 +144,7 @@ public class EdgeServer implements Runnable {
                     try {
                         AtomicInteger retry = new AtomicInteger(resendMessage.getRetry());
                         KvLogger kvLogger = KvLogger.instance(this)
-                                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                                 .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
                                 .p(HostStackConstants.METH_ID, reSendAgentCommonMessage.getMethod())
                                 .p(HostStackConstants.TRACE_ID, reSendAgentCommonMessage.getTraceId())
@@ -153,11 +152,10 @@ public class EdgeServer implements Runnable {
                                 .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                                 .p(HostStackConstants.REGION, EdgeContext.Region)
                                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
-                                .p("ReSendId", resendMessage.getReSendId())
                                 .p("RetryTimes", retry.get());
                         if (!resendChannel.isActive() || !resendChannel.isOpen() || !resendChannel.isWritable()) {
                             SessionReSendMap.remove(resendMessageId);
-                            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
+                            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED)
                                     .p(LogFieldConstants.ERR_MSG, "Channel is not alive")
                                     .w();
                             EdgeClientConnector.getInstance().sendResultToUpstream(resendMessage.getData().getCenterMethId(),
@@ -167,18 +165,7 @@ public class EdgeServer implements Runnable {
                         }
                         if (retry.get() >= edgeServerConfig.getRetryNumber()) {
                             SessionReSendMap.remove(resendMessageId);
-                            KvLogger.instance(this)
-                                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailedLimit)
-                                    .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
-                                    .p(HostStackConstants.METH_ID, reSendAgentCommonMessage.getMethod())
-                                    .p(HostStackConstants.TRACE_ID, reSendAgentCommonMessage.getTraceId())
-                                    .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
-                                    .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
-                                    .p(HostStackConstants.REGION, EdgeContext.Region)
-                                    .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
-                                    .p("ReSendId", resendMessage.getReSendId())
-                                    .p("RetryTimes", retry.get())
+                            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED_LIMIT)
                                     .w();
                             EdgeClientConnector.getInstance().sendResultToUpstream(resendMessage.getData().getCenterMethId(),
                                     EdgeSysCode.SendAgentFailByLimit.getValue(), EdgeSysCode.SendAgentFailByLimit.getMsg(), ByteString.EMPTY, reSendAgentCommonMessage.getTraceId());
@@ -189,24 +176,32 @@ public class EdgeServer implements Runnable {
                         resendMessage.setRetry(retry.incrementAndGet());
                         reSendChannelFuture.addListener(retryFuture -> {
                             if (retryFuture.isDone() && retryFuture.cause() != null) {
-                                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
+                                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED)
                                         .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
                                         .p(LogFieldConstants.ReqData, reSendAgentCommonMessage.toString())
                                         .e(retryFuture.cause());
                             } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
                                 SessionReSendMap.remove(resendMessageId);
-                                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgSuccessful)
+                                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_SUCCESSFUL)
                                         .i();
-                                kvLogger.p(LogFieldConstants.ReqData, reSendAgentCommonMessage.toString())
-                                        .d();
+                                if (kvLogger.isDebug()) {
+                                    kvLogger.p(LogFieldConstants.ReqData, reSendAgentCommonMessage.toString())
+                                            .d();
+                                }
                             }
                         });
 //                            });
                     } catch (Exception ex) {
                         KvLogger.instance(this)
-                                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReSendMsgFailed)
+                                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED)
                                 .p(HostStackConstants.CHANNEL_ID, resendChannel.id())
+                                .p(HostStackConstants.METH_ID, reSendAgentCommonMessage.getMethod())
+                                .p(HostStackConstants.TRACE_ID, reSendAgentCommonMessage.getTraceId())
+                                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                                .p(HostStackConstants.REGION, EdgeContext.Region)
+                                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                                 .e(ex);
                     }
                 });
@@ -216,22 +211,20 @@ public class EdgeServer implements Runnable {
 
     public void destroy() {
         KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                 .p(LogFieldConstants.ACTION, "PrepareDestroy")
                 .i();
+        reSendMsgScheduler.shutdown();
+        sessionManager.destroy();
+        SessionReSendMap.clear();
         if (bossGroup != null) {
             bossGroup.shutdownGracefully();
         }
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
-        if (reSendMsgScheduler != null && !reSendMsgScheduler.isShutdown()) {
-            reSendMsgScheduler.shutdown();
-        }
-        sessionManager.destroy();
-        SessionReSendMap.clear();
         KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                 .p(LogFieldConstants.ACTION, "DestroySuccessfully")
                 .i();
     }

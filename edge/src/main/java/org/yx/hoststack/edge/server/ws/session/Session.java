@@ -96,7 +96,7 @@ public abstract class Session {
 
     public void sendMsg(int centerMethId, AgentCommonMessage<?> agentMessage, SendMsgCallback successCallback, SendMsgCallback failCallback) {
         KvLogger kvLogger = KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
                 .p(HostStackConstants.CHANNEL_ID, context.channel().id())
                 .p(HostStackConstants.TRACE_ID, agentMessage.getTraceId())
                 .p(HostStackConstants.METH_ID, agentMessage.getMethod())
@@ -105,7 +105,7 @@ public abstract class Session {
                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                 .p(HostStackConstants.AGENT_ID, this.getAttr(SessionAttrKeys.AgentId));
         if (!canWrite()) {
-            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgFailed)
+            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_FAILED)
                     .p(LogFieldConstants.ERR_MSG, "Channel not active")
                     .p(LogFieldConstants.ReqData, agentMessage.toString())
                     .e();
@@ -115,7 +115,7 @@ public abstract class Session {
         ChannelFuture channelFuture = context.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(agentMessage)));
         channelFuture.addListener(future -> {
             if (future.isDone() && future.cause() != null) {
-                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgFailed)
+                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_FAILED)
                         .p(LogFieldConstants.ERR_MSG, future.cause().getMessage())
                         .p(LogFieldConstants.ReqData, agentMessage.toString())
                         .e(future.cause());
@@ -125,10 +125,12 @@ public abstract class Session {
                                 .message(agentMessage)
                                 .build());
             } else if (future.isDone() && future.isSuccess()) {
-                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SendMsgSuccessful)
+                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_SUCCESSFUL)
                         .i();
-                kvLogger.p(LogFieldConstants.ReqData, agentMessage.toString())
-                        .d();
+                if (kvLogger.isDebug()) {
+                    kvLogger.p(LogFieldConstants.ReqData, agentMessage.toString())
+                            .d();
+                }
                 Optional.ofNullable(successCallback).ifPresent(SendMsgCallback::callback);
             }
         });

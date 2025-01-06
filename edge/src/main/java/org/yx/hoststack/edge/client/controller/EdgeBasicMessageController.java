@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
-import org.yx.hoststack.edge.client.EdgeClient;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
 import org.yx.hoststack.edge.common.EdgeContext;
@@ -22,7 +21,6 @@ import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
-import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +50,7 @@ public class EdgeBasicMessageController {
     private void edgeRegisterResult(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
         if (message.getBody().getCode() == R.ok().getCode()) {
             KvLogger kvLogger = KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Business)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
                     .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                     .p(HostStackConstants.METH_ID, message.getHeader().getMethId());
@@ -60,7 +58,7 @@ public class EdgeBasicMessageController {
             try {
                 edgeRegisterResult = C2EMessage.C2E_EdgeRegisterResp.parseFrom(message.getBody().getPayload());
             } catch (InvalidProtocolBufferException e) {
-                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeRegisterFailed)
+                kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.EDGE_REGISTER_FAILED)
                         .p(LogFieldConstants.ERR_MSG, e.getMessage())
                         .e(e);
                 EdgeClientConnector.getInstance().sendResultToUpstream(message.getHeader().getMethId(),
@@ -75,8 +73,8 @@ public class EdgeBasicMessageController {
             }
             EdgeContext.Zone = message.getHeader().getZone();
             EdgeContext.Region = message.getHeader().getRegion();
-            kvLogger.p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeRegisterSuccessful)
+            kvLogger.p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.EDGE_REGISTER_SUCCESSFUL)
                     .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
                     .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                     .p(HostStackConstants.REGION, EdgeContext.Region)
@@ -86,18 +84,19 @@ public class EdgeBasicMessageController {
             EdgeClientConnector.getInstance().startHb(edgeRegisterResult.getHbInterval());
         } else {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeRegisterFailed)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.EDGE_REGISTER_FAILED)
                     .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                     .p(LogFieldConstants.Code, message.getBody().getCode())
                     .p(LogFieldConstants.ERR_MSG, message.getBody().getMsg())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                    .e();
+                    .w();
             try {
                 TimeUnit.SECONDS.sleep(5);
-                SpringContextHolder.getBean(EdgeClient.class).reConnect();
-            } catch (Exception ignored) {
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            EdgeClientConnector.getInstance().edgeRegister();
         }
     }
 
@@ -109,10 +108,13 @@ public class EdgeBasicMessageController {
      */
     private void pong(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
         KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.CenterPont)
+                .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.CENTER_PONG)
                 .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                 .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                 .d();
     }
 
@@ -124,10 +126,13 @@ public class EdgeBasicMessageController {
      */
     private void edgeConfigSync(ChannelHandlerContext context, CommonMessageWrapper.CommonMessage message) {
         KvLogger kvLogger = KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EdgeConfigSync)
+                .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.EDGE_CONFIG_SYNC)
                 .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                 .p(HostStackConstants.CHANNEL_ID, context.channel().id())
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                 .p(HostStackConstants.METH_ID, message.getHeader().getMethId());
         C2EMessage.C2E_EdgeConfigSyncReq eEdgeConfigSyncReq;
         try {
@@ -154,10 +159,13 @@ public class EdgeBasicMessageController {
      */
     private void regionConfigSync(ChannelHandlerContext context, CommonMessageWrapper.CommonMessage message) {
         KvLogger kvLogger = KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.RegionConfigSync)
+                .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.REGION_CONFIG_SYNC)
                 .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
                 .p(HostStackConstants.CHANNEL_ID, context.channel().id())
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                 .p(HostStackConstants.METH_ID, message.getHeader().getMethId());
         C2EMessage.C2E_RegionConfigSyncReq regionConfigSyncReq;
         try {

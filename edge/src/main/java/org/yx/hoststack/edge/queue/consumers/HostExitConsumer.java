@@ -35,14 +35,14 @@ public class HostExitConsumer implements Runnable {
             } catch (InterruptedException interruptedException) {
                 Thread.currentThread().interrupt();
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WorkQueueConsumer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.WorkQueueConsumer_ConsumerHostExit)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_EXIT)
                         .p(LogFieldConstants.ERR_MSG, interruptedException.getMessage())
                         .e(interruptedException);
             } catch (Exception e) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WorkQueueConsumer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.WorkQueueConsumer_ConsumerHostExit)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_EXIT)
                         .p(LogFieldConstants.ERR_MSG, e.getMessage())
                         .e(e);
             }

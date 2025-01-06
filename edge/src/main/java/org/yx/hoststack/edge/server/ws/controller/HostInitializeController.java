@@ -32,14 +32,19 @@ public class HostInitializeController extends BaseController {
         HostInitializeReq hostInitializeReq = ((JSONObject) agentCommonMessage.getData()).toJavaObject(HostInitializeReq.class);
         // set channel attr
         context.channel().attr(AttributeKey.valueOf(HostStackConstants.HOST_TYPE)).set(hostInitializeReq.getAgentType());
+
         // save agent devSn & channel mapping relationship
         kvMappingChannelContextTempData.put(hostInitializeReq.getDevSn(), context);
+
         KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.HostPrepareInitialize)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.HOST_PREPARE_INITIALIZE)
                 .p("HostData", JSON.toJSONString(hostInitializeReq))
                 .i();
-        EdgeClientConnector.getInstance().hostInitialize(agentCommonMessage.getHostId(), hostInitializeReq, UUID.fastUUID().toString(), null,
+        Object xToken = getAttr(context.channel(), HostStackConstants.X_TOKEN);
+        EdgeClientConnector.getInstance().hostInitialize(
+                agentCommonMessage.getHostId(), xToken.toString(), hostInitializeReq, UUID.fastUUID().toString(),
+                null,
                 () -> sendAgentResult(agentCommonMessage.getMethod(), agentCommonMessage.getHostId(), agentCommonMessage.getTraceId(),
                         EdgeSysCode.UpstreamServiceNotAvailable.getValue(), EdgeSysCode.UpstreamServiceNotAvailable.getMsg(),
                         null, context));

@@ -691,8 +691,8 @@ public final class E2CMessage {
 
   }
 
-  public interface E2C_IdcExitOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+  public interface E2C_IdcExitReqOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -708,12 +708,12 @@ public final class E2CMessage {
         getIdcSidBytes();
   }
   /**
-   * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExit}
+   * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq}
    */
-  public static final class E2C_IdcExit extends
+  public static final class E2C_IdcExitReq extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
-      E2C_IdcExitOrBuilder {
+      // @@protoc_insertion_point(message_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq)
+      E2C_IdcExitReqOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
       com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
@@ -722,27 +722,27 @@ public final class E2CMessage {
         /* minor= */ 29,
         /* patch= */ 1,
         /* suffix= */ "",
-        E2C_IdcExit.class.getName());
+        E2C_IdcExitReq.class.getName());
     }
-    // Use E2C_IdcExit.newBuilder() to construct.
-    private E2C_IdcExit(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    // Use E2C_IdcExitReq.newBuilder() to construct.
+    private E2C_IdcExitReq(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
-    private E2C_IdcExit() {
+    private E2C_IdcExitReq() {
       idcSid_ = "";
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.Builder.class);
+              org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.Builder.class);
     }
 
     public static final int IDCSID_FIELD_NUMBER = 1;
@@ -823,10 +823,10 @@ public final class E2CMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit)) {
+      if (!(obj instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq)) {
         return super.equals(obj);
       }
-      org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit other = (org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit) obj;
+      org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq other = (org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq) obj;
 
       if (!getIdcSid()
           .equals(other.getIdcSid())) return false;
@@ -848,44 +848,44 @@ public final class E2CMessage {
       return hash;
     }
 
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(byte[] data)
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(java.io.InputStream input)
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -893,26 +893,26 @@ public final class E2CMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseDelimitedFrom(java.io.InputStream input)
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseDelimitedFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit parseFrom(
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -925,7 +925,7 @@ public final class E2CMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit prototype) {
+    public static Builder newBuilder(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -941,26 +941,26 @@ public final class E2CMessage {
       return builder;
     }
     /**
-     * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExit}
+     * Protobuf type {@code org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
-        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitOrBuilder {
+        // @@protoc_insertion_point(builder_implements:org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq)
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReqOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.Builder.class);
+                org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.class, org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.Builder.class);
       }
 
-      // Construct using org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.newBuilder()
+      // Construct using org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.newBuilder()
       private Builder() {
 
       }
@@ -981,17 +981,17 @@ public final class E2CMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor;
       }
 
       @java.lang.Override
-      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstanceForType() {
-        return org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.getDefaultInstance();
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq getDefaultInstanceForType() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.getDefaultInstance();
       }
 
       @java.lang.Override
-      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit build() {
-        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result = buildPartial();
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq build() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -999,14 +999,14 @@ public final class E2CMessage {
       }
 
       @java.lang.Override
-      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit buildPartial() {
-        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit(this);
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq buildPartial() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq result = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit result) {
+      private void buildPartial0(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.idcSid_ = idcSid_;
@@ -1015,16 +1015,16 @@ public final class E2CMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit) {
-          return mergeFrom((org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit)other);
+        if (other instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq) {
+          return mergeFrom((org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit other) {
-        if (other == org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq other) {
+        if (other == org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq.getDefaultInstance()) return this;
         if (!other.getIdcSid().isEmpty()) {
           idcSid_ = other.idcSid_;
           bitField0_ |= 0x00000001;
@@ -1150,23 +1150,23 @@ public final class E2CMessage {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
+      // @@protoc_insertion_point(builder_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq)
     }
 
-    // @@protoc_insertion_point(class_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExit)
-    private static final org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:org.yx.hoststack.protocol.ws.server.E2C_IdcExitReq)
+    private static final org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit();
+      DEFAULT_INSTANCE = new org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq();
     }
 
-    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstance() {
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<E2C_IdcExit>
-        PARSER = new com.google.protobuf.AbstractParser<E2C_IdcExit>() {
+    private static final com.google.protobuf.Parser<E2C_IdcExitReq>
+        PARSER = new com.google.protobuf.AbstractParser<E2C_IdcExitReq>() {
       @java.lang.Override
-      public E2C_IdcExit parsePartialFrom(
+      public E2C_IdcExitReq parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1185,17 +1185,17 @@ public final class E2CMessage {
       }
     };
 
-    public static com.google.protobuf.Parser<E2C_IdcExit> parser() {
+    public static com.google.protobuf.Parser<E2C_IdcExitReq> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<E2C_IdcExit> getParserForType() {
+    public com.google.protobuf.Parser<E2C_IdcExitReq> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExit getDefaultInstanceForType() {
+    public org.yx.hoststack.protocol.ws.server.E2CMessage.E2C_IdcExitReq getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -13710,16 +13710,458 @@ public final class E2CMessage {
 
   }
 
+  public interface ForwardFailedNotifyOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:org.yx.hoststack.protocol.ws.server.ForwardFailedNotify)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 methId = 1;</code>
+     * @return The methId.
+     */
+    int getMethId();
+  }
+  /**
+   * <pre>
+   * ForwardFailed Notify
+   * </pre>
+   *
+   * Protobuf type {@code org.yx.hoststack.protocol.ws.server.ForwardFailedNotify}
+   */
+  public static final class ForwardFailedNotify extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:org.yx.hoststack.protocol.ws.server.ForwardFailedNotify)
+      ForwardFailedNotifyOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 29,
+        /* patch= */ 1,
+        /* suffix= */ "",
+        ForwardFailedNotify.class.getName());
+    }
+    // Use ForwardFailedNotify.newBuilder() to construct.
+    private ForwardFailedNotify(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ForwardFailedNotify() {
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.class, org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.Builder.class);
+    }
+
+    public static final int METHID_FIELD_NUMBER = 1;
+    private int methId_ = 0;
+    /**
+     * <code>int32 methId = 1;</code>
+     * @return The methId.
+     */
+    @java.lang.Override
+    public int getMethId() {
+      return methId_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (methId_ != 0) {
+        output.writeInt32(1, methId_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (methId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, methId_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify)) {
+        return super.equals(obj);
+      }
+      org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify other = (org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify) obj;
+
+      if (getMethId()
+          != other.getMethId()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + METHID_FIELD_NUMBER;
+      hash = (53 * hash) + getMethId();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * ForwardFailed Notify
+     * </pre>
+     *
+     * Protobuf type {@code org.yx.hoststack.protocol.ws.server.ForwardFailedNotify}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:org.yx.hoststack.protocol.ws.server.ForwardFailedNotify)
+        org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotifyOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.class, org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.Builder.class);
+      }
+
+      // Construct using org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        methId_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor;
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify getDefaultInstanceForType() {
+        return org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify build() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify buildPartial() {
+        org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify result = new org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.methId_ = methId_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify) {
+          return mergeFrom((org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify other) {
+        if (other == org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify.getDefaultInstance()) return this;
+        if (other.getMethId() != 0) {
+          setMethId(other.getMethId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                methId_ = input.readInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int methId_ ;
+      /**
+       * <code>int32 methId = 1;</code>
+       * @return The methId.
+       */
+      @java.lang.Override
+      public int getMethId() {
+        return methId_;
+      }
+      /**
+       * <code>int32 methId = 1;</code>
+       * @param value The methId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMethId(int value) {
+
+        methId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 methId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMethId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        methId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:org.yx.hoststack.protocol.ws.server.ForwardFailedNotify)
+    }
+
+    // @@protoc_insertion_point(class_scope:org.yx.hoststack.protocol.ws.server.ForwardFailedNotify)
+    private static final org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify();
+    }
+
+    public static org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ForwardFailedNotify>
+        PARSER = new com.google.protobuf.AbstractParser<ForwardFailedNotify>() {
+      @java.lang.Override
+      public ForwardFailedNotify parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ForwardFailedNotify> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ForwardFailedNotify> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.yx.hoststack.protocol.ws.server.E2CMessage.ForwardFailedNotify getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_EdgeRegisterReq_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_org_yx_hoststack_protocol_ws_server_E2C_EdgeRegisterReq_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor;
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable;
+      internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor;
   private static final 
@@ -13775,6 +14217,11 @@ public final class E2CMessage {
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_org_yx_hoststack_protocol_ws_server_JobReportItem_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -13786,48 +14233,49 @@ public final class E2CMessage {
     java.lang.String[] descriptorData = {
       "\n\021E2C_Message.proto\022#org.yx.hoststack.pr" +
       "otocol.ws.server\"9\n\023E2C_EdgeRegisterReq\022" +
-      "\021\n\tserviceIp\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\"\035\n\013E" +
-      "2C_IdcExit\022\016\n\006idcSid\030\001 \001(\t\"\235\004\n\025E2C_HostI" +
-      "nitializeReq\022\024\n\014agentStartTs\030\001 \001(\004\022\021\n\tag" +
-      "entType\030\002 \001(\t\022\024\n\014resourcePool\030\003 \001(\t\022\021\n\to" +
-      "sStartTs\030\004 \001(\004\022\r\n\005devSn\030\005 \001(\t\022\016\n\006osType\030" +
-      "\006 \001(\t\022\021\n\tosVersion\030\007 \001(\t\022\024\n\014agentVersion" +
-      "\030\010 \001(\t\022\r\n\005osMem\030\t \001(\r\022\017\n\007localIp\030\n \001(\t\022\014" +
-      "\n\004disk\030\013 \001(\t\022=\n\007cpuSpec\030\014 \001(\0132,.org.yx.h" +
-      "oststack.protocol.ws.server.CpuInfo\022=\n\007g" +
-      "puList\030\r \003(\0132,.org.yx.hoststack.protocol" +
-      ".ws.server.GpuInfo\022E\n\013netCardList\030\016 \003(\0132" +
-      "0.org.yx.hoststack.protocol.ws.server.Ne" +
-      "tCardInfo\022\022\n\nruntimeEnv\030\017 \001(\t\022\n\n\002ak\030\020 \001(" +
-      "\t\022\016\n\006hostId\030\021 \001(\t\022\022\n\ndetailedId\030\022 \001(\t\022\r\n" +
-      "\005proxy\030\023 \001(\r\022\024\n\014registerMode\030\024 \001(\t\022\016\n\006xT" +
-      "oken\030\025 \001(\t\"\230\001\n\007CpuInfo\022\016\n\006cpuNum\030\001 \001(\r\022\017" +
-      "\n\007cpuType\030\002 \001(\t\022\027\n\017cpuManufacturer\030\003 \001(\t" +
-      "\022\027\n\017cpuArchitecture\030\004 \001(\t\022\020\n\010cpuCores\030\005 " +
-      "\001(\r\022\022\n\ncpuThreads\030\006 \001(\r\022\024\n\014cpuBaseSpeed\030" +
-      "\007 \001(\t\"~\n\007GpuInfo\022\017\n\007gpuType\030\001 \001(\t\022\027\n\017gpu" +
-      "Manufacturer\030\002 \001(\t\022\016\n\006gpuMem\030\003 \001(\r\022\022\n\ngp" +
-      "uBusType\030\004 \001(\t\022\023\n\013gpuDeviceId\030\005 \001(\t\022\020\n\010g" +
-      "puBusId\030\006 \001(\t\"Q\n\013NetCardInfo\022\023\n\013netCardN" +
-      "ame\030\001 \001(\t\022\023\n\013netCardType\030\002 \001(\t\022\030\n\020netCar" +
-      "dLinkSpeed\030\003 \001(\002\"W\n\024E2C_HostHeartbeatReq" +
-      "\022?\n\006hbData\030\001 \003(\0132/.org.yx.hoststack.prot" +
-      "ocol.ws.server.HostHbData\"\265\001\n\nHostHbData" +
-      "\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\022C\n\nh" +
-      "ostStatus\030\003 \001(\0132/.org.yx.hoststack.proto" +
-      "col.ws.server.HostStatus\022?\n\010vmStatus\030\004 \003" +
-      "(\0132-.org.yx.hoststack.protocol.ws.server" +
-      ".VmStatus\"r\n\nHostStatus\022\020\n\010cpuUsage\030\001 \001(" +
-      "\r\022\023\n\013memoryUsage\030\002 \001(\r\022\020\n\010gpuUsage\030\003 \001(\r" +
-      "\022\026\n\016gpuTemperature\030\004 \001(\r\022\023\n\013gpuFanSpeed\030" +
-      "\005 \001(\r\"J\n\010VmStatus\022\016\n\006vmName\030\001 \001(\t\022\020\n\010ima" +
-      "geVer\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\017\n\007running\030\004 \001(" +
-      "\010\"4\n\017E2C_HostExitReq\022\016\n\006hostId\030\001 \001(\t\022\021\n\t" +
-      "agentType\030\002 \001(\t\"U\n\020E2C_JobReportReq\022A\n\005i" +
-      "tems\030\001 \003(\01322.org.yx.hoststack.protocol.w" +
-      "s.server.JobReportItem\"B\n\rJobReportItem\022" +
-      "\017\n\007traceId\030\001 \001(\t\022\r\n\005jobId\030\002 \001(\t\022\021\n\tjobRe" +
-      "sult\030\003 \001(\014b\006proto3"
+      "\021\n\tserviceIp\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\" \n\016E" +
+      "2C_IdcExitReq\022\016\n\006idcSid\030\001 \001(\t\"\235\004\n\025E2C_Ho" +
+      "stInitializeReq\022\024\n\014agentStartTs\030\001 \001(\004\022\021\n" +
+      "\tagentType\030\002 \001(\t\022\024\n\014resourcePool\030\003 \001(\t\022\021" +
+      "\n\tosStartTs\030\004 \001(\004\022\r\n\005devSn\030\005 \001(\t\022\016\n\006osTy" +
+      "pe\030\006 \001(\t\022\021\n\tosVersion\030\007 \001(\t\022\024\n\014agentVers" +
+      "ion\030\010 \001(\t\022\r\n\005osMem\030\t \001(\r\022\017\n\007localIp\030\n \001(" +
+      "\t\022\014\n\004disk\030\013 \001(\t\022=\n\007cpuSpec\030\014 \001(\0132,.org.y" +
+      "x.hoststack.protocol.ws.server.CpuInfo\022=" +
+      "\n\007gpuList\030\r \003(\0132,.org.yx.hoststack.proto" +
+      "col.ws.server.GpuInfo\022E\n\013netCardList\030\016 \003" +
+      "(\01320.org.yx.hoststack.protocol.ws.server" +
+      ".NetCardInfo\022\022\n\nruntimeEnv\030\017 \001(\t\022\n\n\002ak\030\020" +
+      " \001(\t\022\016\n\006hostId\030\021 \001(\t\022\022\n\ndetailedId\030\022 \001(\t" +
+      "\022\r\n\005proxy\030\023 \001(\r\022\024\n\014registerMode\030\024 \001(\t\022\016\n" +
+      "\006xToken\030\025 \001(\t\"\230\001\n\007CpuInfo\022\016\n\006cpuNum\030\001 \001(" +
+      "\r\022\017\n\007cpuType\030\002 \001(\t\022\027\n\017cpuManufacturer\030\003 " +
+      "\001(\t\022\027\n\017cpuArchitecture\030\004 \001(\t\022\020\n\010cpuCores" +
+      "\030\005 \001(\r\022\022\n\ncpuThreads\030\006 \001(\r\022\024\n\014cpuBaseSpe" +
+      "ed\030\007 \001(\t\"~\n\007GpuInfo\022\017\n\007gpuType\030\001 \001(\t\022\027\n\017" +
+      "gpuManufacturer\030\002 \001(\t\022\016\n\006gpuMem\030\003 \001(\r\022\022\n" +
+      "\ngpuBusType\030\004 \001(\t\022\023\n\013gpuDeviceId\030\005 \001(\t\022\020" +
+      "\n\010gpuBusId\030\006 \001(\t\"Q\n\013NetCardInfo\022\023\n\013netCa" +
+      "rdName\030\001 \001(\t\022\023\n\013netCardType\030\002 \001(\t\022\030\n\020net" +
+      "CardLinkSpeed\030\003 \001(\002\"W\n\024E2C_HostHeartbeat" +
+      "Req\022?\n\006hbData\030\001 \003(\0132/.org.yx.hoststack.p" +
+      "rotocol.ws.server.HostHbData\"\265\001\n\nHostHbD" +
+      "ata\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\022C" +
+      "\n\nhostStatus\030\003 \001(\0132/.org.yx.hoststack.pr" +
+      "otocol.ws.server.HostStatus\022?\n\010vmStatus\030" +
+      "\004 \003(\0132-.org.yx.hoststack.protocol.ws.ser" +
+      "ver.VmStatus\"r\n\nHostStatus\022\020\n\010cpuUsage\030\001" +
+      " \001(\r\022\023\n\013memoryUsage\030\002 \001(\r\022\020\n\010gpuUsage\030\003 " +
+      "\001(\r\022\026\n\016gpuTemperature\030\004 \001(\r\022\023\n\013gpuFanSpe" +
+      "ed\030\005 \001(\r\"J\n\010VmStatus\022\016\n\006vmName\030\001 \001(\t\022\020\n\010" +
+      "imageVer\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\017\n\007running\030\004" +
+      " \001(\010\"4\n\017E2C_HostExitReq\022\016\n\006hostId\030\001 \001(\t\022" +
+      "\021\n\tagentType\030\002 \001(\t\"U\n\020E2C_JobReportReq\022A" +
+      "\n\005items\030\001 \003(\01322.org.yx.hoststack.protoco" +
+      "l.ws.server.JobReportItem\"B\n\rJobReportIt" +
+      "em\022\017\n\007traceId\030\001 \001(\t\022\r\n\005jobId\030\002 \001(\t\022\021\n\tjo" +
+      "bResult\030\003 \001(\014\"%\n\023ForwardFailedNotify\022\016\n\006" +
+      "methId\030\001 \001(\005b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -13839,11 +14287,11 @@ public final class E2CMessage {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_EdgeRegisterReq_descriptor,
         new java.lang.String[] { "ServiceIp", "Version", });
-    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor =
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_fieldAccessorTable = new
+    internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExit_descriptor,
+        internal_static_org_yx_hoststack_protocol_ws_server_E2C_IdcExitReq_descriptor,
         new java.lang.String[] { "IdcSid", });
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor =
       getDescriptor().getMessageTypes().get(2);
@@ -13911,6 +14359,12 @@ public final class E2CMessage {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_JobReportItem_descriptor,
         new java.lang.String[] { "TraceId", "JobId", "JobResult", });
+    internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_org_yx_hoststack_protocol_ws_server_ForwardFailedNotify_descriptor,
+        new java.lang.String[] { "MethId", });
     descriptor.resolveAllFeaturesImmutable();
   }
 

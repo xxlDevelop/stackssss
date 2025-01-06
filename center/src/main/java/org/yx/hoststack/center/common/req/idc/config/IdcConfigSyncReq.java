@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
-import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
-
-import java.util.List;
 
 /**
  * IDC Configuration Sync Request

@@ -26,7 +26,7 @@ public enum SysCode {
     x00030003("Invalid internal network address format", 12230003),
     x00030004("Invalid external network address format", 12230004),
     x00030005("Network address configurations already exist", 12230005),
-    x00030006("Network address configurations already exist", 12230006),
+    x00030006("Network save failed", 12230006),
 
 
     x00000420("Image data not found", 143420),

@@ -5,10 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.AttributeKey;
@@ -24,6 +21,9 @@ import org.yx.hoststack.edge.config.EdgeServerConfig;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,11 +38,20 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             FullHttpRequest req = ((FullHttpRequest) msg);
             String xForwardedFor = req.headers().get("X-Forwarded-For");
             String clientIp = xForwardedFor != null ? xForwardedFor : ctx.channel().remoteAddress().toString();
-            String xToken = req.headers().get("x-token");
+
+            String xToken;
+            QueryStringDecoder queryStringDecoder = new QueryStringDecoder(req.uri());
+            Map<String, List<String>> params = queryStringDecoder.parameters();
+            List<String> paramList = params.get("x-token");
+            if (paramList != null && !paramList.isEmpty()) {
+                xToken = paramList.getFirst();
+            } else {
+                xToken = "";
+            }
 
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PrepareHandshake)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PREPARE_HANDSHAKE)
                     .p(LogFieldConstants.X_Token, xToken)
                     .p(HostStackConstants.CLIENT_IP, clientIp)
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
@@ -50,8 +59,8 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
 
             if (req.decoderResult().isFailure() && req.decoderResult().cause() != null) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.PrepareHandshake)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.PREPARE_HANDSHAKE)
                         .p(LogFieldConstants.Code, 500)
                         .p(LogFieldConstants.ERR_MSG, req.decoderResult().cause().getMessage())
                         .p(HttpHeaders.UPGRADE, req.headers().get(HttpHeaders.UPGRADE))
@@ -63,8 +72,8 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             }
             if (!"websocket".equals(req.headers().get(HttpHeaders.UPGRADE))) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.PrepareHandshake)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.PREPARE_HANDSHAKE)
                         .p(LogFieldConstants.Code, 400)
                         .p(LogFieldConstants.ERR_MSG, "Request is not ws or wss")
                         .p(HostStackConstants.CLIENT_IP, clientIp)
@@ -85,11 +94,11 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
                 WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             } else {
                 handShaker.handshake(ctx.channel(), req).addListener((ChannelFutureListener) future -> {
+                    future.channel().attr(AttributeKey.valueOf(HostStackConstants.X_TOKEN)).set(xToken);
                     future.channel().attr(AttributeKey.valueOf(HostStackConstants.CLIENT_IP)).set(clientIp);
-//                    log.info("client handshake success, clientId:{}, channelId:{}, remoteAddr:{}", clientId, ctx.channel().id(), clientIP);
                     KvLogger.instance(this)
-                            .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.HandshakeSuccessful)
+                            .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.HANDSHAKE_SUCCESSFUL)
                             .p(HostStackConstants.CLIENT_IP, clientIp)
                             .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                             .i();
@@ -97,8 +106,8 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             }
         } catch (Exception ex) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsServer)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PrepareHandshake)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.PREPARE_HANDSHAKE)
                     .p(LogFieldConstants.ERR_MSG, ex.getMessage())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                     .e(ex);
@@ -118,6 +127,9 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
     }
 
     private boolean authXToken(ChannelHandlerContext context, String xToken, String clientIp) {
+//        if (StringUtil.isBlank(xToken)) {
+//            return false;
+//        }
         return true;
     }
 }

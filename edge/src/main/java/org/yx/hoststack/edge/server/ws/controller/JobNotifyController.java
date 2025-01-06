@@ -25,8 +25,8 @@ public class JobNotifyController extends BaseController {
 
     private void jobNotify(ChannelHandlerContext context, AgentCommonMessage<?> agentReport) {
         KvLogger.instance(this)
-                .p(LogFieldConstants.EVENT, EdgeEvent.Job)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.AgentJobNotify)
+                .p(LogFieldConstants.EVENT, EdgeEvent.JOB)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.AGENT_JOB_NOTIFY)
                 .p("JobId", agentReport.getJobId())
                 .p("JobStatus", agentReport.getStatus())
                 .p("JobProgress", agentReport.getProgress())

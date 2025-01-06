@@ -124,6 +124,10 @@
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <finalName>${project.name}</finalName>
@@ -146,7 +150,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>yx.uc.DataCenterApplication</mainClass>
+                    <mainClass>org.yx.hoststack.center.CenterApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

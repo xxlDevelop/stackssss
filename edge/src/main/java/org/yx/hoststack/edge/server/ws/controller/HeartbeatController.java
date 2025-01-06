@@ -52,8 +52,8 @@ public class HeartbeatController extends BaseController {
                             .build(), null, null);
         } else {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.NotFoundHostSession)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.NOT_FOUND_HOST_SESSION)
                     .p(HostStackConstants.CHANNEL_ID, channelId)
                     .p(HostStackConstants.TRACE_ID, agentCommonMessage.getTraceId())
                     .p(HostStackConstants.CLIENT_IP, clientIp)

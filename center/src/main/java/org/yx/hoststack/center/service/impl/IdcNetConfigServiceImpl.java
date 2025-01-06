@@ -2,28 +2,28 @@ package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.SysCode;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
 import org.yx.hoststack.center.common.resp.idc.net.IdcNetConfigListResp;
-import org.yx.hoststack.center.mapper.IdcNetConfigMapper;
 import org.yx.hoststack.center.entity.IdcNetConfig;
+import org.yx.hoststack.center.mapper.IdcNetConfigMapper;
 import org.yx.hoststack.center.service.IdcInfoService;
 import org.yx.hoststack.center.service.IdcNetConfigService;
-
-import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
-import org.yx.hoststack.common.HostStackConstants;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, IdcNetConfig> implements IdcNetConfigService {
 
-    
+
     private final IdcNetConfigMapper idcNetConfigMapper;
     private final IdcInfoService idcInfoService;
 
@@ -48,7 +48,7 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
     }
 
     @Override
-    public List<IdcNetConfig> findList(IdcNetConfig params){
+    public List<IdcNetConfig> findList(IdcNetConfig params) {
         LambdaQueryWrapper<IdcNetConfig> query = Wrappers.lambdaQuery(IdcNetConfig.class);
         return idcNetConfigMapper.selectList(query);
     }
@@ -141,24 +141,15 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
         }
 
         // Check for existing combinations in database
-        List<IdcNetConfig> existingConfigs = list(new LambdaQueryWrapper<IdcNetConfig>()
-                .exists("SELECT 1 FROM t_idc_net_config WHERE " +
-                        "CONCAT(local_ip, ':', local_port) IN (" +
-                        String.join(",", localCombinations.stream()
-                                .map(s -> "'" + s + "'")
-                                .collect(Collectors.toList())) + ") " +
-                        "OR CONCAT(mapping_ip, ':', mapping_port) IN (" +
-                        String.join(",", mappingCombinations.stream()
-                                .map(s -> "'" + s + "'")
-                                .collect(Collectors.toList())) + ")"
-                ));
+        Integer count = baseMapper.existsNetworkConfigs(localCombinations, mappingCombinations);
 
-        if (!existingConfigs.isEmpty()) {
+        if (count > 0) {
             return R.failed(SysCode.x00030005.getValue(), SysCode.x00030005.getMsg());
         }
 
         return R.ok();
     }
+
     /**
      * Convert IP:Port string to IdcNetConfig entity
      */
@@ -178,10 +169,6 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
                 .localPort(localPort)
                 .mappingIp(mappingIp)
                 .mappingPort(mappingPort)
-                .mask(req.getMask())
-                .gateway(req.getGateway())
-                .dns1(req.getDns1())
-                .dns2(req.getDns2())
                 .netProtocol(req.getNetProtocol())
                 .bandwidthInLimit(req.getBandwidthInLimit())
                 .bandwidthOutLimit(req.getBandwidthOutLimit())

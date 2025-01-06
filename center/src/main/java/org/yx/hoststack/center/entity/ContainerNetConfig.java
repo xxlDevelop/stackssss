@@ -34,6 +34,11 @@ public class ContainerNetConfig implements Serializable {
     private String cid;
 
     /**
+     *  机房标识
+     */
+    private String idc;
+
+    /**
      * 容器IP
      */
     private String ip;

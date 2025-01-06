@@ -3,6 +3,7 @@ package org.yx.hoststack.center.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +32,8 @@ public class IdcNetConfigController {
 
     @PostMapping("/config")
     public R<?> config(@RequestBody
-                       @Valid
-                       @NotEmpty(message = "The idcNetConfigList must not be empty.") List<@Valid IdcNetConfigReq> idcNetConfigReqList) {
+                           @Valid
+                           @NotEmpty(message = "The idcNetConfigList must not be empty.") List<@Valid IdcNetConfigReq> idcNetConfigReqList) {
         return idcNetConfigService.saveConfig(idcNetConfigReqList);
     }
 

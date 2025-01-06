@@ -47,6 +47,10 @@ public class TraceHolder {
         long startMs = System.currentTimeMillis();
         try {
             function.run();
+        } catch (Exception ex) {
+            KvLogger.instance(TraceHolder.class)
+                    .p(LogFieldConstants.EVENT, "WatchError")
+                    .e(ex);
         } finally {
             long endMs = System.currentTimeMillis();
             StatisLogger statisLogger = StatisLogger.instance(TraceHolder.class)

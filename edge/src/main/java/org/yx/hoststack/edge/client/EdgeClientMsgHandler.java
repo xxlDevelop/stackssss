@@ -13,20 +13,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.common.TraceHolder;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.common.utils.NetUtils;
-import org.yx.hoststack.common.TraceHolder;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
+import org.yx.hoststack.edge.forwarding.manager.RelayControllerManager;
 import org.yx.hoststack.edge.server.RunMode;
-import org.yx.hoststack.edge.transfer.manager.RelayControllerManager;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
-import org.yx.lib.utils.util.SpringContextHolder;
 import org.yx.lib.utils.util.StringUtil;
 
 import java.util.HashMap;
@@ -53,44 +52,16 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        if (SpringContextHolder.getApplicationContext() != null) {
-            KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Action.EdgeWsClient_CloseByServer)
-                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                    .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
-                    .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
-                    .p(HostStackConstants.REGION, EdgeContext.Region)
-                    .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
-                    .i();
-            SpringContextHolder.getBean(EdgeClient.class).reConnect();
-        }
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        if (WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_COMPLETE.equals(evt)) {
-            KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Action.EdgeWsClient_HandshakeSuccessful)
-                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                    .i();
-            ClientWaitConnectSignal.release();
-            // 握手成功，发送edge注册消息
-        } else if (WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_TIMEOUT.equals(evt)) {
-            KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Action.EdgeWsClient_HandshakeTimeout)
-                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                    .i();
-            ClientWaitConnectSignal.release();
-        }
-//        else if (evt instanceof IdleStateEvent) {
-//            IdleStateEvent event = (IdleStateEvent) evt;
-//            if (event == IdleStateEvent.ALL_IDLE_STATE_EVENT) {
-//                log.info("client read write Idle, clientId:{} channelId:{}, remoteAddr: {}, closed", clientId, ctx.channel().id(), ctx.channel().remoteAddress());
-//            }
-//        }
+        KvLogger.instance(this)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                .p(LogFieldConstants.EVENT, EdgeEvent.Action.CLOSE_BY_SERVER)
+                .p(LogFieldConstants.ERR_MSG, "Maybe upstream not ready or close by server")
+                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                .p(HostStackConstants.REGION, EdgeContext.Region)
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .i();
     }
 
     @Override
@@ -103,13 +74,13 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
                     byte[] contentBytes = ByteBufUtil.getBytes(byteBuf);
                     CommonMessageWrapper.CommonMessage commonMessage = CommonMessageWrapper.CommonMessage.parseFrom(contentBytes);
                     KvLogger kvLogger = KvLogger.instance(this)
-                            .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReceiveMsg)
+                            .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.RECEIVE_MSG)
                             .p(LogFieldConstants.TRACE_ID, commonMessage.getHeader().getTraceId())
                             .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                             .p(HostStackConstants.TRACE_ID, commonMessage.getHeader().getTraceId())
-                            .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
-                            .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                            .p(HostStackConstants.IDC_SID, commonMessage.getHeader().getIdcSid())
+                            .p(HostStackConstants.RELAY_SID, commonMessage.getHeader().getRelaySid())
                             .p(HostStackConstants.REGION, EdgeContext.Region)
                             .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                             .p(HostStackConstants.CLIENT_IP, clientIp);
@@ -119,7 +90,6 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
                                 .p(LogFieldConstants.ERR_MSG, EdgeSysCode.LinkSideError.getMsg())
                                 .p("HeaderLinkSide", commonMessage.getHeader().getLinkSide())
                                 .w();
-                        ReferenceCountUtil.release(msg);
                         return;
                     }
 //            if (commonMessage.getHeader()getZone() == null || commonMessage.getHeader().getRegion() == null ||
@@ -141,16 +111,15 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
 //                return;
 //            }
                     TraceHolder.stopWatch(MapBuilder.create(new HashMap<String, String>())
-                                    .put(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                                    .put(LogFieldConstants.ACTION, EdgeEvent.Action.Statis)
+                                    .put(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                                    .put(LogFieldConstants.ACTION, EdgeEvent.Action.STATIS)
                                     .put(LogFieldConstants.TID, commonMessage.getHeader().getTenantId() + "")
                                     .put(HostStackConstants.CHANNEL_ID, ctx.channel().id().toString())
                                     .put(HostStackConstants.TRACE_ID, commonMessage.getHeader().getTraceId())
                                     .put(HostStackConstants.METH_ID, commonMessage.getHeader().getMethId() + "")
-                                    .put(HostStackConstants.TRACE_ID, commonMessage.getHeader().getTraceId())
                                     .put(HostStackConstants.CLIENT_IP, clientIp)
-                                    .put(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
-                                    .put(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                                    .put(HostStackConstants.IDC_SID, commonMessage.getHeader().getIdcSid())
+                                    .put(HostStackConstants.RELAY_SID, commonMessage.getHeader().getRelaySid())
                                     .put(HostStackConstants.REGION, EdgeContext.Region)
                                     .put(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                                     .build(),
@@ -173,20 +142,23 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
                                             .w();
                                     return;
                                 }
-                                if (StringUtil.isNotBlank(idcSid) || idcSid.equals(relaySid)) {
-                                    // idcId is empty or idcId equals relayId, transfer to agent
+                                if ((EdgeContext.RunMode.equalsIgnoreCase(RunMode.IDC) && StringUtil.isNotBlank(idcSid)) ||
+                                        EdgeContext.RunMode.equalsIgnoreCase(RunMode.RELAY) && StringUtil.isBlank(idcSid) && StringUtil.isNoneBlank(relaySid)) {
                                     edgeClientControllerManager.get(commonMessage.getHeader().getMethId()).ifPresentOrElse(
                                             controller -> controller.handle(ctx, commonMessage),
                                             () -> KvLogger.instance(this)
-                                                    .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                                                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReceiveMsg)
-                                                    .p(LogFieldConstants.ERR_MSG, commonMessage.getHeader().getMethId())
-                                                    .p(HostStackConstants.METH_ID, ctx.channel().id())
+                                                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                                                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.RECEIVE_MSG)
+                                                    .p(LogFieldConstants.ERR_MSG, "Unknown MethId")
+                                                    .p(HostStackConstants.IDC_SID, commonMessage.getHeader().getIdcSid())
+                                                    .p(HostStackConstants.RELAY_SID, commonMessage.getHeader().getRelaySid())
+                                                    .p(HostStackConstants.METH_ID, commonMessage.getHeader().getMethId())
+                                                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                                                     .p(HostStackConstants.CLIENT_IP, clientIp)
-                                                    .e());
+                                                    .w());
                                 } else if (EdgeContext.RunMode.equalsIgnoreCase(RunMode.RELAY) && StringUtil.isNotBlank(idcSid)) {
                                     // transfer to idc
-                                    relayControllerManager.get(ProtoMethodId.TransferToIdc.getValue()).handle(ctx, commonMessage);
+                                    relayControllerManager.get(ProtoMethodId.ForwardingToIdc.getValue()).handle(ctx, commonMessage);
                                 } else {
                                     kvLogger.p(LogFieldConstants.ERR_MSG, "UnknownTransferWho")
                                             .w();
@@ -195,14 +167,14 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
                     );
                 } catch (Exception ex) {
                     KvLogger.instance(this)
-                            .p(LogFieldConstants.EVENT, EdgeEvent.EdgeWsClient)
-                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.ReceiveMsg)
+                            .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.RECEIVE_MSG)
                             .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                             .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
                             .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                             .p(HostStackConstants.REGION, EdgeContext.Region)
                             .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
-                            .e();
+                            .e(ex);
                 } finally {
                     ReferenceCountUtil.release(msg);
                 }
@@ -210,5 +182,11 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
         } else {
             ReferenceCountUtil.release(msg);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        ctx.fireExceptionCaught(cause);
+        ctx.close();
     }
 }

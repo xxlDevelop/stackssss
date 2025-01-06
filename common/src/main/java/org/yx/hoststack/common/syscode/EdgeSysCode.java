@@ -15,6 +15,7 @@ public enum EdgeSysCode {
     UnknownJob("UnknownJob", 121005),
     NotFoundAgentSession("NotFoundAgentSession", 121006),
     HttpCallFailed("HttpCallFailed", 121007),
+    SendMsgFailed("SendMsgFailed", 121008),
     UpstreamServiceNotAvailable("UpstreamServiceNotAvailable", 121401),
     DownloadStreamServiceNotAvailable("DownloadStreamServiceNotAvailable", 121402),
     Exception("Exception", 121500),

@@ -1,4 +1,4 @@
-package org.yx.hoststack.edge.transfer.manager;
+package org.yx.hoststack.edge.forwarding.manager;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TransferReSendMap {
+public class ForwardingReSendMap {
     @Getter
     private static final ConcurrentHashMap<String, ResendMessage<CommonMessageWrapper.CommonMessage>> data = new ConcurrentHashMap<>();
 

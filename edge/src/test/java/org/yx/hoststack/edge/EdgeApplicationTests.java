@@ -34,6 +34,17 @@
 //                sessionManager.createSessionTest("Session" + index, SessionType.Host, 10);
 //            }
 //        });
+
+
+//        try {
+//            String plainText = "8cgwv3t9oiqtgck0zgk8k22oprxpswiwlc2is8deosqlsdy52f71heh1ymcwajeu";
+//            String cipherText = YxCryptoUtils.encrypt(plainText);
+//            System.out.println(cipherText);
+//            String deEncryptStr = YxCryptoUtils.deEncrypt(cipherText);
+//            System.out.println(deEncryptStr);
+//        } catch (Exception ex) {
+//            System.out.println(ex.getMessage());
+//        }
 //	}
 //
 //}

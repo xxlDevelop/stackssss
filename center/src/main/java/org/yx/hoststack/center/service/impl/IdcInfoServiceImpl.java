@@ -2,13 +2,14 @@ package org.yx.hoststack.center.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.Master;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,19 +20,18 @@ import org.yx.hoststack.center.common.req.idc.IdcCreateReq;
 import org.yx.hoststack.center.common.req.idc.IdcListReq;
 import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
 import org.yx.hoststack.center.common.req.idc.config.IdcConfigSyncReq;
+import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
 import org.yx.hoststack.center.common.resp.idc.CreateIdcInfoResp;
 import org.yx.hoststack.center.common.resp.idc.IdcListResp;
 import org.yx.hoststack.center.entity.IdcInfo;
 import org.yx.hoststack.center.mapper.IdcInfoMapper;
 import org.yx.hoststack.center.service.IdcInfoService;
+import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +81,7 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
                 .set(IdcInfo::getNetLogSvcHttpsSvc, idcUpdateReq.getNetLogSvcHttpsSvc())
                 .set(IdcInfo::getSpeedTestSvc, idcUpdateReq.getSpeedTestSvc())
                 .set(IdcInfo::getLocation, idcUpdateReq.getLocation());
-        if (!update(query)){
+        if (!update(query)) {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
                     .p(LogFieldConstants.ACTION, CenterEvent.Action.Update_IdcInfo_Failed)
@@ -96,24 +96,17 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
     @Transactional(rollbackFor = Exception.class)
     public R<?> syncConfig(List<IdcConfigSyncReq> syncReqList) {
         try {
-            // Validate input
             if (syncReqList == null || syncReqList.isEmpty()) {
                 return R.failed(SysCode.x00000400.getValue(), "Sync request list cannot be empty");
             }
 
-            // Process each sync request asynchronously
-            List<CompletableFuture<Boolean>> futures = syncReqList.stream()
-                    .map(this::processSyncRequest)
-                    .collect(Collectors.toList());
-
-            // Wait for all sync operations to complete with timeout
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                    .get(IdcConstants.SYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-            // Check if any sync failed
-            boolean allSuccess = futures.stream()
-                    .map(CompletableFuture::join)
-                    .allMatch(Boolean::booleanValue);
+            boolean allSuccess = true;
+            for (IdcConfigSyncReq req : syncReqList) {
+                if (!syncConfigToIdc(req)) {
+                    allSuccess = false;
+                    log.error("Failed to sync configuration to IDC: {}", req.getIdcId());
+                }
+            }
 
             if (!allSuccess) {
                 return R.failed(SysCode.x00030006.getValue(), SysCode.x00030006.getMsg());
@@ -128,64 +121,49 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
     }
 
     /**
-     * Process single sync request
+     * 同步配置到指定IDC
      */
-    private CompletableFuture<Boolean> processSyncRequest(IdcConfigSyncReq req) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                // Get IDC server address
-                String idcServerUrl = getIdcServerUrl(req.getIdcId());
-                if (idcServerUrl == null) {
-                    log.error("Failed to get IDC server URL for IDC: {}", req.getIdcId());
-                    return false;
-                }
+    private boolean syncConfigToIdc(IdcConfigSyncReq req) {
+        try {
+            // 构建基础配置
+            C2EMessage.EdgeBasicConfig.Builder basicBuilder = C2EMessage.EdgeBasicConfig.newBuilder()
+                    .setLocalShareStorageHttpSvc(req.getConfig().getBasic().getLocalShareStorageHttpSvc())
+                    .setShareStorageUser(req.getConfig().getBasic().getShareStorageUser())
+                    .setShareStoragePwd(req.getConfig().getBasic().getShareStoragePwd())
+                    .setLocalLogSvcHttpSvc(req.getConfig().getBasic().getLocalLogSvcHttpSvc())
+                    .setNetLogSvcHttpsSvc(req.getConfig().getBasic().getNetLogSvcHttpsSvc())
+                    .setSpeedTestSvc(req.getConfig().getBasic().getSpeedTestSvc())
+                    .setLocation(req.getConfig().getBasic().getLocation());
 
-                // Send configuration to IDC server
-                String syncUrl = idcServerUrl + IdcConstants.SYNC_CONFIG_PATH;
-                R<?> response = httpUtil.post(syncUrl, req);
+            // 构建网络配置列表
+            List<C2EMessage.EdgeNetConfig> netConfigs = req.getConfig().getNet().stream()
+                    .map(IdcNetConfigReq::toEdgeNetConfig)
+                    .collect(Collectors.toList());
 
-                if (!response.isSuccess()) {
-                    log.error("Failed to sync configuration to IDC: {}, error: {}",
-                            req.getIdcId(), response.getMsg());
-                    return false;
-                }
+            // 构建完整的配置同步请求
+            C2EMessage.C2E_EdgeConfigSyncReq configSyncReq = C2EMessage.C2E_EdgeConfigSyncReq.newBuilder()
+                    .setBasic(basicBuilder.build())
+                    .addAllNet(netConfigs)
+                    .build();
 
-                // Update local sync status
-                updateSyncStatus(req.getIdcId());
-
-                return true;
-
-            } catch (Exception e) {
-                log.error("Error processing sync request for IDC: " + req.getIdcId(), e);
+            // 获取IDC的Channel
+            // TODO 这里获取益健的封装好的方法
+            Channel channel = null;//channelManager.getChannel(req.getIdcId());
+            if (channel == null || !channel.isActive()) {
+                log.error("Channel not found or inactive for IDC: {}", req.getIdcId());
                 return false;
             }
-        });
-    }
 
-    /**
-     * Get IDC server URL from IDC info
-     */
-    private String getIdcServerUrl(String idcId) {
-        try {
-            IdcInfo idcInfo = idcInfoService.getById(idcId);
-            return idcInfo != null ? idcInfo.getLocalHsIdcHttpSvc() : null;
-        } catch (Exception e) {
-            log.error("Error getting IDC server URL for IDC: " + idcId, e);
-            return null;
-        }
-    }
+            // 发送消息
+            channel.writeAndFlush(new BinaryWebSocketFrame(
+                    Unpooled.wrappedBuffer(configSyncReq.toByteArray())
+            ));
 
-    /**
-     * Update sync status in local database
-     */
-    private void updateSyncStatus(String idcId) {
-        try {
-            IdcInfo idcInfo = new IdcInfo();
-            idcInfo.setId(idcId);
-            idcInfo.setLastSyncTime(new Date());
-            idcInfoService.updateById(idcInfo);
+            return true;
+
         } catch (Exception e) {
-            log.error("Error updating sync status for IDC: " + idcId, e);
+            log.error("Error syncing config to IDC: " + req.getIdcId(), e);
+            return false;
         }
     }
 

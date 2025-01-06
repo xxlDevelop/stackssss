@@ -1,30 +1,25 @@
 package org.yx.hoststack.edge;
 
-import cn.hutool.core.lang.UUID;
+import cn.hutool.core.thread.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
-import org.yx.hoststack.edge.queue.MessageQueues;
 import org.yx.hoststack.edge.queue.consumers.HostExitConsumer;
 import org.yx.hoststack.edge.queue.consumers.HostHbConsumer;
-import org.yx.hoststack.edge.queue.consumers.JobNotifyToLocalDiskConsumer;
 import org.yx.hoststack.edge.queue.consumers.JobNotifyToCenterConsumer;
-import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
-import org.yx.hoststack.protocol.ws.agent.common.MessageType;
-import org.yx.lib.utils.util.SpringContextHolder;
+import org.yx.hoststack.edge.queue.consumers.JobNotifyToLocalDiskConsumer;
 
 import java.io.File;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EdgeApplicationRunner implements org.springframework.boot.ApplicationRunner {
+public class EdgeApplicationRunner implements ApplicationRunner {
 
     private final HostHbConsumer hostHbConsumer;
     private final JobNotifyToLocalDiskConsumer jobNotifyToLocalDiskConsumer;
@@ -32,13 +27,14 @@ public class EdgeApplicationRunner implements org.springframework.boot.Applicati
     private final HostExitConsumer hostExitConsumer;
     private final EdgeCommonConfig edgeCommonConfig;
 
+    private final ExecutorService worker = Executors.newFixedThreadPool(4, ThreadFactoryBuilder.create().setNamePrefix("edge-worker-").build());
+
     @Override
     public void run(ApplicationArguments args) {
-        ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-        forkJoinPool.execute(hostHbConsumer);
-        forkJoinPool.execute(jobNotifyToLocalDiskConsumer);
-        forkJoinPool.execute(jobNotifyToCenterConsumer);
-        forkJoinPool.execute(hostExitConsumer);
+        worker.execute(hostHbConsumer);
+        worker.execute(jobNotifyToLocalDiskConsumer);
+        worker.execute(jobNotifyToCenterConsumer);
+        worker.execute(hostExitConsumer);
 
         File notSendJobNotifySavePath = new File(edgeCommonConfig.getNotSendJobNotifySavePath());
         if (!notSendJobNotifySavePath.exists()) {

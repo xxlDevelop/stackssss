@@ -47,8 +47,8 @@ public abstract class HostStackJob {
         });
         if (matchAgentIdSessions.size() != agentIds.size()) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.Job)
-                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.JobFindTargetSession)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.JOB_FIND_TARGET_SESSION)
                     .p(LogFieldConstants.ERR_MSG, "Session count mismatch, maybe in another servers")
                     .p("SourceTargetCount", agentIds.size())
                     .p("MismatchCount", matchAgentIdSessions.size())

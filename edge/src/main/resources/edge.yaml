@@ -1,11 +1,11 @@
 # 公共配置
 # 运行模式: idc/relay
-runMode: idc
-# runMode等于idc时upWsAddr填写区域relay公网wss接入地址
+runMode: relay
+# runMode等于idc时upWsAddr填写区域relay公网或者中心公网wss接入地址
 # runMode等于relay时upWsAddr填写host-stack中心wss接入地址
-upWsAddr: ws://192.168.33.248:8761
+upWsAddr: ws://192.168.33.100:8801
 # 本机IP
-localIp: 192.168.33.218
+localIp: 192.168.33.105
 # 未发出的job通知本地落盘目录
 notSendJobNotifySavePath: /data/host-stack/edge/notify
 # 未发出的job通知本地落盘文件占用最大磁盘空间(MB)，超过该配置，文件进行切分

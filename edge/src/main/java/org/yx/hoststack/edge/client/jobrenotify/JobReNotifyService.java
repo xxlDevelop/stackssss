@@ -28,8 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -62,7 +60,7 @@ public class JobReNotifyService {
                 }
             }
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                     .p(LogFieldConstants.ACTION, "WriteJobNotifyFile")
                     .p("NotifyCount", commonMessageList.size())
                     .p("FilePath", filePath.toString())
@@ -77,7 +75,7 @@ public class JobReNotifyService {
                         channel.write(byteBuffer);
                     } catch (Exception ex) {
                         KvLogger.instance(this)
-                                .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
+                                .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                                 .p(LogFieldConstants.ACTION, "WriteJobNotifyFile")
                                 .p("FilePath", filePath.toString())
                                 .e(ex);
@@ -88,7 +86,7 @@ public class JobReNotifyService {
             }
         } catch (Exception ex) {
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                     .p(LogFieldConstants.ACTION, "WriteJobNotifyFile")
                     .p(LogFieldConstants.ERR_MSG, ex.getMessage())
                     .e(ex);
@@ -105,71 +103,72 @@ public class JobReNotifyService {
         isReSending.set(true);
         try {
             String[] files = new File(edgeCommonConfig.getNotSendJobNotifySavePath()).list();
+            if (files == null || files.length == 0) {
+                return;
+            }
             KvLogger.instance(this)
-                    .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                     .p(LogFieldConstants.ACTION, "StartScanToSend")
                     .p("FileCount", files == null ? 0 : files.length)
                     .i();
             if (!EdgeClientConnector.getInstance().isAlive()) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                         .p(LogFieldConstants.ACTION, "StartScanToSend")
                         .p(LogFieldConstants.ERR_MSG, "Client not alive, can`t send to upStream")
-                        .p("FileCount", files == null ? 0 : files.length)
+                        .p("FileCount", files.length)
                         .w();
                 return;
             }
-            if (files != null) {
-                for (String file : files) {
-                    ReentrantReadWriteLock readWriteLock = FileLock.getLock(HostStackConstants.LOCK_JOB_NOTIFY);
-                    readWriteLock.writeLock().lock();
-                    try {
-                        Path targetPath = Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file);
-                        List<AgentCommonMessage> contentList = Lists.newArrayList();
-                        try (RandomAccessFile accessFile = new RandomAccessFile(targetPath.toString(), "rw")) {
-                            try (FileChannel channel = accessFile.getChannel()) {
-                                ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
-                                channel.read(buffer);
-                                String content = new String(buffer.array(), StandardCharsets.UTF_8);
-                                contentList = JSON.parseArray(StringPool.LEFT_SQ_BRACKET + content + StringPool.RIGHT_SQ_BRACKET, AgentCommonMessage.class);
-                            }
+            for (String file : files) {
+                ReentrantReadWriteLock readWriteLock = FileLock.getLock(HostStackConstants.LOCK_JOB_NOTIFY);
+                readWriteLock.writeLock().lock();
+                try {
+                    Path targetPath = Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file);
+                    List<AgentCommonMessage> contentList;
+                    try (RandomAccessFile accessFile = new RandomAccessFile(targetPath.toString(), "rw")) {
+                        try (FileChannel channel = accessFile.getChannel()) {
+                            ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
+                            channel.read(buffer);
+                            String content = new String(buffer.array(), StandardCharsets.UTF_8);
+                            contentList = JSON.parseArray(StringPool.LEFT_SQ_BRACKET + content + StringPool.RIGHT_SQ_BRACKET, AgentCommonMessage.class);
                         }
-                        List<AgentCommonMessage> notSendMessageList = Lists.newArrayList();
-                        if (!contentList.isEmpty()) {
-                            List<List<AgentCommonMessage>> batchList = ListUtil.batchList(contentList, 100);
-                            for (List<AgentCommonMessage> messageList : batchList) {
-                                EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), null,
-                                        () -> notSendMessageList.addAll(messageList));
-                            }
-                            if (notSendMessageList.isEmpty()) {
-                                FileUtils.delete(new File(targetPath.toString()));
-                            } else {
-                                try {
-                                    try (RandomAccessFile accessFile = new RandomAccessFile(targetPath.toString(), "rw")) {
-                                        try (FileChannel channel = accessFile.getChannel()) {
-                                            ByteBuffer byteBuffer = toByteBuffer(notSendMessageList);
-                                            channel.write(byteBuffer);
-                                        }
-                                    }
-                                } catch (Exception ex) {
-                                    KvLogger.instance(this).p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
-                                            .p(LogFieldConstants.ACTION, "StartScanToSend")
-                                            .p(LogFieldConstants.ERR_MSG, ex.getMessage())
-                                            .p("FilePath", Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file).toString())
-                                            .e(ex);
-                                }
-                            }
-                        }
-                    } catch (Exception ex) {
-                        KvLogger.instance(this)
-                                .p(LogFieldConstants.EVENT, EdgeEvent.JobNotifyToFile)
-                                .p(LogFieldConstants.ACTION, "StartScanToSend")
-                                .p(LogFieldConstants.ERR_MSG, ex.getMessage())
-                                .p("FilePath", Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file).toString())
-                                .e(ex);
-                    } finally {
-                        readWriteLock.writeLock().unlock();
                     }
+                    List<AgentCommonMessage> notSendMessageList = Lists.newArrayList();
+                    if (!contentList.isEmpty()) {
+                        List<List<AgentCommonMessage>> batchList = ListUtil.batchList(contentList, 100);
+                        for (List<AgentCommonMessage> messageList : batchList) {
+                            EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), null,
+                                    () -> notSendMessageList.addAll(messageList));
+                        }
+                        if (notSendMessageList.isEmpty()) {
+                            FileUtils.delete(new File(targetPath.toString()));
+                        } else {
+                            try {
+                                try (RandomAccessFile accessFile = new RandomAccessFile(targetPath.toString(), "rw")) {
+                                    try (FileChannel channel = accessFile.getChannel()) {
+                                        ByteBuffer byteBuffer = toByteBuffer(notSendMessageList);
+                                        channel.write(byteBuffer);
+                                    }
+                                }
+                            } catch (Exception ex) {
+                                KvLogger.instance(this).p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
+                                        .p(LogFieldConstants.ACTION, "StartScanToSend")
+                                        .p(LogFieldConstants.ERR_MSG, ex.getMessage())
+                                        .p("FilePath", Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file).toString())
+                                        .e(ex);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    KvLogger.instance(this)
+                            .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
+                            .p(LogFieldConstants.ACTION, "StartScanToSend")
+                            .p(LogFieldConstants.ERR_MSG, ex.getMessage())
+                            .p("FilePath", Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file).toString())
+                            .e(ex);
+                } finally {
+                    readWriteLock.writeLock().unlock();
                 }
             }
         } finally {

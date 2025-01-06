@@ -1,15 +1,15 @@
 package org.yx.hoststack.center.entity;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Container information
@@ -22,16 +22,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Container implements Serializable{
+public class Container implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 4761804766431502509L;
 
     /**
-     * containerId
+     * Host resource ID to which the container belongs, created through the hoststack platform, this field is not null
      */
-    @TableId(value = "container_id")
-    private String containerId;
+    @TableField(value = "host_id")
+    private String hostId;
+    /**
+     * Self increasing serial number; Define a unique primary key in combination with HostId
+     */
+    @TableField(value = "sequence_number")
+    private Integer sequenceNumber;
 
     /**
      * Image ID, created through the hoststack platform, this field is not null
@@ -43,10 +48,6 @@ public class Container implements Serializable{
      */
     private String imageVer;
 
-    /**
-     * Host resource ID to which the container belongs, created through the hoststack platform, this field is not null
-     */
-    private String hostId;
 
     /**
      * Host version number

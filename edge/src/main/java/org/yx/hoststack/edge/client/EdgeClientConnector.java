@@ -40,20 +40,13 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
 
     public void edgeRegister() {
         sendMsg(buildSendMessage(ProtoMethodId.EdgeRegister.getValue(),
-                        E2CMessage.E2C_EdgeRegisterReq.newBuilder()
-                                .setServiceIp(EdgeContext.ServiceIp)
-                                .setVersion(EdgeContext.ProjectVersion)
-                                .build().toByteString(), UUID.fastUUID().toString()), null,
-                () -> {
-                    try {
-                        TimeUnit.SECONDS.sleep(5);
-                        SpringContextHolder.getBean(EdgeClient.class).reConnect();
-                    } catch (Exception ignored) {
-                    }
-                });
+                E2CMessage.E2C_EdgeRegisterReq.newBuilder()
+                        .setServiceIp(EdgeContext.ServiceIp)
+                        .setVersion(EdgeContext.ProjectVersion)
+                        .build().toByteString(), UUID.fastUUID().toString()), null, null);
     }
 
-    public void hostInitialize(String hostId, HostInitializeReq hostInitializeReq, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
+    public void hostInitialize(String hostId, String hostToken, HostInitializeReq hostInitializeReq, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
         List<E2CMessage.GpuInfo> gpuInfoList = Lists.newArrayList();
         for (HostInitializeReq.GpuInfo gpuInfo : hostInitializeReq.getGpuList()) {
             gpuInfoList.add(E2CMessage.GpuInfo.newBuilder()
@@ -92,6 +85,7 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
                 .setRegisterMode(hostInitializeReq.getRegisterMode())
                 .addAllGpuList(gpuInfoList)
                 .addAllNetCardList(netCardInfoList)
+                .setXToken(hostToken)
                 .build();
         sendMsg(buildSendMessage(ProtoMethodId.HostInitialize.getValue(), hostInitialize.toByteString(), traceId), successCallback, failCallback);
     }
@@ -138,6 +132,13 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
                 .setAgentType(agentType)
                 .build();
         sendMsg(buildSendMessage(ProtoMethodId.HostExit.getValue(), hostExitReq.toByteString(), UUID.fastUUID().toString()), null, null);
+    }
+
+    public void sendIdcExit(String idcId) {
+        E2CMessage.E2C_IdcExitReq idcExitReq = E2CMessage.E2C_IdcExitReq.newBuilder()
+                .setIdcSid(idcId)
+                .build();
+        sendMsg(buildSendMessage(ProtoMethodId.IdcExit.getValue(), idcExitReq.toByteString(), UUID.fastUUID().toString()), null, null);
     }
 
     public void sendJobNotifyReport(List<AgentCommonMessage> agentReportList, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {

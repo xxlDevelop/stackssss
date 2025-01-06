@@ -33,14 +33,14 @@ public class JobNotifyToLocalDiskConsumer implements Runnable {
             } catch (InterruptedException interruptedException) {
                 Thread.currentThread().interrupt();
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WorkQueueConsumer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.WorkQueueConsumer_ConsumerHostHb)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_HB)
                         .p(LogFieldConstants.ERR_MSG, interruptedException.getMessage())
                         .e(interruptedException);
             } catch (Exception e) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WorkQueueConsumer)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.WorkQueueConsumer_ConsumerNotSendJobNotify)
+                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_NOT_SEND_JOB_NOTIFY)
                         .p(LogFieldConstants.ERR_MSG, e.getMessage())
                         .e(e);
             }
