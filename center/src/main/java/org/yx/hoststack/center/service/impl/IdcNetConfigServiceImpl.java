@@ -1,6 +1,8 @@
 package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,6 +14,7 @@ import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.SysCode;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
+import org.yx.hoststack.center.common.resp.PageResp;
 import org.yx.hoststack.center.common.resp.idc.net.IdcNetConfigListResp;
 import org.yx.hoststack.center.entity.IdcNetConfig;
 import org.yx.hoststack.center.mapper.IdcNetConfigMapper;
@@ -179,18 +182,28 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
     }
 
     @Override
-    public R<?> list(IdcNetConfigListReq req) {
+    public R<PageResp<IdcNetConfigListResp>> list(IdcNetConfigListReq req) {
         try {
+            IPage<IdcNetConfig> page = new Page<>(req.getCurrent(), req.getSize());
+            page.orders().add(OrderItem.desc("id"));
+
             // Query network configurations
-            List<IdcNetConfig> configs = list(new LambdaQueryWrapper<IdcNetConfig>()
-                    .eq(IdcNetConfig::getIdcId, req.getIdcId()));
+            page(page, new LambdaQueryWrapper<IdcNetConfig>()
+                    .eq(IdcNetConfig::getIdc, req.getIdcId()));
 
             // Convert to response objects
-            List<IdcNetConfigListResp> respList = configs.stream()
+            List<IdcNetConfigListResp> respList = page.getRecords().stream()
                     .map(this::convertToResponse)
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return R.ok(respList);
+
+            PageResp<IdcNetConfigListResp> resultData = new PageResp<>();
+            resultData.setCurrent(req.getCurrent());
+            resultData.setSize(req.getSize());
+            resultData.setRecords(respList);
+            resultData.setTotal(page.getTotal());
+            resultData.setPages(page.getPages());
+            return R.ok(resultData);
         } catch (Exception e) {
             log.error("Failed to query IDC network configurations", e);
             return R.failed(SysCode.x00000400.getValue(), SysCode.x00000400.getMsg());
@@ -204,10 +217,6 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
         return IdcNetConfigListResp.builder()
                 .localNet(config.getLocalIp() + ":" + config.getLocalPort())
                 .mappingNet(config.getMappingIp() + ":" + config.getMappingPort())
-                .mask(config.getMask())
-                .gateway(config.getGateway())
-                .dns1(config.getDns1())
-                .dns2(config.getDns2())
                 .netProtocol(config.getNetProtocol())
                 .bandwidthInLimit(config.getBandwidthInLimit())
                 .bandwidthOutLimit(config.getBandwidthOutLimit())
@@ -215,6 +224,11 @@ public class IdcNetConfigServiceImpl extends ServiceImpl<IdcNetConfigMapper, Idc
                 .ipType(config.getIpType())
                 .mappingName(config.getMappingName())
                 .build();
+    }
+
+    @Override
+    public List<String> listAvailableIpsByIdcLimitCount(String idc, Integer count) {
+        return baseMapper.listAvailableIpsByIdcLimitCount(idc, count);
     }
 
 }

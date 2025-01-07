@@ -2,7 +2,9 @@ package org.yx.hoststack.center.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.yx.hoststack.center.common.req.relay.RelayUpdateReq;
 import org.yx.hoststack.center.entity.RelayInfo;
+import org.yx.lib.utils.util.R;
 
 import java.util.List;
 
@@ -23,5 +25,7 @@ public interface RelayInfoService extends IService<RelayInfo> {
     boolean update(RelayInfo relayInfo);
 
     int delete(Long id);
+
+    R<?> updateRelay(RelayUpdateReq relayUpdateReq);
 
 }

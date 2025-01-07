@@ -6,19 +6,25 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.yx.hoststack.center.CenterApplicationRunner;
+import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
 import org.yx.hoststack.center.entity.IdcInfo;
 import org.yx.hoststack.center.entity.RegionInfo;
@@ -27,29 +33,34 @@ import org.yx.hoststack.center.entity.ServiceDetail;
 import org.yx.hoststack.center.service.IdcInfoService;
 import org.yx.hoststack.center.service.RelayInfoService;
 import org.yx.hoststack.center.service.ServiceDetailService;
+import org.yx.hoststack.center.ws.CenterServer;
 import org.yx.hoststack.center.ws.common.Node;
 import org.yx.hoststack.center.ws.controller.manager.CenterControllerManager;
 import org.yx.hoststack.center.ws.task.HeartbeatMonitor;
+import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.stream.Stream;
 
-import static org.yx.hoststack.center.CenterApplicationRunner.centerNode;
-import static org.yx.hoststack.center.CenterApplicationRunner.regionInfoCacheMap;
+import static org.yx.hoststack.center.CenterApplicationRunner.monitor;
 import static org.yx.hoststack.center.common.enums.RegisterNodeEnum.IDC;
 import static org.yx.hoststack.center.common.enums.RegisterNodeEnum.RELAY;
 import static org.yx.hoststack.center.common.enums.SysCode.*;
+import static org.yx.hoststack.center.ws.CenterServer.*;
 import static org.yx.hoststack.center.ws.common.Node.findNodeByServiceId;
 
 
@@ -72,8 +83,8 @@ public class EdgeController {
     private final RelayInfoService relayInfoService;
     private final ServiceDetailService serviceDetailService;
 
-    @Qualifier("AsyncThreadExecutor")
-    private final Executor executor;
+    @Qualifier("virtualThreadExecutor")
+    private final Executor virtualThreadExecutor;
     @Value("${applications.serverHbInterval}")
     private Integer serverHbInterval;
 
@@ -86,7 +97,10 @@ public class EdgeController {
     private void register(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
         try {
             ByteString payload = message.getBody().getPayload();
+            CommonMessageWrapper.Header header = message.getHeader();
             E2CMessage.E2C_EdgeRegisterReq edgeRegister = E2CMessage.E2C_EdgeRegisterReq.parseFrom(payload);
+            String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
+            ctx.channel().attr(AttributeKey.valueOf("innerServiceId")).set(serviceId);
             String serviceIp = edgeRegister.getServiceIp();
 
             RegionInfo region = getRegionByIp(serviceIp);
@@ -94,9 +108,10 @@ public class EdgeController {
                 sendErrorResponse(ctx, message, x00000407.getValue(), x00000407.getMsg());
                 return;
             }
-            Long nodeId = checkAndRegisterNode(ctx, message.getHeader(), serviceIp, region);
 
-//            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer).p(LogFieldConstants.ACTION, CenterEvent.Action.CenterWsServer_EdgeRegisterCenter).p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId()).p(HostStackConstants.CHANNEL_ID, ctx.channel().id()).p("ServiceIp", serviceIp).p("Region", region).i();
+            Long nodeId = checkAndRegisterNode(ctx, header, serviceIp, region);
+
+            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer).p(LogFieldConstants.ACTION, CenterEvent.Action.CenterWsServer_EdgeRegisterCenter).p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId()).p(HostStackConstants.CHANNEL_ID, ctx.channel().id()).p("ServiceIp", serviceIp).p("Region", region).i();
 
             CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
                     .setHeader(CommonMessageWrapper.CommonMessage.newBuilder()
@@ -131,7 +146,7 @@ public class EdgeController {
      * @date 2024/12/16 15:50
      */
     private RegionInfo getRegionByIp(String serviceIp) {
-        List<RegionInfo> regionInfos = regionInfoCacheMap.get(CenterApplicationRunner.REGION_CACHE_KEY);
+        List<RegionInfo> regionInfos = globalRegionInfoCacheMap.get(CenterServer.REGION_CACHE_KEY);
         if (!CollectionUtils.isEmpty(regionInfos)) {
             Optional<RegionInfo> first = regionInfos.parallelStream().filter(x -> x.getPublicIpList().contains(serviceIp)).findFirst();
             if (first.isPresent()) {
@@ -152,54 +167,93 @@ public class EdgeController {
         String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
         Node relayNode = null;
         if (!ObjectUtils.isEmpty(header.getRelaySid())) {
-            RelayInfo existingRelay = relayInfoCacheMap.getOrDefault(header.getRelaySid(), new RelayInfo());
-
-            if (ObjectUtils.isEmpty(existingRelay.getId()) && !relayInfoCacheMap.containsKey(header.getRelaySid())) {
-                existingRelay = relayInfoService.getOneOpt(new LambdaQueryWrapper<RelayInfo>().eq(RelayInfo::getRegion, region.getRegionCode()).eq(RelayInfo::getZone, region.getZoneCode()).eq(RelayInfo::getRelayIp, serviceIp), false)
-                        .orElse(new RelayInfo().builder()
+            RelayInfo relayInfo = relayInfoCacheMap.getOrDefault(header.getRelaySid(), new RelayInfo());
+            if (ObjectUtils.isEmpty(relayInfo.getId()) && !relayInfoCacheMap.containsKey(header.getRelaySid())) {
+                relayInfo = relayInfoCacheMap.computeIfAbsent(serviceId, key -> {
+                    RelayInfo globalRelay = globalRelayInfoCacheMap.computeIfAbsent(serviceId, r -> {
+                        RelayInfo build = new RelayInfo().builder()
                                 .zone((region.getZoneCode()))
                                 .region(region.getRegionCode())
                                 .relayIp(serviceIp)
                                 .location(region.getLocation())
-                                .relay(String.format(String.valueOf(RELAY)))
-                                .build());
-                RelayInfo finalExistingRelay = existingRelay;
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        relayInfoService.saveOrUpdate(finalExistingRelay);
-                    } catch (Exception e) {
-                        KvLogger.instance(this).p(LogFieldConstants.ACTION, "saveOrUpdateRelayInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
-                    }
-                }, executor);
+                                .relay(r)
+                                .build();
+
+                        CompletableFuture.runAsync(() -> {
+                            try {
+                                relayInfoService.insert(build);
+                            } catch (Exception e) {
+                                KvLogger.instance(this).p(LogFieldConstants.ACTION, "SaveRelayInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
+                            }
+                        }, virtualThreadExecutor);
+                        return build;
+                    });
+
+                    return globalRelay;
+                });
                 centerNode.addOrUpdateNode(header.getRelaySid(), RELAY, ctx.channel());
             }
-            relayInfoCacheMap.put(header.getRelaySid(), existingRelay);
+
+            int hashCode = Objects.hash(region.getZoneCode(), region.getRegionCode(), serviceId, serviceIp);
+            if (hashCode != relayInfo.hashCode()) {
+                relayInfo.setZone(region.getZoneCode());
+                relayInfo.setRegion(region.getRegionCode());
+                relayInfo.setRelayIp(serviceIp);
+                RelayInfo finalRelayInfo = relayInfo;
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        relayInfoService.update(finalRelayInfo);
+                    } catch (Exception e) {
+                        KvLogger.instance(this).p(LogFieldConstants.ACTION, "UpdateRelayInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
+                    }
+                }, virtualThreadExecutor);
+            }
+
+            relayInfoCacheMap.put(header.getRelaySid(), relayInfo);
             relayNode = findNodeByServiceId(header.getRelaySid());
         }
 
+
         if (!ObjectUtils.isEmpty(header.getIdcSid())) {
-            IdcInfo existingIdc = idcInfoCacheMap.getOrDefault(header.getIdcSid(), new IdcInfo());
-            if (ObjectUtils.isEmpty(existingIdc.getId()) && !idcInfoCacheMap.containsKey(header.getIdcSid())) {
-                existingIdc = idcInfoService.getOneOpt(new LambdaQueryWrapper<IdcInfo>().eq(IdcInfo::getRegion, region.getRegionCode()).eq(IdcInfo::getZone, region.getZoneCode()).eq(IdcInfo::getIdcIp, serviceIp), false).orElse(
-                        new IdcInfo().builder()
-                                .zone((region.getZoneCode()))
-                                .region(region.getRegionCode())
-                                .idcIp(serviceIp)
-                                .location(region.getLocation())
-                                .idc(String.format(String.valueOf(IDC))).build());
+            IdcInfo idcInfo = idcInfoCacheMap.computeIfAbsent(serviceId, key -> {
+                IdcInfo globalIdcInfo = globalIdcInfoCacheMap.computeIfAbsent(serviceId, i -> {
+                    IdcInfo build = new IdcInfo().builder()
+                            .zone((region.getZoneCode()))
+                            .region(region.getRegionCode())
+                            .idcIp(serviceIp)
+                            .location(region.getLocation())
+                            .createAt(new Date())
+                            .lastUpdateAt(new Date())
+                            .idc(i).build();
+                    CompletableFuture.runAsync(() -> {
+                        try {
+                            idcInfoService.save(build);
+                        } catch (Exception e) {
+                            KvLogger.instance(this).p(LogFieldConstants.ACTION, "SaveIdcInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
+                        }
+                    }, virtualThreadExecutor);
+                    return build;
+                });
 
+                return globalIdcInfo;
+            });
 
-                IdcInfo finalExistingIdc = existingIdc;
+            int hashCode = Objects.hash(region.getZoneCode(), region.getRegionCode(), serviceId, serviceIp);
+            if (hashCode != idcInfo.hashCode()) {
+                idcInfo.setZone(region.getZoneCode());
+                idcInfo.setRegion(region.getRegionCode());
+                idcInfo.setIdcIp(serviceIp);
+                idcInfo.setLastUpdateAt(new Date());
                 CompletableFuture.runAsync(() -> {
                     try {
-                        idcInfoService.saveOrUpdate(finalExistingIdc);
+                        idcInfoService.updateById(idcInfo);
                     } catch (Exception e) {
-                        KvLogger.instance(this).p(LogFieldConstants.ACTION, "saveOrUpdateIdcInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
+                        KvLogger.instance(this).p(LogFieldConstants.ACTION, "UpdateIdcInfo").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
                     }
-                }, executor);
+                }, virtualThreadExecutor);
             }
 
-            idcInfoCacheMap.put(header.getIdcSid(), existingIdc);
+            idcInfoCacheMap.put(header.getIdcSid(), idcInfo);
             if (!ObjectUtils.isEmpty(relayNode)) {
                 relayNode.addOrUpdateNode(header.getIdcSid(), IDC, ctx.channel(), relayNode);
             } else {
@@ -215,25 +269,34 @@ public class EdgeController {
     }
 
     public void updateServerDetail(Long nodeId, String serviceIp, CommonMessageWrapper.Header header, String serviceId) {
-        HeartbeatMonitor monitor = new HeartbeatMonitor();
         RegisterNodeEnum type = !StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY;
         ServiceDetail serviceDetail = serverDetailCacheMap.computeIfAbsent(serviceId, key -> {
-            ServiceDetail detail = serviceDetailService.getOneOpt(new LambdaQueryWrapper<ServiceDetail>().eq(ServiceDetail::getEdgeId, nodeId).eq(ServiceDetail::getServiceId, serviceId).eq(ServiceDetail::getLocalIp, serviceIp), false)
-                    .orElse(ServiceDetail.builder()
-                            .edgeId(nodeId)
-                            .localIp(serviceIp)
-                            .version("1.0")
-                            .type(String.valueOf(type))
-                            .serviceId(key)
-                            .build());
-            detail.setHealthy(NumberUtils.INTEGER_ONE.byteValue());
-            detail.setLastHbAt(new Date());
-            serviceDetailService.saveOrUpdate(detail);
-            return detail;
-        });
+            ServiceDetail globalServiceDetail = globalServerDetailCacheMap.computeIfAbsent(serviceId, s -> {
+                ServiceDetail build = ServiceDetail.builder()
+                        .edgeId(nodeId)
+                        .localIp(serviceIp)
+                        .version("1.0")
+                        .type(String.valueOf(type))
+                        .serviceId(s)
+                        .healthy(NumberUtils.BYTE_ONE)
+                        .lastHbAt(new Date())
+                        .build();
 
-        monitor.updateHeartbeat(serviceId, type, () -> offline(serviceId, serviceDetail.getId(), type));
-        monitor.startMonitor();
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        serviceDetailService.insert(build);
+                    } catch (Exception e) {
+                        KvLogger.instance(this).p(LogFieldConstants.ACTION, "SaveServiceDetail").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
+                    }
+                }, virtualThreadExecutor);
+                return build;
+            });
+            return globalServiceDetail;
+        });
+        SpringContextHolder.getBean(HeartbeatMonitor.class).updateHeartbeat(serviceId, type, expirationTime -> {
+            EdgeController bean = SpringContextHolder.getBean(EdgeController.class);
+            bean.offline(serviceId, serviceDetail.getId(), type, expirationTime);
+        });
         serverDetailCacheMap.put(serviceId, serviceDetail);
     }
 
@@ -244,11 +307,19 @@ public class EdgeController {
 
      * @date 2024/12/17 10:44
      */
-    private void sendErrorResponse(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, int code, String msg) {
-        CommonMessageWrapper.CommonMessage errorMessage =
-                CommonMessageWrapper.CommonMessage.newBuilder().setHeader(message.getHeader().toBuilder()
-                                .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE))
-                        .setBody(CommonMessageWrapper.Body.newBuilder().setCode(code).setMsg(msg).build()).build();
+    private void sendErrorResponse(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, int code, String msg, String... args) {
+        List<String> params = List.of(args);
+        CommonMessageWrapper.CommonMessage errorMessage = CommonMessageWrapper.CommonMessage.newBuilder()
+                .setHeader(CommonMessageWrapper.CommonMessage.newBuilder().getHeaderBuilder()
+                        .setMethId(CollectionUtils.isEmpty(params) ? message.getHeader().getMethId() : Integer.parseInt(params.get(0)))
+                        .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
+                        .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
+                        .setZone(message.getHeader().getZone())
+                        .setRegion(message.getHeader().getRegion())
+                        .setIdcSid(message.getHeader().getIdcSid())
+                        .setRelaySid(message.getHeader().getRelaySid())
+                        .setTraceId(message.getHeader().getTraceId()))
+                .setBody(CommonMessageWrapper.Body.newBuilder().setCode(code).setMsg(msg).build()).build();
         ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(errorMessage.toByteArray())));
     }
 
@@ -271,13 +342,9 @@ public class EdgeController {
                     return null;
                 }
                 existingDetail.setLastHbAt(new Date());
-
-                monitor.updateHeartbeat(serviceId, type, () -> offline(serviceId, existingDetail.getId(), type));
-
+                monitor.updateHeartbeat(serviceId, type, expirationTime -> offline(serviceId, existingDetail.getId(), type, expirationTime));
                 return existingDetail;
             });
-
-            monitor.startMonitor();
             CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
                     .setHeader(CommonMessageWrapper.CommonMessage.newBuilder().getHeaderBuilder()
                             .setMethId(ProtoMethodId.Pong.getValue())
@@ -306,27 +373,35 @@ public class EdgeController {
      * @author yijian
      * @date 2025/1/3 17:43
      */
-    public void offline(String serviceId, Long id, RegisterNodeEnum type) {
-        KvLogger.instance(this).p(LogFieldConstants.ACTION, String.format("%-HeatBeat Timeout", type));
-//        CompletableFuture.runAsync(() -> {
-        try {
-            ServiceDetail detail = serverDetailCacheMap.get(serviceId);
-            detail.setHealthy(NumberUtils.BYTE_ZERO);
-            serverDetailCacheMap.put(serviceId, detail);
+    public void offline(String serviceId, Long id, RegisterNodeEnum type, long expirationTime) {
+        ServiceDetailService service = SpringContextHolder.getBean(ServiceDetailService.class);
+        ServiceDetail detail = serverDetailCacheMap.get(serviceId);
+        CompletableFuture.runAsync(() -> {
+            try {
 
-            Node node = findNodeByServiceId(serviceId);
-            if (node != null) {
+                Node node = findNodeByServiceId(serviceId);
+                if (node == null || !ObjectUtils.isEmpty(detail)) {
+                    long time = detail.getLastHbAt().getTime();
+                    if (time > expirationTime) return;
+                }
+
+                detail.setHealthy(NumberUtils.BYTE_ZERO);
+                serverDetailCacheMap.put(serviceId, detail);
+
+                Channel channel = node.getChannel();
                 node.removeNodeRecursively(node);
+                service.update(new LambdaUpdateWrapper<ServiceDetail>().set(ServiceDetail::getHealthy, NumberUtils.INTEGER_ZERO).eq(ServiceDetail::getId, id));
+
+                CenterServer.centerNode.printNodeInfo(2);
+                channel.close();
+            } catch (Exception e) {
+                KvLogger.instance(SpringContextHolder.getBean(EdgeController.class)).p(LogFieldConstants.ACTION, "OfflineError").p(LogFieldConstants.ERR_MSG, e.getMessage()).e();
             }
-            serviceDetailService.update(new LambdaUpdateWrapper<ServiceDetail>().set(ServiceDetail::getHealthy, NumberUtils.INTEGER_ZERO).eq(ServiceDetail::getId, id));
+        }, virtualThreadExecutor);
 
-            centerNode.printNodeInfo(2);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        }, executor);
-
-
-        KvLogger.instance(this).p(LogFieldConstants.ACTION, String.format("%-HeatBeat Timeout", type));
+        KvLogger.instance(SpringContextHolder.getBean(EdgeController.class)).p(LogFieldConstants.ACTION, String.format("%s:ServiceID:%s-HeatBeat Timeout", type, serviceId))
+                .p("expirationTime", expirationTime)
+                .p("currentTime", detail.getLastHbAt())
+                .i();
     }
 }

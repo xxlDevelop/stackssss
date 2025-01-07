@@ -11,6 +11,8 @@ public class IdcUpdateReq {
     @NotBlank
     private String idc;
     @NotBlank
+    private String idcIp;
+    @NotBlank
     private String localHsIdcHttpSvc;
     @NotBlank
     private String netHsIdcHttpsSvc;

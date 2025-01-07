@@ -24,4 +24,16 @@
         LIMIT 1
         ) t
     </select>
+
+    <select id="listAvailableIpsByIdcLimitCount" resultType="java.lang.String">
+        SELECT local_ip
+        FROM (SELECT DISTINCT a.local_ip AS local_ip
+              FROM t_idc_net_config AS a
+              WHERE a.idc = #{idc}
+                AND NOT EXISTS (SELECT 1
+                                FROM t_container_net_config AS b
+                                WHERE b.idc = a.idc
+                                  AND b.ip = a.local_ip)) AS filtered_ips
+            LIMIT #{count};
+    </select>
 </mapper>

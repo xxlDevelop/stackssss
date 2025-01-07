@@ -1,8 +1,11 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +14,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Agent信息表,存储hostAgent和containerAgent信息
+ * @author Lee666
  */
 @Data
 @Builder
@@ -18,15 +22,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @TableName("t_host")
 public class Host implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -3393744176451974020L;
     /**
      * hostAgent唯一标识
      */
+    @TableId(value = "host_id", type = IdType.INPUT)
     private String hostId;
 
     /**
-     * host版本号
+     * agent版本号
      */
-    private String hostVersion;
+    private String agentVersion;
+
+    /**
+     * 资源注册模式：host，container，benchmark
+     */
+    private String registerMode;
 
     /**
      * 节点启动时间
@@ -84,7 +96,12 @@ public class Host implements Serializable {
     private String region;
 
     /**
-     * host所属idc机房
+     * host所属relay标识
+     */
+    private String relay;
+
+    /**
+     * host所属IDC标识
      */
     private String idc;
 
@@ -104,15 +121,25 @@ public class Host implements Serializable {
     private Integer cpuNum;
 
     /**
+     * 详细的硬件唯一标识信息，采用key:value格式，例如“cpuId:123,biosId:456”
+     */
+    private String detailedId;
+
+    /**
+     * 网络代理 0-否，1-是
+     */
+    private Integer proxy;
+
+    /**
      * BareMetal提供者ID
 
      */
     private String baremetalProvider;
 
     /**
-     * BareMetal所属租户ID
+     * BareMetal提供者所属租户ID
      */
-    private Long tenantId;
+    private Long providerTenantId;
 
     /**
      * 最后心跳时间
@@ -139,5 +166,4 @@ public class Host implements Serializable {
      */
     private Date createAt;
 
-    private static final long serialVersionUID = 1L;
 }

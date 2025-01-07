@@ -53,26 +53,6 @@ public class IdcNetConfig implements Serializable{
     private Integer localPort;
 
     /**
-     *  内网网关
-     */
-    private String gateway;
-
-    /**
-     *  子网掩码
-     */
-    private String mask;
-
-    /**
-     *  DNS1
-     */
-    private String dns1;
-
-    /**
-     *  DNS2
-     */
-    private String dns2;
-
-    /**
      *  外网IP映射
      */
     private String mappingIp;

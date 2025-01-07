@@ -31,7 +31,7 @@ public class JobInfo implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.INPUT)
     private String jobId;
 
     /**

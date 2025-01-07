@@ -1,6 +1,8 @@
 package org.yx.hoststack.center.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -26,31 +29,34 @@ public class Container implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 4761804766431502509L;
+    /**
+     * Custom primary key HostId + # + auto-increment sequence number
+     */
+    @TableId(value = "container_id", type = IdType.INPUT)
+    private String containerId;
 
     /**
-     * Host resource ID to which the container belongs, created through the hoststack platform, this field is not null
+     * Host resource ID to which the container belongs, not null when created via the hoststack platform
      */
-    @TableField(value = "host_id")
     private String hostId;
+
     /**
-     * Self increasing serial number; Define a unique primary key in combination with HostId
+     * Auto-increment sequence number; combined with HostId to define a unique primary key
      */
-    @TableField(value = "sequence_number")
     private Integer sequenceNumber;
 
     /**
-     * Image ID, created through the hoststack platform, this field is not null
+     * Image ID, not null when created via the hoststack platform
      */
     private String imageId;
 
     /**
-     * Image version, created through the hoststack platform, this field is not null
+     * Image version, not null when created via the hoststack platform
      */
     private String imageVer;
 
-
     /**
-     * Host version number
+     * Host version
      */
     private String agentVersion;
 
@@ -80,12 +86,12 @@ public class Container implements Serializable {
     private String osVersion;
 
     /**
-     * Operating system memory
+     * Operating system memory, in MB
      */
     private String osMem;
 
     /**
-     * Resource pool type, idc, edge, he
+     * Resource pool type: idc, edge, he
      */
     private String resourcePool;
 
@@ -140,12 +146,12 @@ public class Container implements Serializable {
     private Integer cpuNum;
 
     /**
-     * Detailed hardware unique identifier information, in key:value format, e.g., “cpuId:123,biosId:456”
+     * Detailed unique hardware identifier information in key:value format, e.g., "cpuId:123,biosId:456"
      */
     private String detailedId;
 
     /**
-     * Network proxy 0-No, 1-Yes
+     * Network proxy: 0-No, 1-Yes
      */
     private Integer proxy;
 
@@ -175,13 +181,8 @@ public class Container implements Serializable {
     private String sk;
 
     /**
-     * Checker public key
-     */
-    private String checkerPublicKey;
-
-    /**
      * Creation timestamp
      */
-    private Date createAt;
+    private Timestamp createAt;
 
 }

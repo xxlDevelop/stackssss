@@ -83,7 +83,7 @@ public class HostController {
                 case HOST:
                     if (ObjectUtils.isEmpty(hostCurrentMap.get(hostInit.getDevSn()))) {
                         Host host = Host.builder().hostId(convertToHex(regionInfo.getRegionId()) + DigestUtils.md5Hex(hostInit.getDevSn()))
-                                .hostVersion(hostInit.getAgentVersion())
+                                .agentVersion(hostInit.getAgentVersion())
                                 .startTime(new Date(hostInit.getOsStartTs()))
                                 .devSn(hostInit.getDevSn())
                                 .osType(hostInit.getOsType())

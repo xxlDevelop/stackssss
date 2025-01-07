@@ -1,6 +1,8 @@
 package org.yx.hoststack.center.ws;
 
 import cn.hutool.core.thread.ThreadFactoryBuilder;
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -15,17 +17,31 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.center.common.constant.CenterEvent;
+import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
+import org.yx.hoststack.center.entity.IdcInfo;
+import org.yx.hoststack.center.entity.RegionInfo;
+import org.yx.hoststack.center.entity.RelayInfo;
+import org.yx.hoststack.center.entity.ServiceDetail;
+import org.yx.hoststack.center.service.IdcInfoService;
+import org.yx.hoststack.center.service.RegionInfoService;
+import org.yx.hoststack.center.service.RelayInfoService;
+import org.yx.hoststack.center.service.ServiceDetailService;
+import org.yx.hoststack.center.ws.common.Node;
 import org.yx.hoststack.center.ws.config.CenterServerConfig;
 import org.yx.hoststack.protocol.ws.ResendMessage;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
 import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -37,6 +53,25 @@ public class CenterServer implements Runnable {
     private final CenterServerConfig edgeServerConfig;
 
     private final CenterServerChannelInitializer centerServerChannelInitializer;
+
+
+    public static final String REGION_CACHE_KEY = "regionCache";
+    public static final ConcurrentHashMap<String, List<RegionInfo>> globalRegionInfoCacheMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, IdcInfo> globalIdcInfoCacheMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, RelayInfo> globalRelayInfoCacheMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ServiceDetail> globalServerDetailCacheMap = new ConcurrentHashMap<>();
+
+    private final RegionInfoService regionInfoService;
+    private final IdcInfoService idcInfoService;
+    private final RelayInfoService relayInfoService;
+    private final ServiceDetailService serviceDetailService;
+    private final NacosDiscoveryProperties nacosDiscoveryProperties;
+
+    public static String address;
+    public static String hostName;
+    public static int port;
+    public static Node centerNode;
+
 
     private int bossThreadCount() {
         return edgeServerConfig.getBossThreadCount() <= 1 ? 1 : edgeServerConfig.getBossThreadCount();
@@ -101,6 +136,9 @@ public class CenterServer implements Runnable {
                 .childOption(ChannelOption.SO_REUSEADDR, true)
                 .childHandler(centerServerChannelInitializer);
 //                    .handler(new LoggingHandler(msgServerConfig.getLogLevel() == 2 ? LogLevel.INFO : LogLevel.DEBUG));
+
+        // init project params
+        applicationInit();
 
         ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
         if (channelFuture.isSuccess()) {
@@ -211,5 +249,25 @@ public class CenterServer implements Runnable {
                 .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
                 .p(LogFieldConstants.ACTION, "DestroySuccessfully")
                 .i();
+    }
+
+
+    void applicationInit() {
+        List<RegionInfo> regionInfos = regionInfoService.list();
+        globalRegionInfoCacheMap.put(REGION_CACHE_KEY, regionInfos);
+
+        globalIdcInfoCacheMap = idcInfoService.list(new LambdaQueryWrapper<IdcInfo>().select(IdcInfo::getZone,IdcInfo::getRegion,IdcInfo::getIdc,IdcInfo::getIdcIp)).parallelStream().collect(Collectors.toConcurrentMap(IdcInfo::getIdc, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
+
+        globalRelayInfoCacheMap = relayInfoService.list(new LambdaQueryWrapper<RelayInfo>().select(RelayInfo::getZone,RelayInfo::getRegion,RelayInfo::getRelay,RelayInfo::getRelayIp)).parallelStream().collect(Collectors.toMap(RelayInfo::getRelay, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
+
+        globalServerDetailCacheMap = serviceDetailService.list().parallelStream().collect(Collectors.toMap(ServiceDetail::getServiceId, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
+
+        hostName = nacosDiscoveryProperties.getUsername();
+
+        address = nacosDiscoveryProperties.getIp();
+
+        port = nacosDiscoveryProperties.getPort();
+
+        centerNode = new Node(hostName, RegisterNodeEnum.CENTER, null);
     }
 }

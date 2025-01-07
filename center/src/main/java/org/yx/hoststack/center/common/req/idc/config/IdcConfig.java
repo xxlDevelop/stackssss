@@ -1,6 +1,7 @@
 package org.yx.hoststack.center.common.req.idc.config;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +19,10 @@ import java.util.List;
 public class IdcConfig {
 
     @NotNull(message = "Basic configuration cannot be null")
+    @Valid
     private IdcUpdateReq basic;
 
     @NotNull(message = "Network configuration cannot be null")
+    @Valid
     private List<IdcNetConfigReq> net;
 }

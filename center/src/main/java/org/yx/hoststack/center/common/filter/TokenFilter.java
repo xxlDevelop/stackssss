@@ -13,7 +13,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.yx.hoststack.center.common.constant.LoggerEvents;
+import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.constant.RequestAttributeConstants;
 import org.yx.hoststack.center.common.req.XUserDTO;
 import org.yx.lib.utils.constant.CommonConstants;
@@ -50,8 +50,8 @@ class TokenFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        KvLogger.instance(this).p(LogFieldConstants.EVENT, LoggerEvents.TOKEN_FILTER_EVENT)
-                .p(LogFieldConstants.ACTION, LoggerEvents.Actions.TOKEN_FILTER_EVENT_ACTION_INIT).i();
+        KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.TOKEN_FILTER_EVENT)
+                .p(LogFieldConstants.ACTION, CenterEvent.Action.TOKEN_FILTER_EVENT_ACTION_INIT).i();
         Filter.super.init(filterConfig);
     }
 
@@ -62,8 +62,8 @@ class TokenFilter implements Filter {
 
         String xUser = httpRequest.getHeader(CommonConstants.X_USER);
         if (StringUtil.isBlank(xUser)) {
-            KvLogger.instance(this).p(LogFieldConstants.EVENT, LoggerEvents.TOKEN_FILTER_EVENT)
-                    .p(LogFieldConstants.ACTION, LoggerEvents.Actions.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
+            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.TOKEN_FILTER_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
                     .p(LogFieldConstants.ERR_MSG, "x-user is null")
                     .p(LogFieldConstants.ReqUrl, ((HttpServletRequest) servletRequest).getRequestURI())
                     .i();
@@ -75,8 +75,8 @@ class TokenFilter implements Filter {
         XUserDTO xUserDTO = JSONUtil.toBean(xUserStr, XUserDTO.class);
 
         if (!StringUtils.hasLength(xUserDTO.getUid()) && !StringUtils.hasLength(xUserDTO.getAk())) {
-            KvLogger.instance(this).p(LogFieldConstants.EVENT, LoggerEvents.TOKEN_FILTER_EVENT)
-                    .p(LogFieldConstants.ACTION, LoggerEvents.Actions.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
+            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.TOKEN_FILTER_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
                     .p(LogFieldConstants.ERR_MSG, "The UID and AK of x-user are null")
                     .p(LogFieldConstants.ReqUrl, ((HttpServletRequest) servletRequest).getRequestURI())
                     .i();
@@ -84,8 +84,8 @@ class TokenFilter implements Filter {
             return;
         }
         if (!StringUtils.hasLength(xUserDTO.getRoleId()) && !StringUtils.hasLength(xUserDTO.getTenantType()) && (xUserDTO.getTid() == null || xUserDTO.getTid() == 0L)) {
-            KvLogger.instance(this).p(LogFieldConstants.EVENT, LoggerEvents.TOKEN_FILTER_EVENT)
-                    .p(LogFieldConstants.ACTION, LoggerEvents.Actions.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
+            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.TOKEN_FILTER_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.TOKEN_FILTER_EVENT_ACTION_DO_FILTER)
                     .p(LogFieldConstants.ERR_MSG, "The RoleId and Tid and TenantType of x-user are null")
                     .p(LogFieldConstants.ReqUrl, ((HttpServletRequest) servletRequest).getRequestURI())
                     .i();

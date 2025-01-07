@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.yx.hoststack.center.common.req.PageReq;
 
 /**
  * IDC Network Configuration List Request
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IdcNetConfigListReq {
+public class IdcNetConfigListReq extends PageReq {
 
     @NotBlank(message = "IDC identifier cannot be empty")
     private String idcId;

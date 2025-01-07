@@ -1,5 +1,6 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VolumeMountRel implements Serializable{
 
+    @Serial
     private static final long serialVersionUID=1L;
 
     /**
@@ -50,11 +52,11 @@ public class VolumeMountRel implements Serializable{
     /**
      *  宿主机ID
      */
-    private String hostId;
+    private String volumeHost;
 
     /**
      *  挂载时间
      */
-    private Date monutAt;
+    private Date mountAt;
 
 }

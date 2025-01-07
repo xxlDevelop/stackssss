@@ -1,6 +1,7 @@
 package org.yx.hoststack.center.common.req.container;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -52,5 +53,14 @@ public class ContainerCreateReqDTO implements Serializable {
      * Number of containers to be created
      */
     @NotNull(message = "count cannot be empty")
-    private Long count;
+    @Min(value = 1, message = "The minimum value of count is 1")
+    private Integer count;
+    /**
+     * base volume id
+     */
+    private String baseVolumeId;
+    /**
+     * user volume id
+     */
+    private String userVolumeId;
 }

@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -64,7 +65,6 @@ public class ExecutorConfig {
     private static final String TASK_NAME = "edge-executor-";
 
     @Bean("centerExecutor")
-    @Primary
     public Executor edgeExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(getCorePoolSize() * 2);
@@ -82,18 +82,8 @@ public class ExecutorConfig {
      * Asynchronous thread pool configuration class
      * @author zhangyijian
      */
-
-    @Bean("AsyncThreadExecutor")
-    public Executor asyncThreadExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize((getCorePoolSize() * 2) - 1);
-        executor.setMaxPoolSize(getMaxPoolSize() * 3);
-        executor.setQueueCapacity(getQueueCapacity());
-        executor.setKeepAliveSeconds(getKeepAlive());
-        executor.setThreadNamePrefix("async-threadExecutor-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.initialize();
-        return executor;
+    @Bean("virtualThreadExecutor")
+    public Executor virtualThreadExecutor() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 }

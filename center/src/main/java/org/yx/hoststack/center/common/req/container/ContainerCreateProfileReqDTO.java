@@ -1,5 +1,7 @@
 package org.yx.hoststack.center.common.req.container;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -14,6 +16,8 @@ import java.io.Serializable;
  * @Version : 1.0
  */
 @Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
@@ -25,11 +29,12 @@ public class ContainerCreateProfileReqDTO implements Serializable {
      * Number of CPU cores
      */
     @NotNull(message = "vCpu cannot be empty")
+    @JsonProperty("vCpu")
     private Integer vCpu;
     /**
      * Memory, unit MB
      */
-    @NotNull(message = "memory cannot be empty")
+    @NotBlank(message = "memory cannot be empty")
     private String memory;
     /**
      * Operating System Type

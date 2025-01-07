@@ -12,6 +12,9 @@ server:
   shutdown: graceful
 
 spring:
+  main:
+    # Since virtual threads are daemon threads, if all JVM threads are virtual threads, the JVM will exit directly. Therefore, the official recommendation is to enable the following properties to prevent the main thread from exiting the JVM
+    keep-alive: true
   cloud:
     config:
       allow-override: true

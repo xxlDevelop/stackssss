@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.idc.net.IdcNetConfigListResp;
 import org.yx.hoststack.center.entity.IdcNetConfig;
 import org.yx.lib.utils.util.R;
 
@@ -35,5 +37,7 @@ public interface IdcNetConfigService extends IService<IdcNetConfig> {
      * @param req query parameters
      * @return R<?> with list of network configurations
      */
-    R<?> list(IdcNetConfigListReq req);
+    R<PageResp<IdcNetConfigListResp>> list(IdcNetConfigListReq req);
+
+    List<String> listAvailableIpsByIdcLimitCount(String idc, Integer count);
 }

@@ -28,13 +28,22 @@ public enum SysCode {
     x00030005("Network address configurations already exist", 12230005),
     x00030006("Network save failed", 12230006),
 
+    x00000100("No available net IP", 143100),
+    x00000101("Insufficient available net IP addresses", 143101),
+
 
     x00000420("Image data not found", 143420),
     x00000430("Host data not found", 143430),
     x00000440("Host session data not found", 143440),
+    x00000450("Container create region does not match the selected host region", 143450),
 
 
     x00000500("Internal server error", 143500),
+    x00000501("Unknown column", 143501),
+
+
+    x00000600("Task rejected", 143600),
+
 
 
     x00000010("Request too fast", 143010),

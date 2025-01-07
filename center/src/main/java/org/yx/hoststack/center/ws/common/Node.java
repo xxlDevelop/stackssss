@@ -1,14 +1,14 @@
 package org.yx.hoststack.center.ws.common;
 
 import io.netty.channel.Channel;
+import lombok.Data;
+import org.springframework.util.ObjectUtils;
 import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Data
 public class Node {
     String serviceId;
     RegisterNodeEnum type;
@@ -16,6 +16,7 @@ public class Node {
     Channel channel;
     Node parent;
     List<Node> children = new ArrayList<>();
+
 
     // 用于全局快速查找的哈希表
     public static final ConcurrentHashMap<String, Node> NODE_MAP = new ConcurrentHashMap<>();
@@ -89,12 +90,11 @@ public class Node {
     }
 
 
-
-
     /**
      * 使用哈希表根据 serviceId 查找节点
      */
     public static Node findNodeByServiceId(String serviceId) {
+        if (ObjectUtils.isEmpty(serviceId)) return null;
         return NODE_MAP.get(serviceId);
     }
 
@@ -130,6 +130,7 @@ public class Node {
 
     public void addOrUpdateNode() {
     }
+
     public void printNodeInfo(int level) {
         String indentation = " ".repeat(level * 2);
         System.out.println(indentation + type + " (" + serviceId + ")");

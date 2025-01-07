@@ -1,8 +1,10 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +20,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @TableName("t_agent_session")
 public class AgentSession implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 5012682025684570213L;
     /**
-    * hostAgentId/containerAgentId
-    */
+     * hostAgentId/containerAgentId
+     */
+    @TableId
     private String agentId;
 
     private String zone;
@@ -30,54 +35,52 @@ public class AgentSession implements Serializable {
     private String idc;
 
     /**
-    * host/container
-    */
+     * host/container
+     */
     private String agentType;
 
     /**
-    * 资源池类型：idc/edge/he
-    */
+     * 资源池类型：idc/edge/he
+     */
     private String resourcePool;
 
     /**
-    * 容器个数，当agent_type等于host时，该字段有效
-    */
+     * 容器个数，当agent_type等于host时，该字段有效
+     */
     private Integer containerCount;
 
     /**
-    * CPU利用率，单位%
-    */
+     * CPU利用率，单位%
+     */
     private Integer cpuUsage;
 
     /**
-    * 内存利用率，单位%
-    */
+     * 内存利用率，单位%
+     */
     private Integer memoryUsage;
 
     /**
-    * GPU利用率，单位%
-    */
+     * GPU利用率，单位%
+     */
     private Integer gpuUsage;
 
     /**
-    * GPU温度，单位℃
-    */
+     * GPU温度，单位℃
+     */
     private Integer gpuTemperature;
 
     /**
-    * GPU风扇转速，单位%
-    */
+     * GPU风扇转速，单位%
+     */
     private Integer gpuFanSpeed;
 
     /**
-    * agentIp信息
-    */
+     * agentIp信息
+     */
     private String agentIp;
 
     /**
-    * 会话创建时间
-    */
+     * 会话创建时间
+     */
     private Date createTime;
-
-    private static final long serialVersionUID = 1L;
 }

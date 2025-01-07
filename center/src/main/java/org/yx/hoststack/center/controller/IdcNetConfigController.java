@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.yx.hoststack.center.common.constant.RequestMappingBase;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigListReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.idc.net.IdcNetConfigListResp;
 import org.yx.hoststack.center.service.IdcNetConfigService;
 import org.yx.lib.utils.util.R;
 
@@ -32,8 +34,8 @@ public class IdcNetConfigController {
 
     @PostMapping("/config")
     public R<?> config(@RequestBody
-                           @Valid
-                           @NotEmpty(message = "The idcNetConfigList must not be empty.") List<@Valid IdcNetConfigReq> idcNetConfigReqList) {
+                       @Valid
+                       @NotEmpty(message = "The idcNetConfigList must not be empty.") List<@Valid IdcNetConfigReq> idcNetConfigReqList) {
         return idcNetConfigService.saveConfig(idcNetConfigReqList);
     }
 
@@ -45,7 +47,7 @@ public class IdcNetConfigController {
      * @return R<?> with list of network configurations
      */
     @PostMapping("/list")
-    public R<?> list(@RequestBody @Valid IdcNetConfigListReq req) {
+    public R<PageResp<IdcNetConfigListResp>> list(@RequestBody @Validated IdcNetConfigListReq req) {
         return idcNetConfigService.list(req);
     }
 

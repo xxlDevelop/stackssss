@@ -1,16 +1,22 @@
 package org.yx.hoststack.center.ws.task;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import org.yx.hoststack.center.CenterApplicationRunner;
+import org.springframework.util.ObjectUtils;
 import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
+import org.yx.hoststack.center.ws.CenterServer;
+import org.yx.lib.utils.logger.KvLogger;
+import org.yx.lib.utils.logger.LogFieldConstants;
 
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 @Component
 @RefreshScope
@@ -36,31 +42,29 @@ public class HeartbeatMonitor {
     private void processQueue(DelayQueue<HeartbeatTask> queue) {
         while (true) {
             try {
-                HeartbeatTask task = queue.take();
-                System.out.println("Task taken: " + JSONObject.toJSONString(task)); // Debug log
-
-                task.executeTimeoutCallback();
-                CenterApplicationRunner.centerNode.printNodeInfo(2);
+                HeartbeatTask task = queue.poll();
+                if (ObjectUtils.isEmpty(task)) {
+                    TimeUnit.SECONDS.sleep(NumberUtils.INTEGER_ONE);
+                } else {
+                    task.executeTimeoutCallback();
+                }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                KvLogger.instance(this).p(LogFieldConstants.ACTION, "Interrupted")
+                        .p("HeartbeatMonitor throw Exception Interrupted", e.getMessage()).e();
             }
         }
     }
 
     // 更新心跳：如果服务ID已经存在，则移除旧任务并重新加入队列
-    public void updateHeartbeat(String serviceId, RegisterNodeEnum type, Runnable timeoutCallback) {
-        lock.lock();
-        try {
-            HeartbeatTask task = new HeartbeatTask(serviceId, 10, type, timeoutCallback);
-            System.out.println("Offering task to queue: " + JSONObject.toJSONString(task)); // Debug log
+    public void updateHeartbeat(String serviceId, RegisterNodeEnum type, Consumer<Long> timeoutCallback) {
+        if (RegisterNodeEnum.HOST.equals(type)) {
+            containerQueue.offer(new HeartbeatTask(serviceId, hostHbInterval=1, type, timeoutCallback));
+        } else {
 
-            if (RegisterNodeEnum.HOST.equals(type)) {
-                containerQueue.offer(new HeartbeatTask(serviceId,  3, type, timeoutCallback));
-            } else {
-                serverQueue.offer(task);
-            }
-        } finally {
-            lock.unlock();
+            serverQueue.removeIf(task -> serviceId.equals(task.getServiceId()));
+
+            serverQueue.offer(new HeartbeatTask(serviceId, serverHbInterval +1000, type, timeoutCallback));
+            System.out.println(serverQueue.size());
         }
     }
 }

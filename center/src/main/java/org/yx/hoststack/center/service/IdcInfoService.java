@@ -5,6 +5,7 @@ import org.yx.hoststack.center.common.req.idc.IdcCreateReq;
 import org.yx.hoststack.center.common.req.idc.IdcListReq;
 import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
 import org.yx.hoststack.center.common.req.idc.config.IdcConfigSyncReq;
+import org.yx.hoststack.center.common.resp.PageResp;
 import org.yx.hoststack.center.common.resp.idc.CreateIdcInfoResp;
 import org.yx.hoststack.center.common.resp.idc.IdcListResp;
 import org.yx.hoststack.center.entity.IdcInfo;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public interface IdcInfoService extends IService<IdcInfo> {
 
-    List<IdcListResp> list(IdcListReq idcListReq);
+    R<PageResp<IdcListResp>> list(IdcListReq idcListReq);
 
     CreateIdcInfoResp create(IdcCreateReq idcCreateReq);
 

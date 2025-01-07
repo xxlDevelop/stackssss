@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.Master;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -21,6 +24,7 @@ import org.yx.hoststack.center.common.req.idc.IdcListReq;
 import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
 import org.yx.hoststack.center.common.req.idc.config.IdcConfigSyncReq;
 import org.yx.hoststack.center.common.req.idc.net.IdcNetConfigReq;
+import org.yx.hoststack.center.common.resp.PageResp;
 import org.yx.hoststack.center.common.resp.idc.CreateIdcInfoResp;
 import org.yx.hoststack.center.common.resp.idc.IdcListResp;
 import org.yx.hoststack.center.entity.IdcInfo;
@@ -48,12 +52,21 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
 
 
     @Override
-    public List<IdcListResp> list(IdcListReq idcListReq) {
+    public R<PageResp<IdcListResp>> list(IdcListReq idcListReq) {
+        IPage<IdcInfo> page = new Page<>(idcListReq.getCurrent(), idcListReq.getSize());
+        page.orders().add(OrderItem.desc("id"));
         LambdaQueryWrapper<IdcInfo> query = Wrappers.lambdaQuery(IdcInfo.class)
                 .eq(IdcInfo::getZone, idcListReq.getZone())
                 .eq(IdcInfo::getRegion, idcListReq.getRegion());
-        List<IdcInfo> idcInfoList = list(query);
-        return idcInfoList.stream().map(IdcListResp::new).toList();
+        page(page, query);
+
+        PageResp<IdcListResp> resultData = new PageResp<>();
+        resultData.setCurrent(idcListReq.getCurrent());
+        resultData.setSize(idcListReq.getSize());
+        resultData.setRecords(page.getRecords().stream().map(IdcListResp::new).toList());
+        resultData.setTotal(page.getTotal());
+        resultData.setPages(page.getPages());
+        return R.ok(resultData);
 
     }
 

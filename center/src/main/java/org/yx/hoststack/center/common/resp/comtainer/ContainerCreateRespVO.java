@@ -1,9 +1,6 @@
 package org.yx.hoststack.center.common.resp.comtainer;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -18,6 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class ContainerCreateRespVO implements Serializable {
 
     @Serial

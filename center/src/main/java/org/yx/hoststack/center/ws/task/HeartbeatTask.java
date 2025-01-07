@@ -4,24 +4,25 @@ import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class HeartbeatTask implements Delayed {
     private String serviceId;
     private long expirationTime;
     private RegisterNodeEnum type;
-    private Runnable timeoutCallback;
+    private Consumer<Long> timeoutCallback;
 
-    public HeartbeatTask(String serviceId, long timeoutThreshold, RegisterNodeEnum type, Runnable timeoutCallback) {
+    public HeartbeatTask(String serviceId, long timeoutThreshold, RegisterNodeEnum type, Consumer<Long> timeoutCallback) {
         this.serviceId = serviceId;
         this.type = type;
         this.expirationTime = System.currentTimeMillis() + (timeoutThreshold * 1000);
+        System.out.println("HeartbeatTask : expirationTime:" + expirationTime);
         this.timeoutCallback = timeoutCallback;
     }
 
     @Override
     public long getDelay(TimeUnit unit) {
         long convert = unit.convert(expirationTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        System.out.println(convert);
         return convert;
     }
 
@@ -48,11 +49,17 @@ public class HeartbeatTask implements Delayed {
     }
 
     public void executeTimeoutCallback() {
-        if (timeoutCallback != null) {
-            System.out.println("Executing timeout callback for " + serviceId);
-            timeoutCallback.run();
-        } else {
-            System.out.println("No timeout callback set for " + serviceId);
+        try {
+            if (timeoutCallback != null) {
+                System.out.println("Executing timeout callback for " + serviceId);
+                timeoutCallback.accept(expirationTime);
+                System.out.println("Callback executed successfully for " + serviceId);
+            } else {
+                System.out.println("No timeout callback defined for " + serviceId);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception while executing callback for " + serviceId);
+            e.printStackTrace();
         }
     }
 }
