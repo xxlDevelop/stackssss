@@ -1,6 +1,5 @@
 package org.yx.hoststack.edge.server.ws.controller;
 
-import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +22,7 @@ import org.yx.lib.utils.logger.LogFieldConstants;
 @RequiredArgsConstructor
 public class HostInitializeController extends BaseController {
     {
-        EdgeServerControllerManager.add(AgentMethodId.Initialize, this::hostInitialize);
+        EdgeServerControllerManager.add(AgentMethodId.InitializeMachine, this::hostInitialize);
     }
 
     private final KvMappingChannelContextTempData kvMappingChannelContextTempData;
@@ -38,12 +37,12 @@ public class HostInitializeController extends BaseController {
 
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
-                .p(LogFieldConstants.ACTION, EdgeEvent.Action.HOST_PREPARE_INITIALIZE)
+                .p(LogFieldConstants.ACTION, EdgeEvent.Action.HOST_INITIALIZE)
                 .p("HostData", JSON.toJSONString(hostInitializeReq))
                 .i();
         Object xToken = getAttr(context.channel(), HostStackConstants.X_TOKEN);
         EdgeClientConnector.getInstance().hostInitialize(
-                agentCommonMessage.getHostId(), xToken.toString(), hostInitializeReq, UUID.fastUUID().toString(),
+                agentCommonMessage.getHostId(), xToken.toString(), hostInitializeReq, agentCommonMessage.getTraceId(),
                 null,
                 () -> sendAgentResult(agentCommonMessage.getMethod(), agentCommonMessage.getHostId(), agentCommonMessage.getTraceId(),
                         EdgeSysCode.UpstreamServiceNotAvailable.getValue(), EdgeSysCode.UpstreamServiceNotAvailable.getMsg(),

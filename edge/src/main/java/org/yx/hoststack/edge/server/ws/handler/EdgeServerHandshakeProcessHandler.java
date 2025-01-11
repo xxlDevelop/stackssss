@@ -1,5 +1,9 @@
 package org.yx.hoststack.edge.server.ws.handler;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -17,10 +21,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.edge.common.EdgeEvent;
-import org.yx.hoststack.edge.config.EdgeServerConfig;
+import org.yx.hoststack.edge.server.RunMode;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.token.YxTokenBuilderUtil;
+import org.yx.lib.utils.util.StringPool;
+import org.yx.lib.utils.util.StringUtil;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +38,6 @@ import java.util.Map;
 public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
 
     //    private final ChannelManager channelManager;
-    private final EdgeServerConfig edgeServerConfig;
 
     @Override
     public void doHandle(ChannelHandlerContext ctx, Object msg) {
@@ -40,6 +47,7 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             String clientIp = xForwardedFor != null ? xForwardedFor : ctx.channel().remoteAddress().toString();
 
             String xToken;
+            String connectType;
             QueryStringDecoder queryStringDecoder = new QueryStringDecoder(req.uri());
             Map<String, List<String>> params = queryStringDecoder.parameters();
             List<String> paramList = params.get("x-token");
@@ -48,6 +56,10 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             } else {
                 xToken = "";
             }
+            connectType = req.headers().get("connectType");
+            if (StringUtil.isBlank(connectType)) {
+                connectType = "agent";
+            }
 
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
@@ -55,6 +67,7 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
                     .p(LogFieldConstants.X_Token, xToken)
                     .p(HostStackConstants.CLIENT_IP, clientIp)
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                    .p("ContentType", connectType)
                     .i();
 
             if (req.decoderResult().isFailure() && req.decoderResult().cause() != null) {
@@ -83,7 +96,7 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
                 wsProtocolDecodeUpgradeFailed(ctx, HttpResponseStatus.BAD_REQUEST);
                 return;
             }
-            if (!authXToken(ctx, xToken, clientIp)) {
+            if (!authXToken(ctx, xToken, connectType, clientIp)) {
                 wsProtocolDecodeUpgradeFailed(ctx, HttpResponseStatus.UNAUTHORIZED);
                 return;
             }
@@ -93,15 +106,19 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
             if (handShaker == null) {
                 WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             } else {
+                String finalConnectType = connectType;
                 handShaker.handshake(ctx.channel(), req).addListener((ChannelFutureListener) future -> {
-                    future.channel().attr(AttributeKey.valueOf(HostStackConstants.X_TOKEN)).set(xToken);
-                    future.channel().attr(AttributeKey.valueOf(HostStackConstants.CLIENT_IP)).set(clientIp);
-                    KvLogger.instance(this)
-                            .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
-                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.HANDSHAKE_SUCCESSFUL)
-                            .p(HostStackConstants.CLIENT_IP, clientIp)
-                            .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                            .i();
+                    if (future.isSuccess()) {
+                        future.channel().attr(AttributeKey.valueOf(HostStackConstants.X_TOKEN)).set(xToken);
+                        future.channel().attr(AttributeKey.valueOf(HostStackConstants.CLIENT_IP)).set(clientIp);
+                        KvLogger.instance(this)
+                                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.HANDSHAKE_SUCCESSFUL)
+                                .p(HostStackConstants.CLIENT_IP, clientIp)
+                                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                                .p("ConnectType", finalConnectType)
+                                .i();
+                    }
                 });
             }
         } catch (Exception ex) {
@@ -126,10 +143,68 @@ public class EdgeServerHandshakeProcessHandler implements ChannelHandler {
         f.addListener(ChannelFutureListener.CLOSE);
     }
 
-    private boolean authXToken(ChannelHandlerContext context, String xToken, String clientIp) {
-//        if (StringUtil.isBlank(xToken)) {
-//            return false;
-//        }
+    private boolean authXToken(ChannelHandlerContext context, String xToken, String connectType, String clientIp) {
+        if (connectType.equalsIgnoreCase(RunMode.IDC)) {
+            return true;
+        } else {
+            // forTest begin
+            String ak1 = "pkl4rq2x5ss2voqsv9ya";
+            String sk = "8cgwv3t9oiqtgck0zgk8k22oprxpswiwlc2is8deosqlsdy52f71heh1ymcwajeu";
+            Long xTokenExpireS = 36000L;
+            Map<String, Object> customerTokenPayload = Maps.newHashMap();
+            customerTokenPayload.put("uid", 1111111111);
+            xToken = YxTokenBuilderUtil.buildXToken(ak1, sk, xTokenExpireS, customerTokenPayload);
+            // forTest end
+
+            KvLogger kvLogger = KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.X_TOKEN_VALID)
+                    .p("XToken", xToken)
+                    .p(HostStackConstants.CLIENT_IP, clientIp)
+                    .p(HostStackConstants.CHANNEL_ID, context.channel().id());
+            if (StringUtil.isBlank(xToken)) {
+                kvLogger.p(LogFieldConstants.ERR_MSG, "XToken is empty").w();
+                return false;
+            }
+            List<String> tokens = StrUtil.split(xToken, StringPool.DOT);
+            if (tokens.size() != 3) {
+                kvLogger.p(LogFieldConstants.ERR_MSG, "XToken illegality").w();
+                return false;
+            }
+            try {
+                JSONObject payload = JSON.parseObject(Base64.getDecoder().decode(tokens.get(1)));
+                Long aLong = payload.getLong("exp");
+                if (aLong == null) {
+                    kvLogger.p(LogFieldConstants.ERR_MSG, "XToken exp is null").w();
+                    return false;
+                }
+                if (aLong < System.currentTimeMillis()) {
+                    kvLogger.p(LogFieldConstants.ERR_MSG, "XToken is expire").w();
+                    return false;
+                }
+                String nonce = payload.getString("nonce");
+                String ak = payload.getString("ak");
+                if (StringUtil.isBlank(nonce) || StringUtil.isBlank(ak)) {
+                    kvLogger.p(LogFieldConstants.ERR_MSG, "XToken nonce or ak is empty").w();
+                    return false;
+                }
+                byte[] decodeHeaders = Base64.getDecoder().decode(tokens.getFirst());
+                JSONObject headers = JSON.parseObject(decodeHeaders);
+                String alg = headers.getString("alg");
+                String typ = headers.getString("typ");
+                if (StringUtil.isBlank(alg) || StringUtil.isBlank(typ)) {
+                    kvLogger.p(LogFieldConstants.ERR_MSG, "XToken alg or typ is empty").w();
+                    return false;
+                }
+                if (!"HS256".equalsIgnoreCase(alg) || !"JWT".equalsIgnoreCase(typ)) {
+                    kvLogger.p(LogFieldConstants.ERR_MSG, "XToken alg or typ illegality").w();
+                    return false;
+                }
+            } catch (Exception ex) {
+                kvLogger.p(LogFieldConstants.ERR_MSG, ex.getMessage()).e(ex);
+                return false;
+            }
+        }
         return true;
     }
 }

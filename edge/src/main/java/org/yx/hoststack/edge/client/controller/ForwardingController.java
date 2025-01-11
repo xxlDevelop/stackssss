@@ -7,6 +7,7 @@ import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
+import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
@@ -30,7 +31,8 @@ public class ForwardingController {
                 .p(HostStackConstants.IDC_SID, commonMessage.getHeader().getIdcSid())
                 .p(HostStackConstants.RELAY_SID, commonMessage.getHeader().getRelaySid())
                 .p(HostStackConstants.METH_ID, commonMessage.getHeader().getMethId())
-                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id());
+                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode);
         try {
             E2CMessage.ForwardFailedNotify forwardFailedNotify =
                     E2CMessage.ForwardFailedNotify.parseFrom(commonMessage.getBody().getPayload());

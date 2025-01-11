@@ -91,7 +91,7 @@ public class HostInitializeRespController {
                 // send agent host initialize result
                 session.sendMsg(message.getHeader().getMethId(), AgentCommonMessage.<HostInitializeResp>builder()
                                 .type(MessageType.RESPONSE)
-                                .method(AgentMethodId.Initialize.getValue())
+                                .method(AgentMethodId.InitializeMachine.getValue())
                                 .traceId(message.getHeader().getTraceId())
                                 .code(0)
                                 .data(HostInitializeResp.builder().hostId(hostInitializeResult.getHostId()).build())
@@ -115,20 +115,19 @@ public class HostInitializeRespController {
                     .p(LogFieldConstants.Code, message.getBody().getCode())
                     .p(LogFieldConstants.ERR_MSG, message.getBody().getMsg())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                    .e();
-            hostChannelContext.writeAndFlush(new TextWebSocketFrame(
-                    JSON.toJSONString(AgentCommonMessage.<HostInitializeResp>builder()
-                            .type(MessageType.RESPONSE)
-                            .method(AgentMethodId.Initialize.getValue())
-                            .traceId(message.getHeader().getTraceId())
-                            .code(message.getBody().getCode())
-                            .msg(message.getBody().getMsg())
-                            .data(HostInitializeResp.builder().hostId(hostInitializeResult.getHostId()).build())
-                            .build())
-            ));
-//            hostChannelContext.channel().eventLoop().schedule(() -> {
-//                hostChannelContext.close();
-//            }, 1, TimeUnit.SECONDS);
+                    .w();
+            if (hostChannelContext != null) {
+                hostChannelContext.writeAndFlush(new TextWebSocketFrame(
+                        JSON.toJSONString(AgentCommonMessage.<HostInitializeResp>builder()
+                                .type(MessageType.RESPONSE)
+                                .method(AgentMethodId.InitializeMachine.getValue())
+                                .traceId(message.getHeader().getTraceId())
+                                .code(message.getBody().getCode())
+                                .msg(message.getBody().getMsg())
+                                .data(HostInitializeResp.builder().hostId(hostInitializeResult.getHostId()).build())
+                                .build())
+                ));
+            }
         }
         kvMappingChannelContextTempData.remove(hostInitializeResult.getDevSn());
     }

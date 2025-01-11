@@ -77,38 +77,35 @@ public class ForwardingNode {
                 kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_IDC_FAIL)
                         .p(LogFieldConstants.ERR_MSG, future.cause().getMessage())
                         .p(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
-                        .p(LogFieldConstants.Code, EdgeSysCode.SendMsgFailed.getValue())
+                        .p("ForwardResult", EdgeSysCode.SendMsgFailed.getValue())
                         .e(future.cause());
                 ForwardingReSendMap.putResendMessage(context.channel(), message);
             } else if (future.isDone() && future.isSuccess()) {
                 kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_IDC)
-                        .p(LogFieldConstants.Code, 0);
+                        .p("ForwardResult", 0);
                 if (message.getHeader().getMethId() == ProtoMethodId.Ping.getValue() ||
-                        message.getHeader().getMethId() == ProtoMethodId.Pong.getValue()) {
-                    kvLogger.d();
-                } else {
-                    kvLogger.i();
-                }
-                if (kvLogger.isDebug()) {
+                        message.getHeader().getMethId() == ProtoMethodId.Pong.getValue() || kvLogger.isDebug()) {
                     kvLogger.p(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
                             .d();
+                } else {
+                    kvLogger.i();
                 }
             }
         });
     }
 
     public void destroy() {
+        if (checkHbScheduler != null) {
+            checkHbScheduler.shutdownNow();
+        }
+        if (context.channel().isOpen()) {
+            context.close();
+        }
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
                 .p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_NODE_DESTROY)
                 .p("NodeId", this.nodeId)
                 .p(HostStackConstants.CHANNEL_ID, this.context.channel().id())
                 .i();
-        if (context.channel().isOpen()) {
-            context.close();
-        }
-        if (checkHbScheduler != null) {
-            checkHbScheduler.shutdown();
-        }
     }
 }

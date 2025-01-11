@@ -1,0 +1,6 @@
+org\yx\remote\model\resp\TenantInfoResp.class
+org\yx\remote\UserCenterCenterRemoteService.class
+org\yx\remote\config\UserCenterApiConfig.class
+org\yx\remote\UserCenterRemoteTenantInfoService$1.class
+org\yx\remote\UserCenterRemoteTenantInfoService.class
+org\yx\remote\config\RemoteUserCenterConfig.class

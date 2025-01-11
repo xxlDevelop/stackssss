@@ -35,7 +35,6 @@ public interface EdgeEvent {
         String HANDSHAKE_SUCCESSFUL = "HandshakeSuccessful";
         String HANDSHAKE_TIMEOUT = "HandshakeTimeout";
         String CLOSE_BY_SERVER = "CloseByServer";
-        String RE_CONNECT_TO_SERVER = "ReConnectToServer";
 
 
         String CENTER_PONG = "CenterPong";
@@ -44,11 +43,12 @@ public interface EdgeEvent {
         String EDGE_CONFIG_SYNC = "EdgeConfigSync";
         String REGION_CONFIG_SYNC = "RegionConfigSync";
         String PREPARE_HANDSHAKE = "PrepareHandshake";
+        String X_TOKEN_VALID = "X_TOKEN_VALID";
         String HOST_ACTIVE_CLOSE = "HostActiveClose";
         String CREATE_HOST_SESSION = "CreateHostSession";
         String CREATE_FORWARDING_NODE = "CreateForwardingNode";
         String NOT_FOUND_HOST_SESSION = "NotFoundHostSession";
-        String HOST_PREPARE_INITIALIZE = "HostPrepareInitialize";
+        String HOST_INITIALIZE = "HostInitialize";
         String HOST_INITIALIZE_SUCCESSFUL = "HostInitializeSuccessful";
         String HOST_INITIALIZE_FAILED = "HostInitializeFailed";
 
@@ -58,6 +58,7 @@ public interface EdgeEvent {
         String FORWARDING_TO_IDC_FAIL = "ForwardingToIdcFail";
         String FORWARDING_TO_CENTER = "ForwardingToCenter";
         String FORWARDING_TO_CENTER_FAIL = "ForwardingToCenterFail";
+        String FORWARDING_NODE_PING = "ForwardingNodePing";
         String IDC_EXIT = "IdcExit";
 
         String CONSUMER_HOST_HB = "ConsumerHostHb";

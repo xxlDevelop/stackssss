@@ -128,15 +128,57 @@ public class Node {
         }
     }
 
-    public void addOrUpdateNode() {
-    }
+    /**
+     * 打印节点信息（迭代方式，避免递归栈溢出）
+     */
+    public void printNodeInfoIterative() {
+        Set<Node> visited = new HashSet<>();
+        Deque<NodeWithLevel> stack = new LinkedList<>();
+        stack.push(new NodeWithLevel(this, 0));
 
-    public void printNodeInfo(int level) {
-        String indentation = " ".repeat(level * 2);
-        System.out.println(indentation + type + " (" + serviceId + ")");
+        while (!stack.isEmpty()) {
+            NodeWithLevel currentWithLevel = stack.pop();
+            Node node = currentWithLevel.getNode();
+            int level = currentWithLevel.getLevel();
 
-        for (Node child : children) {
-            child.printNodeInfo(level + 1);
+            if (visited.contains(node)) {
+                continue;
+            }
+            System.out.println(" ".repeat(level * 2) + node.type + " (" + node.serviceId + ")");
+            visited.add(node);
+            for (Node child : node.children) {
+                stack.push(new NodeWithLevel(child, level + 1));
+            }
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceId, type, channel);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Node node = (Node) obj;
+        return Objects.equals(serviceId, node.serviceId) &&
+                Objects.equals(type, node.type)&&
+                Objects.equals(channel, node.channel);
+    }
+    @Override
+    public String toString() {
+        return "Node{" +
+                "serviceId='" + serviceId + '\'' +
+                ", type=" + type +
+                ", hostId='" + hostId + '\'' +
+                ", channel=" + (channel != null ? channel.id() : "null") +
+                '}';
+    }
+
+
 }

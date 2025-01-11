@@ -37,9 +37,6 @@ public class RelayForwardingController {
         RelayControllerManager.add(ProtoMethodId.ForwardingToIdc, this::forwardingToIdc);
     }
 
-    @Value("${sessionTimeout.idc:10}")
-    private int idcSessionTimeout;
-
     private final KvMappingChannelContextTempData kvMappingChannelContextTempData;
     private final ForwardingNodeMgr forwardingNodeMgr;
 
@@ -62,11 +59,17 @@ public class RelayForwardingController {
                 forwardingNodeMgr.get(message.getHeader().getIdcSid()).ifPresentOrElse(
                         forwardingNode -> {
                             if (message.getHeader().getMethId() == ProtoMethodId.Ping.getValue()) {
+                                if (kvLogger.isDebug()) {
+                                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_NODE_PING)
+                                            .p("NodeId", forwardingNode.getNodeId())
+                                            .d();
+                                }
                                 forwardingNode.hb();
                             }
                         },
                         () -> {
                             kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_CENTER_FAIL)
+                                    .p(LogFieldConstants.Code, EdgeSysCode.UpstreamServiceNotAvailable.getValue())
                                     .p(LogFieldConstants.ERR_MSG, "Not found idc session, close")
                                     .w();
                             context.close();
@@ -76,7 +79,7 @@ public class RelayForwardingController {
                     () -> {
                         kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_CENTER)
                                 .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
-                                .p(LogFieldConstants.Code, 0);
+                                .p("ForwardResult", 0);
                         if (message.getHeader().getMethId() == ProtoMethodId.Ping.getValue() ||
                                 message.getHeader().getMethId() == ProtoMethodId.Pong.getValue()) {
                             kvLogger.d();
@@ -86,8 +89,9 @@ public class RelayForwardingController {
                     },
                     () -> {
                         kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_CENTER_FAIL)
-                                .p(LogFieldConstants.Code, EdgeSysCode.UpstreamServiceNotAvailable.getValue())
+                                .p("ForwardResult", EdgeSysCode.UpstreamServiceNotAvailable.getValue())
                                 .p(LogFieldConstants.ERR_MSG, EdgeSysCode.UpstreamServiceNotAvailable.getMsg())
+                                .p(HostStackConstants.METH_ID, message.getHeader().getMethId())
                                 .w();
                         sendRelayTransferFailMsg(message, EdgeSysCode.UpstreamServiceNotAvailable.getValue(),
                                 EdgeSysCode.UpstreamServiceNotAvailable.getMsg(), context, CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE);
@@ -121,9 +125,8 @@ public class RelayForwardingController {
                     if (message.getBody().getCode() == R.ok().getCode()) {
                         idcChannelContext.channel().attr(AttributeKey.valueOf(HostStackConstants.CHANNEL_TYPE)).set(ChannelType.IDC);
                         idcChannelContext.channel().attr(AttributeKey.valueOf(HostStackConstants.IDC_SID)).set(message.getHeader().getIdcSid());
-                        ForwardingNode forwardingNode = new ForwardingNode(message.getHeader().getIdcSid(), idcChannelContext, idcSessionTimeout, registerResp.getHbInterval());
                         // create idc transfer node
-                        forwardingNodeMgr.addForwardingNode(forwardingNode);
+                        ForwardingNode forwardingNode = forwardingNodeMgr.createForwardingNode(message.getHeader().getIdcSid(), registerResp.getHbInterval(), idcChannelContext);
                         kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.CREATE_FORWARDING_NODE)
                                 .p("NodeId", message.getHeader().getIdcSid())
                                 .i();
@@ -149,17 +152,21 @@ public class RelayForwardingController {
                             forwardingNode.sendMsg(buildRelaySendMessage(message));
                         },
                         () -> {
-                            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_IDC)
+                            kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_IDC_FAIL)
+                                    .p(LogFieldConstants.Code, EdgeSysCode.DownloadStreamServiceNotAvailable.getValue())
                                     .p(LogFieldConstants.ERR_MSG, "Not found idc session, close")
+                                    .p(HostStackConstants.METH_ID, message.getHeader().getMethId())
                                     .p("TargetIdc", message.getHeader().getIdcSid())
                                     .w();
-                            context.close();
+//                            sendRelayTransferFailMsg(message, EdgeSysCode.DownloadStreamServiceNotAvailable.getValue(),
+//                                    EdgeSysCode.DownloadStreamServiceNotAvailable.getMsg(), context, CommonMessageWrapper.ENUM_LINK_SIDE.EDGE_TO_CENTER_VALUE);
                         });
             }
         }
     }
 
-    private CommonMessageWrapper.CommonMessage buildRelaySendMessage(CommonMessageWrapper.CommonMessage idcMessage) {
+    private CommonMessageWrapper.CommonMessage buildRelaySendMessage(CommonMessageWrapper.CommonMessage
+                                                                             idcMessage) {
         return CommonMessageWrapper.CommonMessage.newBuilder()
                 .setHeader(CommonMessageWrapper.CommonMessage.newBuilder().getHeaderBuilder()
                         .setLinkSide(idcMessage.getHeader().getLinkSide())

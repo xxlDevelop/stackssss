@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
+import org.yx.hoststack.edge.cache.IdcConfigCacheManager;
+import org.yx.hoststack.edge.cache.RegionConfigCacheManager;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.client.controller.manager.EdgeClientControllerManager;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeCommonConfig;
-import org.yx.hoststack.edge.cache.IdcConfigCacheManager;
-import org.yx.hoststack.edge.cache.RegionConfigCacheManager;
 import org.yx.hoststack.edge.server.RunMode;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
@@ -91,12 +91,7 @@ public class EdgeBasicMessageController {
                     .p(LogFieldConstants.ERR_MSG, message.getBody().getMsg())
                     .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                     .w();
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            EdgeClientConnector.getInstance().edgeRegister();
+            EdgeClientConnector.getInstance().disConnect();
         }
     }
 
@@ -107,15 +102,25 @@ public class EdgeBasicMessageController {
      * @param message CommonMessage
      */
     private void pong(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
-        KvLogger.instance(this)
+        KvLogger kvLogger = KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
                 .p(LogFieldConstants.ACTION, EdgeEvent.Action.CENTER_PONG)
                 .p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId())
+                .p(LogFieldConstants.Code, message.getBody().getCode())
+                .p(LogFieldConstants.ERR_MSG, message.getBody().getMsg())
                 .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                 .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
-                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
-                .d();
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId);
+        // upstream not exists, prepare reconnect
+        if (message.getBody().getCode() == 143408) {
+            kvLogger.i();
+            EdgeClientConnector.getInstance().disConnect();
+        } else if (message.getBody().getCode() != EdgeSysCode.Success.getValue()) {
+            kvLogger.w();
+        } else {
+            kvLogger.d();
+        }
     }
 
     /**

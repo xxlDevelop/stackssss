@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ForwardingNodeMgr {
-    @Value("${idc.sessionTimeout:10}")
+    @Value("${sessionTimeout.idc:10}")
     private int idcSessionTimeout;
     private static final Map<String, ForwardingNode> FORWARDING_NODE_MAP = Maps.newConcurrentMap();
     private ScheduledExecutorService reSendScheduler;
@@ -108,15 +108,12 @@ public class ForwardingNodeMgr {
         }, 5, 60, TimeUnit.SECONDS);
     }
 
-    public ForwardingNode addForwardingNode(String nodeId, int hbInterval, ChannelHandlerContext context) {
+    public ForwardingNode createForwardingNode(String nodeId, int hbInterval, ChannelHandlerContext context) {
+        KvLogger.instance(this).p("idcSessionTimeoutidcSessionTimeoutidcSessionTimeoutidcSessionTimeout", idcSessionTimeout).i();
         ForwardingNode node = new ForwardingNode(nodeId, context, idcSessionTimeout, hbInterval);
-        addForwardingNode(node);
-        return node;
-    }
-
-    public void addForwardingNode(ForwardingNode node) {
         node.registerTimeoutEvent(this::forwardingNodeTimeout);
         FORWARDING_NODE_MAP.put(node.getNodeId(), node);
+        return node;
     }
 
     public void removeForwardingNode(String nodeId) {
@@ -137,5 +134,6 @@ public class ForwardingNodeMgr {
             reSendScheduler.shutdown();
         }
         FORWARDING_NODE_MAP.values().forEach(ForwardingNode::destroy);
+        FORWARDING_NODE_MAP.clear();
     }
 }

@@ -43,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.yx.hoststack.center.CenterApplicationRunner.hostName;
+
 @Component
 @RequiredArgsConstructor
 public class CenterServer implements Runnable {
@@ -65,13 +67,8 @@ public class CenterServer implements Runnable {
     private final IdcInfoService idcInfoService;
     private final RelayInfoService relayInfoService;
     private final ServiceDetailService serviceDetailService;
-    private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
-    public static String address;
-    public static String hostName;
-    public static int port;
     public static Node centerNode;
-
 
     private int bossThreadCount() {
         return edgeServerConfig.getBossThreadCount() <= 1 ? 1 : edgeServerConfig.getBossThreadCount();
@@ -119,6 +116,9 @@ public class CenterServer implements Runnable {
     }
 
     private void init() throws InterruptedException {
+        // init project params
+        applicationInit();
+
         int port = edgeServerConfig.getWsPort();
         bossGroup = this.buildBossGroup();
         workerGroup = this.buildWorkerGroup();
@@ -136,9 +136,6 @@ public class CenterServer implements Runnable {
                 .childOption(ChannelOption.SO_REUSEADDR, true)
                 .childHandler(centerServerChannelInitializer);
 //                    .handler(new LoggingHandler(msgServerConfig.getLogLevel() == 2 ? LogLevel.INFO : LogLevel.DEBUG));
-
-        // init project params
-        applicationInit();
 
         ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
         if (channelFuture.isSuccess()) {
@@ -256,17 +253,11 @@ public class CenterServer implements Runnable {
         List<RegionInfo> regionInfos = regionInfoService.list();
         globalRegionInfoCacheMap.put(REGION_CACHE_KEY, regionInfos);
 
-        globalIdcInfoCacheMap = idcInfoService.list(new LambdaQueryWrapper<IdcInfo>().select(IdcInfo::getZone,IdcInfo::getRegion,IdcInfo::getIdc,IdcInfo::getIdcIp)).parallelStream().collect(Collectors.toConcurrentMap(IdcInfo::getIdc, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
+        globalIdcInfoCacheMap = idcInfoService.list(new LambdaQueryWrapper<IdcInfo>().select(IdcInfo::getId,IdcInfo::getZone,IdcInfo::getRegion,IdcInfo::getIdc,IdcInfo::getIdcIp)).parallelStream().collect(Collectors.toConcurrentMap(IdcInfo::getIdc, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
 
-        globalRelayInfoCacheMap = relayInfoService.list(new LambdaQueryWrapper<RelayInfo>().select(RelayInfo::getZone,RelayInfo::getRegion,RelayInfo::getRelay,RelayInfo::getRelayIp)).parallelStream().collect(Collectors.toMap(RelayInfo::getRelay, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
+        globalRelayInfoCacheMap = relayInfoService.list(new LambdaQueryWrapper<RelayInfo>().select(RelayInfo::getId,RelayInfo::getZone,RelayInfo::getRegion,RelayInfo::getRelay,RelayInfo::getRelayIp)).parallelStream().collect(Collectors.toMap(RelayInfo::getRelay, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
 
         globalServerDetailCacheMap = serviceDetailService.list().parallelStream().collect(Collectors.toMap(ServiceDetail::getServiceId, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
-
-        hostName = nacosDiscoveryProperties.getUsername();
-
-        address = nacosDiscoveryProperties.getIp();
-
-        port = nacosDiscoveryProperties.getPort();
 
         centerNode = new Node(hostName, RegisterNodeEnum.CENTER, null);
     }

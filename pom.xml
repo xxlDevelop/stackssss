@@ -47,8 +47,9 @@
         <yx.lib.data.version>21.0.3-8998a2f8</yx.lib.data.version>
         <yx.lib.datasource.version>21.0.3-8998a2f8</yx.lib.datasource.version>
         <yx.lib.job.version>21.0.3-8998a2f8</yx.lib.job.version>
-        <yx.lib.utils.version>21.0.4-40918143</yx.lib.utils.version>
+        <yx.lib.utils.version>21.0.6-SNAPSHOT</yx.lib.utils.version>
         <org.yx.hoststack.version>1.0.0</org.yx.hoststack.version>
+        <org.yx.hoststack.remote.uc.version>1.0.0-SNAPSHOT</org.yx.hoststack.remote.uc.version>
     </properties>
 
     <modules>
@@ -56,6 +57,7 @@
         <module>common</module>
         <module>center</module>
         <module>edge</module>
+        <module>remote/usercenter</module>
     </modules>
 
     <dependencies>
@@ -153,11 +155,6 @@
                 <version>${yx.lib.job.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.yx.lib</groupId>
-                <artifactId>yx-lib-utils</artifactId>
-                <version>${yx.lib.utils.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.yx.hoststack</groupId>
                 <artifactId>protocol</artifactId>
                 <version>${org.yx.hoststack.version}</version>
@@ -167,7 +164,6 @@
                 <artifactId>common</artifactId>
                 <version>${org.yx.hoststack.version}</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -239,6 +235,11 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yx.hoststack</groupId>
+                <artifactId>remote-user-center</artifactId>
+                <version>${org.yx.hoststack.remote.uc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

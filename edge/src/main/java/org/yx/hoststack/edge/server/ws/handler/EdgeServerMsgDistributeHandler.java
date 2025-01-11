@@ -88,6 +88,8 @@ public class EdgeServerMsgDistributeHandler extends ChannelInboundHandlerAdapter
                                     .p(HostStackConstants.IDC_SID, idcSid.toString())
                                     .i();
                             EdgeClientConnector.getInstance().sendIdcExit(idcSid.toString());
+                            transferNode.destroy();
+                            forwardingNodeMgr.removeForwardingNode(transferNode.getNodeId());
                         },
                         ctx::close);
             } else {

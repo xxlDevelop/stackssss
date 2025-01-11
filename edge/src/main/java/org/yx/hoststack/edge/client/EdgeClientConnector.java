@@ -1,24 +1,24 @@
 package org.yx.hoststack.edge.client;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.crypto.digest.MD5;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.SendMsgCallback;
 import org.yx.hoststack.edge.queue.message.HostHeartMessage;
+import org.yx.hoststack.edge.server.RunMode;
 import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.hoststack.protocol.ws.agent.req.HostHeartbeatReq;
 import org.yx.hoststack.protocol.ws.agent.req.HostInitializeReq;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
 import org.yx.hoststack.protocol.ws.server.JobResult;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
-import org.yx.lib.utils.util.SpringContextHolder;
 import org.yx.lib.utils.util.StringPool;
 import org.yx.lib.utils.util.StringUtil;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class EdgeClientConnector extends EdgeClientConnectorBase {
     private static volatile EdgeClientConnector instance;
@@ -40,10 +40,11 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
 
     public void edgeRegister() {
         sendMsg(buildSendMessage(ProtoMethodId.EdgeRegister.getValue(),
-                E2CMessage.E2C_EdgeRegisterReq.newBuilder()
-                        .setServiceIp(EdgeContext.ServiceIp)
-                        .setVersion(EdgeContext.ProjectVersion)
-                        .build().toByteString(), UUID.fastUUID().toString()), null, null);
+                        E2CMessage.E2C_EdgeRegisterReq.newBuilder()
+                                .setServiceIp(EdgeContext.ServiceIp)
+                                .setVersion(EdgeContext.ProjectVersion)
+                                .build().toByteString(), EdgeContext.RunMode.equals(RunMode.IDC) ? EdgeContext.IdcServiceId : EdgeContext.RelayServiceId),
+                null, null);
     }
 
     public void hostInitialize(String hostId, String hostToken, HostInitializeReq hostInitializeReq, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {

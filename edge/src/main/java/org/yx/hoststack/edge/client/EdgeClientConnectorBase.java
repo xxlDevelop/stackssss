@@ -3,6 +3,7 @@ package org.yx.hoststack.edge.client;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadFactoryBuilder;
+import cn.hutool.core.thread.ThreadUtil;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -49,9 +50,12 @@ abstract class EdgeClientConnectorBase {
         this.channel = channelFuture.channel();
     }
 
-    public void close() {
-        if (channel != null && channel.isActive()) {
-            channel.close();
+    public synchronized void disConnect() {
+        if (edgeClientHbScheduler != null) {
+            edgeClientHbScheduler.shutdownNow();
+        }
+        if (channel != null && channel.isOpen()) {
+            channel.disconnect();
         }
     }
 
@@ -77,16 +81,13 @@ abstract class EdgeClientConnectorBase {
     }
 
     protected void startHeartbeat(int hbInterval) {
-        if (edgeClientHbScheduler != null) {
-            edgeClientHbScheduler.shutdown();
-            edgeClientHbScheduler = null;
-        }
-        edgeClientHbScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("edge-client-hb").build());
+        sendMsg(buildSendMessage(ProtoMethodId.Ping.getValue(), ByteString.EMPTY, UUID.fastUUID().toString()), null,
+                this::disConnect);
+        edgeClientHbScheduler = Executors.newScheduledThreadPool(1, ThreadFactoryBuilder.create().setNamePrefix("client-hb-").build());
         edgeClientHbScheduler.scheduleAtFixedRate(() -> {
             try {
                 sendMsg(buildSendMessage(ProtoMethodId.Ping.getValue(), ByteString.EMPTY, UUID.fastUUID().toString()), null,
-                        this::close);
+                        this::disConnect);
             } catch (Exception ex) {
                 KvLogger.instance(this)
                         .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
@@ -94,7 +95,7 @@ abstract class EdgeClientConnectorBase {
                         .p(HostStackConstants.CHANNEL_ID, channel.id())
                         .e(ex);
             }
-        }, 0, hbInterval, TimeUnit.SECONDS);
+        }, hbInterval, hbInterval, TimeUnit.SECONDS);
     }
 
     public CommonMessageWrapper.CommonMessage buildSendMessage(int methodId, ByteString payload, String traceId) {
@@ -162,16 +163,14 @@ abstract class EdgeClientConnectorBase {
                         .e(future.cause());
                 putResendMessage(message);
             } else if (future.isDone() && future.isSuccess()) {
-                kvLogger.p(LogFieldConstants.Code, 0);
+                kvLogger.p(LogFieldConstants.Code, 0)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_SUCCESSFUL);
                 if (message.getHeader().getMethId() == ProtoMethodId.Ping.getValue() ||
-                        message.getHeader().getMethId() == ProtoMethodId.Pong.getValue()) {
-                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_SUCCESSFUL).d();
-                } else {
-                    kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.SEND_MSG_SUCCESSFUL).i();
-                }
-                if (kvLogger.isDebug()) {
+                        message.getHeader().getMethId() == ProtoMethodId.Pong.getValue() || kvLogger.isDebug()) {
                     kvLogger.p(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
                             .d();
+                } else {
+                    kvLogger.i();
                 }
                 Optional.ofNullable(successCallback).ifPresent(SendMsgCallback::callback);
             }

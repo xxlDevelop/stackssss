@@ -11,6 +11,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.center.common.constant.CenterEvent;
+import org.yx.hoststack.center.entity.RelayInfo;
 import org.yx.hoststack.center.ws.controller.manager.CenterControllerManager;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
@@ -19,6 +20,9 @@ import org.yx.lib.utils.logger.LogFieldConstants;
 
 import java.util.HashMap;
 import java.util.concurrent.Executor;
+
+import static org.yx.hoststack.common.HostStackConstants.IDC_SID;
+import static org.yx.hoststack.common.HostStackConstants.RELAY_SID;
 
 @Service
 @ChannelHandler.Sharable
@@ -66,6 +70,8 @@ public class WebSocketServerHandler extends ChannelInboundHandlerAdapter {
                                     .put(HostStackConstants.METH_ID, commonMessage.getHeader().getMethId() + "")
                                     .put(HostStackConstants.TRACE_ID, commonMessage.getHeader().getTraceId())
                                     .put(HostStackConstants.CLIENT_IP, clientIp)
+                                    .put(IDC_SID,commonMessage.getHeader().getIdcSid())
+                                    .put(RELAY_SID,commonMessage.getHeader().getRelaySid())
                                     .build(),
                             () -> centerControllerManager.get(commonMessage.getHeader().getMethId()).handle(ctx, commonMessage));
                 });

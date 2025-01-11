@@ -19,6 +19,13 @@ public enum SysCode {
     x00000410("Region Info not found", 143410),
     x00000411("Host Init failed ", 143411),
     x00000412("Heartbeat report Information error", 143412),
+    x00000413("Save IdcInfo error", 143413),
+    x00000414("Update IdcInfo error", 143414),
+    x00000415("Save RelayInfo error", 143415),
+    x00000416("Update RelayInfo error", 143416),
+    x00000417("Save ServiceDetail error", 143417),
+    x00000418("Update ServiceDetail error", 143418),
+    x00000419("idc exit successful.", 143419),
 
     // IDC Network Configuration Error Codes
     x00030001("Duplicate internal network address found", 12230001),

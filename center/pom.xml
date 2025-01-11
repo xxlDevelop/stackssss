@@ -91,10 +91,10 @@
             <groupId>org.yx.lib</groupId>
             <artifactId>yx-lib-job</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.yx.lib</groupId>
-            <artifactId>yx-lib-utils</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.yx.lib</groupId>-->
+<!--            <artifactId>yx-lib-utils</artifactId>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.yx.hoststack</groupId>
@@ -127,6 +127,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.yx.hoststack</groupId>
+            <artifactId>remote-user-center</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

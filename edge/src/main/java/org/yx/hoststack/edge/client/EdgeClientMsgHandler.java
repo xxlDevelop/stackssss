@@ -51,17 +51,39 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        if (WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_COMPLETE.equals(evt)) {
+            KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.HANDSHAKE_SUCCESSFUL)
+                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                    .i();
+            ClientWaitConnectSignal.release();
+            // 握手成功，发送edge注册消息
+        } else if (WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_TIMEOUT.equals(evt)) {
+            KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.HANDSHAKE_TIMEOUT)
+                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                    .i();
+            ClientWaitConnectSignal.release();
+        }
+    }
+
+    @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
                 .p(LogFieldConstants.EVENT, EdgeEvent.Action.CLOSE_BY_SERVER)
                 .p(LogFieldConstants.ERR_MSG, "Maybe upstream not ready or close by server")
+                .p(LogFieldConstants.Code, EdgeSysCode.CloseByServer)
                 .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
                 .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
                 .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
                 .p(HostStackConstants.REGION, EdgeContext.Region)
                 .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                 .i();
+        EdgeClientConnector.getInstance().disConnect();
     }
 
     @Override
@@ -127,16 +149,16 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
                                 String idcSid = commonMessage.getHeader().getIdcSid();
                                 String relaySid = commonMessage.getHeader().getRelaySid();
                                 if (edgeCommonConfig.getRunMode().equals(RunMode.IDC) && !EdgeContext.IdcServiceId.equals(idcSid)) {
-                                    kvLogger.p(LogFieldConstants.Code, EdgeSysCode.IdcSidMismatched.getValue())
-                                            .p(LogFieldConstants.ERR_MSG, EdgeSysCode.IdcSidMismatched.getMsg())
+                                    kvLogger.p(LogFieldConstants.Code, EdgeSysCode.IdcNotReady.getValue())
+                                            .p(LogFieldConstants.ERR_MSG, EdgeSysCode.IdcNotReady.getMsg())
                                             .p("HeaderIdcSid", idcSid)
                                             .p("SelfIdcSid", EdgeContext.IdcServiceId)
                                             .w();
                                     return;
                                 }
                                 if (edgeCommonConfig.getRunMode().equals(RunMode.RELAY) && !EdgeContext.RelayServiceId.equals(relaySid)) {
-                                    kvLogger.p(LogFieldConstants.Code, EdgeSysCode.RelaySidMismatched.getValue())
-                                            .p(LogFieldConstants.ERR_MSG, EdgeSysCode.RelaySidMismatched.getMsg())
+                                    kvLogger.p(LogFieldConstants.Code, EdgeSysCode.RelayNotReady.getValue())
+                                            .p(LogFieldConstants.ERR_MSG, EdgeSysCode.RelayNotReady.getMsg())
                                             .p("HeaderRelaySid", relaySid)
                                             .p("SelfRelaySid", EdgeContext.RelayServiceId)
                                             .w();
@@ -186,7 +208,16 @@ public class EdgeClientMsgHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ctx.fireExceptionCaught(cause);
+        KvLogger.instance(this)
+                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
+                .p(LogFieldConstants.ACTION, "ChannelExceptionCaught")
+                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                .p(HostStackConstants.IDC_SID, EdgeContext.IdcServiceId)
+                .p(HostStackConstants.RELAY_SID, EdgeContext.RelayServiceId)
+                .p(HostStackConstants.REGION, EdgeContext.Region)
+                .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
+                .e(cause);
         ctx.close();
+        EdgeClientConnector.getInstance().disConnect();
     }
 }

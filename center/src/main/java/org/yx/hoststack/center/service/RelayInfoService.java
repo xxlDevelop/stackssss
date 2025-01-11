@@ -2,7 +2,10 @@ package org.yx.hoststack.center.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.yx.hoststack.center.common.req.relay.RelayListReq;
 import org.yx.hoststack.center.common.req.relay.RelayUpdateReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.relay.RelayListResp;
 import org.yx.hoststack.center.entity.RelayInfo;
 import org.yx.lib.utils.util.R;
 
@@ -28,4 +31,5 @@ public interface RelayInfoService extends IService<RelayInfo> {
 
     R<?> updateRelay(RelayUpdateReq relayUpdateReq);
 
+    R<PageResp<RelayListResp>> listRelay(RelayListReq relayListReq);
 }

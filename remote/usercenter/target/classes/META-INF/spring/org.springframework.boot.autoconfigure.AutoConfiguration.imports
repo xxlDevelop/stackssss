@@ -1,0 +1,3 @@
+    org.yx.remote.config.UserCenterApiConfig
+    org.yx.remote.config.RemoteUserCenterConfig
+    org.yx.lib.utils.rest.RestTemplateConfig

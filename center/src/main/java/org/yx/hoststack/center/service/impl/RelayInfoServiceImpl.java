@@ -3,6 +3,8 @@ package org.yx.hoststack.center.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.center.common.constant.CenterEvent;
+import org.yx.hoststack.center.common.req.relay.RelayListReq;
 import org.yx.hoststack.center.common.req.relay.RelayUpdateReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.relay.RelayListResp;
 import org.yx.hoststack.center.entity.RelayInfo;
 import org.yx.hoststack.center.mapper.RelayInfoMapper;
 import org.yx.hoststack.center.service.RelayInfoService;
@@ -19,6 +24,7 @@ import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author lyc
@@ -90,6 +96,34 @@ public class RelayInfoServiceImpl extends ServiceImpl<RelayInfoMapper, RelayInfo
                     .p("relayUpdateReq", JSON.toJSONString(relayUpdateReq))
                     .e(e);
             return R.failed("updateRelay error");
+        }
+    }
+
+    @Override
+    public R<PageResp<RelayListResp>> listRelay(RelayListReq relayListReq) {
+        try {
+            IPage<RelayInfo> page = new Page<>(relayListReq.getCurrent(), relayListReq.getSize());
+            page.orders().add(OrderItem.desc("id"));
+            LambdaQueryWrapper<RelayInfo> query = Wrappers.lambdaQuery(RelayInfo.class)
+                    .eq(RelayInfo::getZone, relayListReq.getZone())
+                    .eq(RelayInfo::getRegion, relayListReq.getRegion());
+            relayInfoMapper.selectPage(page, query);
+
+            PageResp<RelayListResp> resultData = new PageResp<>();
+            resultData.setCurrent(page.getCurrent());
+            resultData.setSize(page.getSize());
+            resultData.setRecords(page.getRecords().stream().map(RelayListResp::new).collect(Collectors.toList()));
+            resultData.setTotal(page.getTotal());
+            resultData.setPages(page.getPages());
+            return R.ok(resultData);
+        } catch (Exception ex) {
+            KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, CenterEvent.RELAY_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.Update_IdcInfo_Failed)
+                    .p(LogFieldConstants.ERR_MSG, ex.getMessage())
+                    .p("relayListReq", JSON.toJSONString(relayListReq))
+                    .e(ex);
+            return R.failed("listRelay server error");
         }
     }
 

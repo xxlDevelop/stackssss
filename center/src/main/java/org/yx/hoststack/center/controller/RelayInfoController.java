@@ -5,7 +5,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.yx.hoststack.center.common.constant.RequestMappingBase;
+import org.yx.hoststack.center.common.req.relay.RelayListReq;
 import org.yx.hoststack.center.common.req.relay.RelayUpdateReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.relay.RelayListResp;
 import org.yx.hoststack.center.entity.RelayInfo;
 import org.yx.hoststack.center.service.RelayInfoService;
 import org.yx.lib.utils.util.R;
@@ -89,5 +92,12 @@ public class RelayInfoController {
         int result = relayInfoService.delete(id);
         return R.ok(result);
     }
+
+
+    @PostMapping("/list")
+    public R<PageResp<RelayListResp>> listRelay(@RequestBody @Valid RelayListReq relayListReq) {
+        return relayInfoService.listRelay(relayListReq);
+    }
+
 
 }

@@ -3,7 +3,6 @@ package org.yx.hoststack.edge.apiservice;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -17,10 +16,13 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class ApiServiceBase {
 
     private final WebClient webClient;
+
+    public ApiServiceBase(WebClient webClient) {
+        this.webClient = webClient;
+    }
 
     public Mono<String> post(String postUrl, String traceId, Map<String, String> customerHeaders, Object requestBody) {
         return route(postUrl, traceId, HttpMethod.GET, customerHeaders, requestBody);

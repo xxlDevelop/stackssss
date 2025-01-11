@@ -19,8 +19,10 @@ import org.yx.hoststack.edge.client.jobrenotify.JobReNotifyService;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.config.EdgeClientConfig;
+import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.SpringContextHolder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,13 +42,13 @@ public class EdgeClient implements Runnable {
     private final ScheduledExecutorService reSendJobNotifyScheduler;
     private URI webSocketUri;
     private AtomicBoolean isShundown = new AtomicBoolean(false);
-    private AtomicBoolean isReconnect = new AtomicBoolean(false);
     private ChannelFuture channelFuture = null;
 
     public EdgeClient(@Value("${upWsAddr}") String upWsAddr,
                       EdgeClientConfig edgeClientConfig,
                       EdgeClientChannelInitializer edgeClientChannelInitializer,
-                      JobReNotifyService jobReNotifyService) {
+                      JobReNotifyService jobReNotifyService,
+                      EdgeCommonConfig edgeCommonConfig) {
         this.upWsAddr = upWsAddr;
         this.edgeClientConfig = edgeClientConfig;
         this.edgeClientChannelInitializer = edgeClientChannelInitializer;
@@ -123,15 +125,24 @@ public class EdgeClient implements Runnable {
                     .handler(edgeClientChannelInitializer);
         }
         EdgeClientConnector edgeClientConnector = EdgeClientConnector.getInstance();
+        AtomicBoolean isConnecting = new AtomicBoolean(false);
         for (; ; ) {
             if (isShundown.get()) {
                 break;
             }
+            if (isConnecting.get()) {
+                return;
+            }
+            isConnecting.set(true);
             try {
+                ClientWaitConnectSignal.reset();
+                edgeClientConnector.disConnect();
                 channelFuture = bootstrap.connect(webSocketUri.getHost(), webSocketUri.getPort()).sync();
+                ClientWaitConnectSignal.await(3, TimeUnit.SECONDS);
                 channelFuture.addListener(future -> {
+                    isConnecting.set(false);
                     if (future.isSuccess()) {
-                        if (channelFuture.channel().isActive() && channelFuture.channel().isOpen()) {
+                        if (channelFuture.channel().isActive() && channelFuture.channel().isOpen() && channelFuture.channel().isWritable()) {
                             KvLogger.instance(this)
                                     .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_CLIENT)
                                     .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONNECT_SUCCESSFUL)
@@ -159,6 +170,9 @@ public class EdgeClient implements Runnable {
                         .p("TargetUrl", upWsAddr);
                 kvLogger.w();
                 kvLogger.e(ex);
+            } finally {
+                ClientWaitConnectSignal.release();
+                isConnecting.set(false);
             }
             ThreadUtil.sleep(3000);
         }
