@@ -7,9 +7,11 @@ package org.yx.hoststack.center.common.enums;
 
 public enum AgentTypeEnum {
     HOST("host"),
-    CONTAINER("container");
+    CONTAINER("container"),
+    BENCHMARK("benchmark");
 
-    private final String name;
+    private String name;
+
 
     AgentTypeEnum(String name) {
         this.name= name;
@@ -19,12 +21,17 @@ public enum AgentTypeEnum {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
     public static AgentTypeEnum fromString(String name) {
         for (AgentTypeEnum mode : AgentTypeEnum.values()) {
             if (mode.getName().equalsIgnoreCase(name)) {
                 return mode;
             }
         }
-        throw new IllegalArgumentException("Unknown register mode: " + name);
+        throw new IllegalArgumentException("Unknown agent type: " + name);
     }
 }

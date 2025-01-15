@@ -32,8 +32,7 @@ message E2C_HostInitializeReq {
   string hostId = 17;
   string detailedId = 18;
   uint32 proxy = 19;
-  string registerMode = 20;
-  string xToken = 21;
+  string xToken = 20;
 }
 message CpuInfo {
   uint32 cpuNum = 1;

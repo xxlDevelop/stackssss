@@ -91,7 +91,7 @@ public class ContainerJob extends HostStackJob {
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;
-            case "updateProfile":
+            case "updateprofile":
                 JobParams.ContainerUpdateProfile containerUpdateProfile = JobParams.ContainerUpdateProfile.parseFrom(jobReq.getJobParams());
                 Session updateProfileContainerHostTargetSession = getJobTargetSession(containerUpdateProfile.getHostId(), SessionType.Host);
                 // send job to host
@@ -132,7 +132,7 @@ public class ContainerJob extends HostStackJob {
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;
-            case "execCmd":
+            case "execcmd":
                 //TODO
                 break;
             default:

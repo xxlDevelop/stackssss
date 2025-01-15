@@ -1,4 +1,4 @@
-package org.yx.hoststack.edge.apiservice;
+package org.yx.hoststack.center.apiservice;
 
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSON;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
-import org.yx.hoststack.edge.config.WebClientConfig;
+import org.yx.hoststack.center.common.config.WebClientConfig;
 import org.yx.lib.utils.util.R;
 import org.yx.lib.utils.util.StringUtil;
 import reactor.core.publisher.Mono;

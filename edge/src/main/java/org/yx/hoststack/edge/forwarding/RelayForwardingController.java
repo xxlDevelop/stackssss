@@ -7,19 +7,17 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
-import org.yx.hoststack.edge.client.EdgeClient;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.common.ChannelType;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.common.KvMappingChannelContextTempData;
-import org.yx.hoststack.edge.forwarding.manager.RelayControllerManager;
 import org.yx.hoststack.edge.forwarding.manager.ForwardingNode;
 import org.yx.hoststack.edge.forwarding.manager.ForwardingNodeMgr;
+import org.yx.hoststack.edge.forwarding.manager.RelayControllerManager;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
@@ -27,7 +25,6 @@ import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
-import org.yx.lib.utils.util.SpringContextHolder;
 
 @Service
 @RequiredArgsConstructor

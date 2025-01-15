@@ -83,7 +83,6 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
                 .setHostId(hostId)
                 .setDetailedId(hostInitializeReq.getDetailedId())
                 .setProxy(hostInitializeReq.getProxy())
-                .setRegisterMode(hostInitializeReq.getRegisterMode())
                 .addAllGpuList(gpuInfoList)
                 .addAllNetCardList(netCardInfoList)
                 .setXToken(hostToken)

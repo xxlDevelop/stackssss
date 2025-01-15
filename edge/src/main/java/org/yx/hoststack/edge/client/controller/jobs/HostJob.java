@@ -48,7 +48,7 @@ public class HostJob extends HostStackJob {
                             });
                 });
                 break;
-            case "updateConfig":
+            case "updateconfig":
                 JobParams.HostUpdateConfig hostUpdateConfig = JobParams.HostUpdateConfig.parseFrom(jobReq.getJobParams());
                 List<String> updateHostConfigTargetIds = hostTargetToHostIdList(hostUpdateConfig.getTargetList());
                 Map<String, Session> updateHostConfigTargetSessions = getJobTargetSessions(updateHostConfigTargetIds, SessionType.Host);
@@ -73,7 +73,7 @@ public class HostJob extends HostStackJob {
                             });
                 });
                 break;
-            case "execCmd":
+            case "execcmd":
                 JobParams.HostExecCmd hostExecCmd = JobParams.HostExecCmd.parseFrom(jobReq.getJobParams());
                 List<String> execCmdHostTargetIds = hostTargetToHostIdList(hostExecCmd.getTargetList());
                 Map<String, Session> execCmdHostTargetIdSessions = getJobTargetSessions(execCmdHostTargetIds, SessionType.Host);

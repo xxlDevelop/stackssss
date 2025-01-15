@@ -40,8 +40,8 @@ public class ForwardingNodeMgr {
     }
 
     private void startRetrySend() {
-        reSendScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("transfer-node-resend").build());
+        reSendScheduler = Executors.newSingleThreadScheduledExecutor(
+                ThreadFactoryBuilder.create().setNamePrefix("transfer-node-resend-").build());
         reSendScheduler.scheduleAtFixedRate(() -> {
             if (ForwardingReSendMap.getData().mappingCount() > 0) {
                 for (Map.Entry<String, ResendMessage<CommonMessageWrapper.CommonMessage>> resendMessageEntry : ForwardingReSendMap.getData().entrySet()) {

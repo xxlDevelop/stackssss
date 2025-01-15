@@ -42,7 +42,6 @@ public class HostInitializeReq {
     private String disk;
     private String detailedId;
     private int proxy;
-    private String registerMode;
     private List<HostInitializeReq.GpuInfo> gpuList;
     private List<HostInitializeReq.NetCardInfo> netcardList;
 

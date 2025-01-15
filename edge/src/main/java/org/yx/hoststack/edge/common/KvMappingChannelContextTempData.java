@@ -19,7 +19,7 @@ public class KvMappingChannelContextTempData {
     private final ScheduledExecutorService checkContextTimeoutData;
 
     public KvMappingChannelContextTempData() {
-        checkContextTimeoutData = Executors.newScheduledThreadPool(1,
+        checkContextTimeoutData = Executors.newSingleThreadScheduledExecutor(
                 ThreadFactoryBuilder.create().setNamePrefix("checkChannelContextTempDataTimeoutData").build());
         checkContextTimeoutData.scheduleAtFixedRate(() -> {
             long curTs = System.currentTimeMillis();

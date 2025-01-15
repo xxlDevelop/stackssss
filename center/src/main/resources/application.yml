@@ -66,6 +66,21 @@ mybatis-plus:
     # Close the mybatis plus startup icon
     banner: false
 
+#okhttp:
+#  enable: true
+#  # [OPS-MODIFY] Socket connection timeout (seconds)
+#  connect-timeout: 5
+#  # [OPS-MODIFY] Socket read timeout (seconds)
+#  read-timeout: 15
+#  # [OPS-MODIFY] Socket write timeout (seconds)
+#  write-timeout: 5
+#  # [OPS-MODIFY] Maximum number of idle connections
+#  max-idle-connections: 10
+#  # [OPS-MODIFY] Maximum survival time of idle connections (seconds)
+#  keep-alive-duration: 3
+#  # [OPS-MODIFY] retry when the connection failure
+#  retry-on-connection-failure: false
+
 logging:
   level:
     org:

@@ -3,7 +3,6 @@ package org.yx.hoststack.edge.client;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadFactoryBuilder;
-import cn.hutool.core.thread.ThreadUtil;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -16,7 +15,6 @@ import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
 import org.yx.hoststack.edge.common.SendMsgCallback;
 import org.yx.hoststack.edge.config.EdgeClientConfig;
-import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.hoststack.protocol.ws.ResendMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
@@ -27,22 +25,23 @@ import org.yx.lib.utils.util.StringUtil;
 
 import java.text.MessageFormat;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 abstract class EdgeClientConnectorBase {
-    private static final ConcurrentHashMap<String, ResendMessage<CommonMessageWrapper.CommonMessage>> ClientReSendMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ResendMessage<CommonMessageWrapper.CommonMessage>> CLIENT_RE_SEND_MAP = new ConcurrentHashMap<>();
     protected ScheduledExecutorService edgeClientHbScheduler;
     protected final ScheduledExecutorService reSendMsgScheduler;
     protected final EdgeClientConfig edgeClientConfig;
-    protected final EdgeCommonConfig edgeCommonConfig;
     private Channel channel;
 
     public EdgeClientConnectorBase() {
-        reSendMsgScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("edge-client-reSend").build());
+        reSendMsgScheduler = Executors.newSingleThreadScheduledExecutor(
+                ThreadFactoryBuilder.create().setNamePrefix("client-reSend-").build());
         edgeClientConfig = SpringContextHolder.getBean(EdgeClientConfig.class);
-        edgeCommonConfig = SpringContextHolder.getBean(EdgeCommonConfig.class);
         startRetrySend();
     }
 
@@ -83,7 +82,8 @@ abstract class EdgeClientConnectorBase {
     protected void startHeartbeat(int hbInterval) {
         sendMsg(buildSendMessage(ProtoMethodId.Ping.getValue(), ByteString.EMPTY, UUID.fastUUID().toString()), null,
                 this::disConnect);
-        edgeClientHbScheduler = Executors.newScheduledThreadPool(1, ThreadFactoryBuilder.create().setNamePrefix("client-hb-").build());
+        edgeClientHbScheduler = Executors.newSingleThreadScheduledExecutor(
+                ThreadFactoryBuilder.create().setNamePrefix("client-hb-").build());
         edgeClientHbScheduler.scheduleAtFixedRate(() -> {
             try {
                 sendMsg(buildSendMessage(ProtoMethodId.Ping.getValue(), ByteString.EMPTY, UUID.fastUUID().toString()), null,
@@ -184,13 +184,13 @@ abstract class EdgeClientConnectorBase {
         ResendMessage<CommonMessageWrapper.CommonMessage> resendMessage = new ResendMessage<>();
         resendMessage.setReSendId(resendId);
         resendMessage.setData(msg);
-        ClientReSendMap.putIfAbsent(resendId, resendMessage);
+        CLIENT_RE_SEND_MAP.putIfAbsent(resendId, resendMessage);
     }
 
     private void startRetrySend() {
         reSendMsgScheduler.scheduleAtFixedRate(() -> {
-            if (ClientReSendMap.mappingCount() > 0) {
-                ClientReSendMap.forEach((resendMessageId, resendMessage) -> {
+            if (CLIENT_RE_SEND_MAP.mappingCount() > 0) {
+                CLIENT_RE_SEND_MAP.forEach((resendMessageId, resendMessage) -> {
                     CommonMessageWrapper.CommonMessage reSendProto = resendMessage.getData();
                     AtomicInteger retry = new AtomicInteger(resendMessage.getRetry());
                     KvLogger kvLogger = KvLogger.instance(this)
@@ -205,17 +205,18 @@ abstract class EdgeClientConnectorBase {
                             .p("RetryTimes", retry.get())
                             .p("ReSendId", resendMessage.getReSendId());
                     if (!isAlive()) {
-                        ClientReSendMap.remove(resendMessageId);
+                        CLIENT_RE_SEND_MAP.remove(resendMessageId);
                         kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED)
-                                .p(LogFieldConstants.ERR_MSG, "Channel is not alive")
+                                .p(LogFieldConstants.ERR_MSG, "Channel is not alive, drop this msg")
                                 .p(LogFieldConstants.Code, EdgeSysCode.SendMsgFailed.getValue())
                                 .w();
                         return;
                     }
                     try {
                         if (retry.get() >= edgeClientConfig.getRetryNumber()) {
-                            ClientReSendMap.remove(resendMessageId);
+                            CLIENT_RE_SEND_MAP.remove(resendMessageId);
                             kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED_LIMIT)
+                                    .p(LogFieldConstants.ERR_MSG, "retry send limit, drop this msg")
                                     .w();
                             return;
                         }
@@ -240,7 +241,7 @@ abstract class EdgeClientConnectorBase {
                                     kvLogger.p(LogFieldConstants.ReqData, Base64.encode(resendMessage.getData().toByteArray()))
                                             .d();
                                 }
-                                ClientReSendMap.remove(resendMessageId);
+                                CLIENT_RE_SEND_MAP.remove(resendMessageId);
                             }
                         });
                     } catch (Exception ex) {

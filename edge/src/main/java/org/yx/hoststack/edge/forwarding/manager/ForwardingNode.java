@@ -41,8 +41,8 @@ public class ForwardingNode {
         this.lastUpdateHbAt = new AtomicLong(createTimeAt);
         this.sessionTimeout = sessionTimeout;
         this.hbInterval = hbInterval;
-        checkHbScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("transfer-node-hb-check" + context.channel().id()).build());
+        checkHbScheduler = Executors.newSingleThreadScheduledExecutor(
+                ThreadFactoryBuilder.create().setNamePrefix("transfer-node-hb-check-" + context.channel().id()).build());
         checkHbScheduler.scheduleAtFixedRate(() -> {
             long diff = System.currentTimeMillis() - this.lastUpdateHbAt.get();
             if (diff > sessionTimeout * 1000L && timeoutConsumer != null) {

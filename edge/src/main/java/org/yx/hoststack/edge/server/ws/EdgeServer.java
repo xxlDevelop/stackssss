@@ -42,7 +42,7 @@ public class EdgeServer implements Runnable {
 
     private final SessionManager sessionManager;
 
-    private final ScheduledExecutorService reSendMsgScheduler = Executors.newScheduledThreadPool(1,
+    private final ScheduledExecutorService reSendMsgScheduler = Executors.newSingleThreadScheduledExecutor(
             ThreadFactoryBuilder.create().setNamePrefix("server-reSend-").build());
 
     private int bossThreadCount() {

@@ -2,6 +2,7 @@ package org.yx.hoststack.center.ws.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -13,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.yx.hoststack.center.common.enums.RegisterModeEnum;
+import org.yx.hoststack.center.common.enums.AgentTypeEnum;
 import org.yx.hoststack.center.entity.*;
 import org.yx.hoststack.center.service.*;
 import org.yx.hoststack.center.ws.controller.manager.CenterControllerManager;
@@ -60,30 +61,44 @@ public class HostController {
      * @param message CommonMessage
      */
     private void init(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
+        E2CMessage.E2C_HostInitializeReq hostInit = null;
         try {
             ByteString payload = message.getBody().getPayload();
-            E2CMessage.E2C_HostInitializeReq hostInit = E2CMessage.E2C_HostInitializeReq.parseFrom(payload);
+            hostInit = E2CMessage.E2C_HostInitializeReq.parseFrom(payload);
 
             Long tenantId = message.getHeader().getTenantId();
-            TenantInfo tenantInfo = tenantInfoService.getById(tenantId);
-            if (ObjectUtils.isEmpty(tenantInfo)) {
-                sendErrorResponse(ctx, message, x00000409.getValue(), x00000409.getMsg());
-            }
+            // TODO find tid by ak
+//            TenantInfo tenantInfo = tenantInfoService.getById(tenantId);
+//            if (ObjectUtils.isEmpty(tenantInfo)) {
+//                sendErrorResponse(ctx, message, x00000409.getValue(), x00000409.getMsg());
+//            }
+            TenantInfo tenantInfo = new TenantInfo();
+            tenantInfo.setTenantAk("123");
+            tenantInfo.setTenantSk("abc");
             RegionInfo regionInfo = regionInfoService.getOne(new LambdaQueryWrapper<RegionInfo>().eq(RegionInfo::getRegionCode, message.getHeader().getRegion()).eq(RegionInfo::getZoneCode, message.getHeader().getZone()), false);
             if (ObjectUtils.isEmpty(regionInfo)) {
-                sendErrorResponse(ctx, message, x00000410.getValue(), x00000410.getMsg());
+                sendHostInitErrorResponse(ctx, hostInit.getDevSn(), message, x00000410.getValue(), x00000410.getMsg());
             }
-            if (!ObjectUtils.isEmpty(hostInit.getHostId()) && !containerService.exists(new LambdaQueryWrapper<Container>().eq(Container::getHostId, hostInit.getHostId()))) {
-                sendErrorResponse(ctx, message, x00000411.getValue(), x00000411.getMsg());
+            if (!hostInit.getAgentType().equals(AgentTypeEnum.HOST.getName()) && !ObjectUtils.isEmpty(hostInit.getHostId()) && !containerService.exists(new LambdaQueryWrapper<Container>().eq(Container::getHostId, hostInit.getHostId()))) {
+                sendHostInitErrorResponse(ctx, hostInit.getDevSn(), message, x00000411.getValue(), x00000411.getMsg());
             }
 
-            RegisterModeEnum mode = RegisterModeEnum.fromString(hostInit.getRegisterMode());
+            AgentTypeEnum agentType = AgentTypeEnum.fromString(hostInit.getAgentType());
             String hostId = StringUtils.EMPTY;
-            switch (mode) {
+            switch (agentType) {
                 case HOST:
                     if (ObjectUtils.isEmpty(hostCurrentMap.get(hostInit.getDevSn()))) {
+                        List<JSONObject> netList = Lists.newArrayList();
+                        hostInit.getNetCardListList().forEach(netCardInfo -> {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("netCardName", netCardInfo.getNetCardName());
+                            jsonObject.put("netCardType", netCardInfo.getNetCardType());
+                            jsonObject.put("netCardLinkSpeed", netCardInfo.getNetCardLinkSpeed());
+                            netList.add(jsonObject);
+                        });
                         Host host = Host.builder().hostId(convertToHex(regionInfo.getRegionId()) + DigestUtils.md5Hex(hostInit.getDevSn()))
                                 .agentVersion(hostInit.getAgentVersion())
+                                .registerMode(agentType.getName())
                                 .startTime(new Date(hostInit.getOsStartTs()))
                                 .devSn(hostInit.getDevSn())
                                 .osType(hostInit.getOsType())
@@ -92,7 +107,7 @@ public class HostController {
                                 .resourcePool(hostInit.getResourcePool())
                                 .runtimeEnv(hostInit.getRuntimeEnv())
                                 .diskInfo(hostInit.getDisk())
-                                .networkCardInfo(JSONObject.toJSONString(hostInit.getNetCardListList()))
+                                .networkCardInfo(JSONObject.toJSONString(netList))
                                 .zone(message.getHeader().getZone())
                                 .region(message.getHeader().getRegion())
                                 .idc(message.getHeader().getIdcSid())
@@ -152,13 +167,17 @@ public class HostController {
 //                hostGpuService.saveBatch(hostGpus);
 //            }
 
-            SysModule sysModule = sysModuleService.getOne(new LambdaQueryWrapper<SysModule>().eq(SysModule::getModuleArch, hostInit.getOsType()).eq(SysModule::getVersion, hostInit.getAgentVersion()), false);
+            SysModule sysModule = sysModuleService.getOne(new LambdaQueryWrapper<SysModule>()
+                    .eq(SysModule::getModuleName, hostInit.getAgentType())
+                    .eq(SysModule::getModuleArch, hostInit.getOsType())
+                    .eq(SysModule::getVersion, hostInit.getAgentVersion()), false);
             if (ObjectUtils.isEmpty(sysModule)) {
                 sysModuleService.insert(SysModule.builder()
                         .moduleId(UUID.randomUUID().toString().replace("-", "").toLowerCase(Locale.ROOT))
-                        .moduleName(hostInit.getOsType())
+                        .moduleName(hostInit.getAgentType())
                         .moduleArch(hostInit.getOsType())
                         .version(hostInit.getAgentVersion())
+                        .createAt(new Date())
                         .build());
             }
 
@@ -177,16 +196,17 @@ public class HostController {
                             .setPayload(
                                     C2EMessage.C2E_HostInitializeResp.newBuilder()
                                             .setHostId(StringUtils.isEmpty(hostId) ? hostInit.getHostId() : hostId)
+                                            .setDevSn(hostInit.getDevSn())
                                             .build().toByteString()
                             ).build()).build();
 
             ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
         } catch (Exception ex) {
-            sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
+            sendHostInitErrorResponse(ctx, hostInit != null ? hostInit.getDevSn() : "", message, x00000500.getValue(), x00000500.getMsg());
         }
     }
 
-//    @NotNull
+    //    @NotNull
     private static List<HostGpu> getHostGpus(E2CMessage.E2C_HostInitializeReq hostInit, Host host) {
         List<E2CMessage.GpuInfo> gpuInfos = hostInit.getGpuListList();
         List<HostGpu> hostGpus = new ArrayList<>(gpuInfos.size());
@@ -215,7 +235,18 @@ public class HostController {
         CommonMessageWrapper.CommonMessage errorMessage =
                 CommonMessageWrapper.CommonMessage.newBuilder().setHeader(message.getHeader().toBuilder()
                                 .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE))
-                        .setBody(CommonMessageWrapper.Body.newBuilder().setCode(code).setMsg(msg).build()).build();
+                        .setBody(CommonMessageWrapper.Body.newBuilder().setCode(code).setMsg(msg)).build();
+        ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(errorMessage.toByteArray())));
+    }
+
+    private void sendHostInitErrorResponse(ChannelHandlerContext ctx, String devSn, CommonMessageWrapper.CommonMessage message, int code, String msg) {
+        CommonMessageWrapper.CommonMessage errorMessage =
+                CommonMessageWrapper.CommonMessage.newBuilder().setHeader(message.getHeader().toBuilder()
+                                .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE))
+                        .setBody(CommonMessageWrapper.Body.newBuilder().setCode(code).setMsg(msg)
+                                .setPayload(C2EMessage.C2E_HostInitializeResp.newBuilder()
+                                        .setDevSn(devSn)
+                                        .build().toByteString()).build()).build();
         ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(errorMessage.toByteArray())));
     }
 
@@ -235,12 +266,12 @@ public class HostController {
                 sendErrorResponse(ctx, message, x00000412.getValue(), x00000412.getMsg());
             }
             hbData.forEach(x -> {
-                RegisterModeEnum mode = RegisterModeEnum.fromString(x.getAgentType());
+                AgentTypeEnum agentType = AgentTypeEnum.fromString(x.getAgentType());
                 AgentSession session = agentSessionService.getOne(new LambdaQueryWrapper<AgentSession>().eq(AgentSession::getAgentId, x.getHostId()), false);
-                switch (mode) {
+                switch (agentType) {
                     case HOST:
                         if (ObjectUtils.isEmpty(session.getAgentId())) {
-                             session = AgentSession.builder()
+                            session = AgentSession.builder()
                                     .agentId(x.getHostId())
                                     .zone(message.getHeader().getZone())
                                     .region(message.getHeader().getRegion())

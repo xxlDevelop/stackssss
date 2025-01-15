@@ -259,6 +259,6 @@ public class CenterServer implements Runnable {
 
         globalServerDetailCacheMap = serviceDetailService.list().parallelStream().collect(Collectors.toMap(ServiceDetail::getServiceId, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
 
-        centerNode = new Node(hostName, RegisterNodeEnum.CENTER, null);
+        centerNode = new Node(hostName == null? "center" : hostName, RegisterNodeEnum.CENTER, null);
     }
 }

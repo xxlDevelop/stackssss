@@ -65,8 +65,8 @@ public class EdgeClient implements Runnable {
                     .p("TargetUrl", upWsAddr)
                     .e(e);
         }
-        reSendJobNotifyScheduler = Executors.newScheduledThreadPool(1,
-                ThreadFactoryBuilder.create().setNamePrefix("resend-job-notify").build());
+        reSendJobNotifyScheduler = Executors.newSingleThreadScheduledExecutor(
+                ThreadFactoryBuilder.create().setNamePrefix("resend-job-notify-").build());
         reSendJobNotifyScheduler.scheduleAtFixedRate(jobReNotifyService::reSendJobNotify, 10, 10, TimeUnit.SECONDS);
     }
 

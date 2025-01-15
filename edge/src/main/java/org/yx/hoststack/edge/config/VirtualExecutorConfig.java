@@ -19,11 +19,11 @@ public class VirtualExecutorConfig {
     @Value("${spring.threads.virtual.warmUpThread:10000}")
     private int warmUpThread;
 
-    private static final String TASK_NAME = "v-executor";
+    private static final String TASK_NAME = "v-executor-";
 
     @Bean("edgeExecutor")
     public Executor edgeVirtualExecutor() {
-        ThreadFactory factory = Thread.ofVirtual().name(TASK_NAME).factory();
+        ThreadFactory factory = Thread.ofVirtual().name(TASK_NAME, 0).factory();
         ExecutorService executorService = Executors.newThreadPerTaskExecutor(factory);
         if (needWarmUp) {
             KvLogger.instance(this)

@@ -1,10 +1,9 @@
-package org.yx.hoststack.edge.config;
+package org.yx.hoststack.center.common.config;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +13,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.yx.hoststack.common.syscode.EdgeSysCode;
-import org.yx.hoststack.edge.common.exception.InvalidHttpStatusException;
+import org.yx.hoststack.center.common.exception.InvalidHttpStatusException;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import reactor.core.publisher.Mono;
@@ -27,42 +26,23 @@ import java.util.function.Function;
 
 @Configuration
 public class WebClientConfig {
-
-    @Value("${webClient.maxConnections:500}")
-    private int maxConnections;
-
-    @Value("${webClient.maxIdleTime:3}")
-    private int maxIdleTime;
-
-    @Value("${webClient.connectTimeout:5}")
-    private int connectTimeout;
-
-    @Value("${webClient.responseTimeout:5}")
-    private int responseTimeout;
-
-    @Value("${webClient.readTimeout:5}")
-    private int readTimeout;
-
-    @Value("${webClient.writeTimeout:5}")
-    private int writeTimeout;
-
     @Bean
     public WebClient webClient() {
-        // Config http connectPool
-        ConnectionProvider provider = ConnectionProvider.builder("custom")
-                .maxConnections(maxConnections)
-                .maxIdleTime(Duration.ofSeconds(maxIdleTime))
+        // 配置HTTP连接池
+        ConnectionProvider provider = ConnectionProvider.builder("center-http-pool")
+                .maxConnections(500)
+                .maxIdleTime(Duration.ofSeconds(20))
                 .build();
 
-        // config http client
+        // 配置HTTP客户端
         HttpClient httpClient = HttpClient.create(provider)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout * 1000)
-                .responseTimeout(Duration.ofSeconds(responseTimeout))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                .responseTimeout(Duration.ofSeconds(5))
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(readTimeout))
-                                .addHandlerLast(new WriteTimeoutHandler(writeTimeout)));
+                        conn.addHandlerLast(new ReadTimeoutHandler(5))
+                                .addHandlerLast(new WriteTimeoutHandler(5)));
 
-        // build webClient instance
+        // 构建WebClient实例
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

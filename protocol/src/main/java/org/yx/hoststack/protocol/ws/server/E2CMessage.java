@@ -1437,24 +1437,12 @@ public final class E2CMessage {
     int getProxy();
 
     /**
-     * <code>string registerMode = 20;</code>
-     * @return The registerMode.
-     */
-    java.lang.String getRegisterMode();
-    /**
-     * <code>string registerMode = 20;</code>
-     * @return The bytes for registerMode.
-     */
-    com.google.protobuf.ByteString
-        getRegisterModeBytes();
-
-    /**
-     * <code>string xToken = 21;</code>
+     * <code>string xToken = 20;</code>
      * @return The xToken.
      */
     java.lang.String getXToken();
     /**
-     * <code>string xToken = 21;</code>
+     * <code>string xToken = 20;</code>
      * @return The bytes for xToken.
      */
     com.google.protobuf.ByteString
@@ -1500,7 +1488,6 @@ public final class E2CMessage {
       ak_ = "";
       hostId_ = "";
       detailedId_ = "";
-      registerMode_ = "";
       xToken_ = "";
     }
 
@@ -2138,50 +2125,11 @@ public final class E2CMessage {
       return proxy_;
     }
 
-    public static final int REGISTERMODE_FIELD_NUMBER = 20;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object registerMode_ = "";
-    /**
-     * <code>string registerMode = 20;</code>
-     * @return The registerMode.
-     */
-    @java.lang.Override
-    public java.lang.String getRegisterMode() {
-      java.lang.Object ref = registerMode_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        registerMode_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string registerMode = 20;</code>
-     * @return The bytes for registerMode.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getRegisterModeBytes() {
-      java.lang.Object ref = registerMode_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        registerMode_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int XTOKEN_FIELD_NUMBER = 21;
+    public static final int XTOKEN_FIELD_NUMBER = 20;
     @SuppressWarnings("serial")
     private volatile java.lang.Object xToken_ = "";
     /**
-     * <code>string xToken = 21;</code>
+     * <code>string xToken = 20;</code>
      * @return The xToken.
      */
     @java.lang.Override
@@ -2198,7 +2146,7 @@ public final class E2CMessage {
       }
     }
     /**
-     * <code>string xToken = 21;</code>
+     * <code>string xToken = 20;</code>
      * @return The bytes for xToken.
      */
     @java.lang.Override
@@ -2287,11 +2235,8 @@ public final class E2CMessage {
       if (proxy_ != 0) {
         output.writeUInt32(19, proxy_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(registerMode_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 20, registerMode_);
-      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(xToken_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 21, xToken_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 20, xToken_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2366,11 +2311,8 @@ public final class E2CMessage {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(19, proxy_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(registerMode_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(20, registerMode_);
-      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(xToken_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(21, xToken_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(20, xToken_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2428,8 +2370,6 @@ public final class E2CMessage {
           .equals(other.getDetailedId())) return false;
       if (getProxy()
           != other.getProxy()) return false;
-      if (!getRegisterMode()
-          .equals(other.getRegisterMode())) return false;
       if (!getXToken()
           .equals(other.getXToken())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -2489,8 +2429,6 @@ public final class E2CMessage {
       hash = (53 * hash) + getDetailedId().hashCode();
       hash = (37 * hash) + PROXY_FIELD_NUMBER;
       hash = (53 * hash) + getProxy();
-      hash = (37 * hash) + REGISTERMODE_FIELD_NUMBER;
-      hash = (53 * hash) + getRegisterMode().hashCode();
       hash = (37 * hash) + XTOKEN_FIELD_NUMBER;
       hash = (53 * hash) + getXToken().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -2671,7 +2609,6 @@ public final class E2CMessage {
         hostId_ = "";
         detailedId_ = "";
         proxy_ = 0;
-        registerMode_ = "";
         xToken_ = "";
         return this;
       }
@@ -2784,9 +2721,6 @@ public final class E2CMessage {
           result.proxy_ = proxy_;
         }
         if (((from_bitField0_ & 0x00080000) != 0)) {
-          result.registerMode_ = registerMode_;
-        }
-        if (((from_bitField0_ & 0x00100000) != 0)) {
           result.xToken_ = xToken_;
         }
         result.bitField0_ |= to_bitField0_;
@@ -2931,14 +2865,9 @@ public final class E2CMessage {
         if (other.getProxy() != 0) {
           setProxy(other.getProxy());
         }
-        if (!other.getRegisterMode().isEmpty()) {
-          registerMode_ = other.registerMode_;
-          bitField0_ |= 0x00080000;
-          onChanged();
-        }
         if (!other.getXToken().isEmpty()) {
           xToken_ = other.xToken_;
-          bitField0_ |= 0x00100000;
+          bitField0_ |= 0x00080000;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -3081,15 +3010,10 @@ public final class E2CMessage {
                 break;
               } // case 152
               case 162: {
-                registerMode_ = input.readStringRequireUtf8();
+                xToken_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00080000;
                 break;
               } // case 162
-              case 170: {
-                xToken_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00100000;
-                break;
-              } // case 170
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -4700,81 +4624,9 @@ public final class E2CMessage {
         return this;
       }
 
-      private java.lang.Object registerMode_ = "";
-      /**
-       * <code>string registerMode = 20;</code>
-       * @return The registerMode.
-       */
-      public java.lang.String getRegisterMode() {
-        java.lang.Object ref = registerMode_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          registerMode_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string registerMode = 20;</code>
-       * @return The bytes for registerMode.
-       */
-      public com.google.protobuf.ByteString
-          getRegisterModeBytes() {
-        java.lang.Object ref = registerMode_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          registerMode_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string registerMode = 20;</code>
-       * @param value The registerMode to set.
-       * @return This builder for chaining.
-       */
-      public Builder setRegisterMode(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        registerMode_ = value;
-        bitField0_ |= 0x00080000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string registerMode = 20;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearRegisterMode() {
-        registerMode_ = getDefaultInstance().getRegisterMode();
-        bitField0_ = (bitField0_ & ~0x00080000);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string registerMode = 20;</code>
-       * @param value The bytes for registerMode to set.
-       * @return This builder for chaining.
-       */
-      public Builder setRegisterModeBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        registerMode_ = value;
-        bitField0_ |= 0x00080000;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object xToken_ = "";
       /**
-       * <code>string xToken = 21;</code>
+       * <code>string xToken = 20;</code>
        * @return The xToken.
        */
       public java.lang.String getXToken() {
@@ -4790,7 +4642,7 @@ public final class E2CMessage {
         }
       }
       /**
-       * <code>string xToken = 21;</code>
+       * <code>string xToken = 20;</code>
        * @return The bytes for xToken.
        */
       public com.google.protobuf.ByteString
@@ -4807,7 +4659,7 @@ public final class E2CMessage {
         }
       }
       /**
-       * <code>string xToken = 21;</code>
+       * <code>string xToken = 20;</code>
        * @param value The xToken to set.
        * @return This builder for chaining.
        */
@@ -4815,22 +4667,22 @@ public final class E2CMessage {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         xToken_ = value;
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
       /**
-       * <code>string xToken = 21;</code>
+       * <code>string xToken = 20;</code>
        * @return This builder for chaining.
        */
       public Builder clearXToken() {
         xToken_ = getDefaultInstance().getXToken();
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         onChanged();
         return this;
       }
       /**
-       * <code>string xToken = 21;</code>
+       * <code>string xToken = 20;</code>
        * @param value The bytes for xToken to set.
        * @return This builder for chaining.
        */
@@ -4839,7 +4691,7 @@ public final class E2CMessage {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         xToken_ = value;
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
@@ -14234,7 +14086,7 @@ public final class E2CMessage {
       "\n\021E2C_Message.proto\022#org.yx.hoststack.pr" +
       "otocol.ws.server\"9\n\023E2C_EdgeRegisterReq\022" +
       "\021\n\tserviceIp\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\" \n\016E" +
-      "2C_IdcExitReq\022\016\n\006idcSid\030\001 \001(\t\"\235\004\n\025E2C_Ho" +
+      "2C_IdcExitReq\022\016\n\006idcSid\030\001 \001(\t\"\207\004\n\025E2C_Ho" +
       "stInitializeReq\022\024\n\014agentStartTs\030\001 \001(\004\022\021\n" +
       "\tagentType\030\002 \001(\t\022\024\n\014resourcePool\030\003 \001(\t\022\021" +
       "\n\tosStartTs\030\004 \001(\004\022\r\n\005devSn\030\005 \001(\t\022\016\n\006osTy" +
@@ -14247,35 +14099,34 @@ public final class E2CMessage {
       "(\01320.org.yx.hoststack.protocol.ws.server" +
       ".NetCardInfo\022\022\n\nruntimeEnv\030\017 \001(\t\022\n\n\002ak\030\020" +
       " \001(\t\022\016\n\006hostId\030\021 \001(\t\022\022\n\ndetailedId\030\022 \001(\t" +
-      "\022\r\n\005proxy\030\023 \001(\r\022\024\n\014registerMode\030\024 \001(\t\022\016\n" +
-      "\006xToken\030\025 \001(\t\"\230\001\n\007CpuInfo\022\016\n\006cpuNum\030\001 \001(" +
-      "\r\022\017\n\007cpuType\030\002 \001(\t\022\027\n\017cpuManufacturer\030\003 " +
-      "\001(\t\022\027\n\017cpuArchitecture\030\004 \001(\t\022\020\n\010cpuCores" +
-      "\030\005 \001(\r\022\022\n\ncpuThreads\030\006 \001(\r\022\024\n\014cpuBaseSpe" +
-      "ed\030\007 \001(\t\"~\n\007GpuInfo\022\017\n\007gpuType\030\001 \001(\t\022\027\n\017" +
-      "gpuManufacturer\030\002 \001(\t\022\016\n\006gpuMem\030\003 \001(\r\022\022\n" +
-      "\ngpuBusType\030\004 \001(\t\022\023\n\013gpuDeviceId\030\005 \001(\t\022\020" +
-      "\n\010gpuBusId\030\006 \001(\t\"Q\n\013NetCardInfo\022\023\n\013netCa" +
-      "rdName\030\001 \001(\t\022\023\n\013netCardType\030\002 \001(\t\022\030\n\020net" +
-      "CardLinkSpeed\030\003 \001(\002\"W\n\024E2C_HostHeartbeat" +
-      "Req\022?\n\006hbData\030\001 \003(\0132/.org.yx.hoststack.p" +
-      "rotocol.ws.server.HostHbData\"\265\001\n\nHostHbD" +
-      "ata\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\022C" +
-      "\n\nhostStatus\030\003 \001(\0132/.org.yx.hoststack.pr" +
-      "otocol.ws.server.HostStatus\022?\n\010vmStatus\030" +
-      "\004 \003(\0132-.org.yx.hoststack.protocol.ws.ser" +
-      "ver.VmStatus\"r\n\nHostStatus\022\020\n\010cpuUsage\030\001" +
-      " \001(\r\022\023\n\013memoryUsage\030\002 \001(\r\022\020\n\010gpuUsage\030\003 " +
-      "\001(\r\022\026\n\016gpuTemperature\030\004 \001(\r\022\023\n\013gpuFanSpe" +
-      "ed\030\005 \001(\r\"J\n\010VmStatus\022\016\n\006vmName\030\001 \001(\t\022\020\n\010" +
-      "imageVer\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\017\n\007running\030\004" +
-      " \001(\010\"4\n\017E2C_HostExitReq\022\016\n\006hostId\030\001 \001(\t\022" +
-      "\021\n\tagentType\030\002 \001(\t\"U\n\020E2C_JobReportReq\022A" +
-      "\n\005items\030\001 \003(\01322.org.yx.hoststack.protoco" +
-      "l.ws.server.JobReportItem\"B\n\rJobReportIt" +
-      "em\022\017\n\007traceId\030\001 \001(\t\022\r\n\005jobId\030\002 \001(\t\022\021\n\tjo" +
-      "bResult\030\003 \001(\014\"%\n\023ForwardFailedNotify\022\016\n\006" +
-      "methId\030\001 \001(\005b\006proto3"
+      "\022\r\n\005proxy\030\023 \001(\r\022\016\n\006xToken\030\024 \001(\t\"\230\001\n\007CpuI" +
+      "nfo\022\016\n\006cpuNum\030\001 \001(\r\022\017\n\007cpuType\030\002 \001(\t\022\027\n\017" +
+      "cpuManufacturer\030\003 \001(\t\022\027\n\017cpuArchitecture" +
+      "\030\004 \001(\t\022\020\n\010cpuCores\030\005 \001(\r\022\022\n\ncpuThreads\030\006" +
+      " \001(\r\022\024\n\014cpuBaseSpeed\030\007 \001(\t\"~\n\007GpuInfo\022\017\n" +
+      "\007gpuType\030\001 \001(\t\022\027\n\017gpuManufacturer\030\002 \001(\t\022" +
+      "\016\n\006gpuMem\030\003 \001(\r\022\022\n\ngpuBusType\030\004 \001(\t\022\023\n\013g" +
+      "puDeviceId\030\005 \001(\t\022\020\n\010gpuBusId\030\006 \001(\t\"Q\n\013Ne" +
+      "tCardInfo\022\023\n\013netCardName\030\001 \001(\t\022\023\n\013netCar" +
+      "dType\030\002 \001(\t\022\030\n\020netCardLinkSpeed\030\003 \001(\002\"W\n" +
+      "\024E2C_HostHeartbeatReq\022?\n\006hbData\030\001 \003(\0132/." +
+      "org.yx.hoststack.protocol.ws.server.Host" +
+      "HbData\"\265\001\n\nHostHbData\022\016\n\006hostId\030\001 \001(\t\022\021\n" +
+      "\tagentType\030\002 \001(\t\022C\n\nhostStatus\030\003 \001(\0132/.o" +
+      "rg.yx.hoststack.protocol.ws.server.HostS" +
+      "tatus\022?\n\010vmStatus\030\004 \003(\0132-.org.yx.hoststa" +
+      "ck.protocol.ws.server.VmStatus\"r\n\nHostSt" +
+      "atus\022\020\n\010cpuUsage\030\001 \001(\r\022\023\n\013memoryUsage\030\002 " +
+      "\001(\r\022\020\n\010gpuUsage\030\003 \001(\r\022\026\n\016gpuTemperature\030" +
+      "\004 \001(\r\022\023\n\013gpuFanSpeed\030\005 \001(\r\"J\n\010VmStatus\022\016" +
+      "\n\006vmName\030\001 \001(\t\022\020\n\010imageVer\030\002 \001(\t\022\013\n\003cid\030" +
+      "\003 \001(\t\022\017\n\007running\030\004 \001(\010\"4\n\017E2C_HostExitRe" +
+      "q\022\016\n\006hostId\030\001 \001(\t\022\021\n\tagentType\030\002 \001(\t\"U\n\020" +
+      "E2C_JobReportReq\022A\n\005items\030\001 \003(\01322.org.yx" +
+      ".hoststack.protocol.ws.server.JobReportI" +
+      "tem\"B\n\rJobReportItem\022\017\n\007traceId\030\001 \001(\t\022\r\n" +
+      "\005jobId\030\002 \001(\t\022\021\n\tjobResult\030\003 \001(\014\"%\n\023Forwa" +
+      "rdFailedNotify\022\016\n\006methId\030\001 \001(\005b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -14298,7 +14149,7 @@ public final class E2CMessage {
     internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_E2C_HostInitializeReq_descriptor,
-        new java.lang.String[] { "AgentStartTs", "AgentType", "ResourcePool", "OsStartTs", "DevSn", "OsType", "OsVersion", "AgentVersion", "OsMem", "LocalIp", "Disk", "CpuSpec", "GpuList", "NetCardList", "RuntimeEnv", "Ak", "HostId", "DetailedId", "Proxy", "RegisterMode", "XToken", });
+        new java.lang.String[] { "AgentStartTs", "AgentType", "ResourcePool", "OsStartTs", "DevSn", "OsType", "OsVersion", "AgentVersion", "OsMem", "LocalIp", "Disk", "CpuSpec", "GpuList", "NetCardList", "RuntimeEnv", "Ak", "HostId", "DetailedId", "Proxy", "XToken", });
     internal_static_org_yx_hoststack_protocol_ws_server_CpuInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_org_yx_hoststack_protocol_ws_server_CpuInfo_fieldAccessorTable = new
