@@ -9,4 +9,5 @@ public class RequestMappingBase {
     public static final String idc = "/idc";
     public static final String idc_net = "/idc/net";
     public static final String relay = "/relay";
+    public static final String center = "/center";
 }

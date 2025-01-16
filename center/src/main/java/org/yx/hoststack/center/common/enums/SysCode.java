@@ -47,6 +47,9 @@ public enum SysCode {
 
     x00000500("Internal server error", 143500),
     x00000501("Unknown column", 143501),
+    x00000502("The corresponding channel was not found", 143502),
+    x00000503("SendMsgError", 143503),
+
 
 
     x00000600("Task rejected", 143600),

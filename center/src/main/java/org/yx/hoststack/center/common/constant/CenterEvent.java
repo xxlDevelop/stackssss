@@ -5,8 +5,10 @@ public interface CenterEvent {
     String ENCRYPTABLE_PROPERTY_RESOLVER_EVENT = "EncryptablePropertyResolverEvent";
     String IDC_NET_CONFIG_SAVE_EVENT = "IdcNetConfigSaveEvent";
     String TOKEN_FILTER_EVENT = "TokenFilterEvent";
-    String THREAD_TASK_REJECTED_EVENT = "ThreadTaskRejectedEVENT";
+    String THREAD_TASK_REJECTED_EVENT = "ThreadTaskRejectedEvent";
     String RELAY_EVENT = "RelayEvent";
+    String FIND_LOCAL_CHANNEL_EVENT = "FindLocalChannelEvent";
+    String SEND_MSG_TO_CHANNEL_EVENT = "SendMsgToChannelEvent";
 
     public interface Action {
         String CenterWsServer_StartInit = "StartInit";
@@ -26,6 +28,9 @@ public interface CenterEvent {
         String CenterWsServer_EdgeRegisterCenter = "RegisterCenter";
         String CenterWsServer_HostInitialize = "HostInitialize";
         String CenterWsServer_Region_Initialize = "RegionInitialize";
+        String FIND_LOCAL_CHANNEL_FAILED = "RegionInitializeFailed";
+        String SEND_MSG_TO_CHANNEL_FAILED = "SendMsgToChannelFailed";
+        String SEND_MSG_TO_CHANNEL_SUCCESSFULLY = "SendMsgToChannelSuccessfully";
 
 
         String Update_IdcInfo_Failed = "UpdateIdcInfoFailed";
