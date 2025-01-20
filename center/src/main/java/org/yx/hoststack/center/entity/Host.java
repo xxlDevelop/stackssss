@@ -38,7 +38,7 @@ public class Host implements Serializable {
     /**
      * 资源注册模式：host，container，benchmark
      */
-    private String registerMode;
+    private String agentType;
 
     /**
      * 节点启动时间
@@ -155,11 +155,6 @@ public class Host implements Serializable {
      * 访问中心的Sk, AES加密
      */
     private String sk;
-
-    /**
-     * Checker公钥
-     */
-    private String checkerPublicKey;
 
     /**
      * 创建时间戳

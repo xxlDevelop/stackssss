@@ -75,7 +75,7 @@ public class HeartbeatMonitor {
     // 更新心跳：如果服务ID已经存在，则移除旧任务并重新加入队列
     public void updateHeartbeat(String serviceId, RegisterNodeEnum type, Consumer<Long> timeoutCallback) {
         if (RegisterNodeEnum.HOST.equals(type)) {
-            containerQueue.offer(new HeartbeatTask(serviceId, hostHbInterval + 1, type, timeoutCallback));
+            containerQueue.offer(new HeartbeatTask(serviceId, (hostHbInterval * 2) + 1, type, timeoutCallback));
         } else {
 
             serverQueue.removeIf(task -> serviceId.equals(task.getServiceId()));

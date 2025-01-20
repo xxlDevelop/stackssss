@@ -35,7 +35,7 @@ public class ServiceDetail implements Serializable{
     /**
      *  IDCID或者中继节点ID
      */
-    private Long edgeId;
+    private String edgeId;
 
     /**
      *   

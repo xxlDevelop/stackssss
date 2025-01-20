@@ -76,7 +76,8 @@ public class HostInitializeRespController {
             // host initialize success, create host/container agent session
             if (hostChannelContext != null) {
                 hostChannelContext.channel().attr(AttributeKey.valueOf(HostStackConstants.CHANNEL_TYPE)).set(ChannelType.AGENT);
-                Session session = sessionManager.createSession(hostChannelContext, SessionType.from(hostInitializeResult.getAgentType()), sessionTimeout);
+                hostChannelContext.channel().attr(AttributeKey.valueOf(HostStackConstants.AGENT_ID)).set(hostInitializeResult.getHostId());
+                Session session = sessionManager.createSession(hostChannelContext, hostInitializeResult.getHostId(), SessionType.from(hostInitializeResult.getAgentType()), sessionTimeout);
                 session.setAttr(SessionAttrKeys.AgentId, hostInitializeResult.getHostId());
                 session.setAttr(SessionAttrKeys.AgentType, hostInitializeResult.getAgentType());
                 KvLogger.instance(this)

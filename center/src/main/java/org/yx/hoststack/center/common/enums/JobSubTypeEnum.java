@@ -6,8 +6,10 @@ package org.yx.hoststack.center.common.enums;
  */
 
 public enum JobSubTypeEnum {
+    PARENT_FOR_CREATE_CONTAINER("createContainer"),
     CREATE("create"),
     UPDATE("update"),
+    UPDATE_CONFIG("update_config"),
     DELETE("delete"),
     RESET("reset"),
     UPGRADE("upgrade"),
@@ -16,7 +18,7 @@ public enum JobSubTypeEnum {
     UNMOUNT("unmount"),
     UPDATE_PROFILE("update_profile"),
     START("start"),
-    STOP("stop"),
+    SHUTDOWN("shutdown"),
     REBOOT("reboot"),
     DROP("drop"),
     EXEC_CMD("exec_cmd"),
@@ -26,7 +28,7 @@ public enum JobSubTypeEnum {
     private final String name;
 
     JobSubTypeEnum(String name) {
-        this.name= name;
+        this.name = name;
     }
 
     public String getName() {

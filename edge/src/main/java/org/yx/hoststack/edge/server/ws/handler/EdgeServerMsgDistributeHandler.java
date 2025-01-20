@@ -6,6 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.common.utils.NetUtils;
@@ -62,20 +63,26 @@ public class EdgeServerMsgDistributeHandler extends ChannelInboundHandlerAdapter
                 .p("ChannelType", channelType)
                 .d();
         if (channelType != null && channelType.equals(ChannelType.AGENT)) {
-            sessionManager.getSessionOpt(ctx.channel().id().toString()).ifPresentOrElse(
-                    session -> {
-                        KvLogger.instance(this)
-                                .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
-                                .p(LogFieldConstants.ACTION, EdgeEvent.Action.CHANNEL_INACTIVE)
-                                .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
-                                .p(HostStackConstants.CLIENT_IP, clientIp)
-                                .p(HostStackConstants.AGENT_ID, session.getAttr(SessionAttrKeys.AgentId))
-                                .p(HostStackConstants.HOST_TYPE, session.getAttr(SessionAttrKeys.AgentType))
-                                .i();
-                        sessionManager.closeSession(session);
-                    },
-                    ctx::close
-            );
+            Object hostId = ctx.channel().attr(AttributeKey.valueOf(HostStackConstants.AGENT_ID)).get();
+            if (hostId != null) {
+                sessionManager.getSessionOpt(hostId.toString()).ifPresentOrElse(
+                        session -> {
+                            KvLogger.instance(this)
+                                    .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
+                                    .p(LogFieldConstants.ACTION, EdgeEvent.Action.CHANNEL_INACTIVE)
+                                    .p(HostStackConstants.CHANNEL_ID, ctx.channel().id())
+                                    .p(HostStackConstants.CLIENT_IP, clientIp)
+                                    .p(HostStackConstants.AGENT_ID, session.getAttr(SessionAttrKeys.AgentId))
+                                    .p(HostStackConstants.HOST_TYPE, session.getAttr(SessionAttrKeys.AgentType))
+                                    .i();
+                            sessionManager.closeSession(session);
+                        },
+                        ctx::close
+
+                );
+            } else {
+                ctx.close();
+            }
         } else if (channelType != null && channelType.equals(ChannelType.IDC)) {
             Object idcSid = ctx.channel().attr(AttributeKey.valueOf(HostStackConstants.IDC_SID)).get();
             if (idcSid != null) {

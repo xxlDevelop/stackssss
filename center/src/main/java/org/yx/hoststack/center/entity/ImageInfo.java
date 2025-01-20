@@ -41,6 +41,11 @@ public class ImageInfo implements Serializable{
     private String imageVer;
 
     /**
+     * 镜像类型
+     */
+    private String imageType;
+
+    /**
      *   The business types applicable to the image, render/ai
      */
     private String bizType;

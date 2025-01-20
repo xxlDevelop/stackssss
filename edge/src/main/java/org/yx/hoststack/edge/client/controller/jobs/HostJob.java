@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.yx.hoststack.edge.common.JobType;
 import org.yx.hoststack.edge.common.exception.NotFoundSessionException;
 import org.yx.hoststack.edge.common.exception.UnknownJobException;
+import org.yx.hoststack.edge.queue.MessageQueues;
 import org.yx.hoststack.edge.server.ws.session.Session;
 import org.yx.hoststack.edge.server.ws.session.SessionManager;
 import org.yx.hoststack.edge.server.ws.session.SessionType;
@@ -23,8 +24,8 @@ import java.util.Map;
 @Service(JobType.Host)
 public class HostJob extends HostStackJob {
 
-    public HostJob(SessionManager sessionManager) {
-        super(sessionManager);
+    protected HostJob(SessionManager sessionManager, MessageQueues messageQueues) {
+        super(sessionManager, messageQueues);
     }
 
     @Override
@@ -33,29 +34,25 @@ public class HostJob extends HostStackJob {
         switch (jobReq.getJobSubType().toLowerCase()) {
             case "reset":
                 JobParams.HostReset hostReset = JobParams.HostReset.parseFrom(jobReq.getJobParams());
-                List<String> resetHostTargetIds = hostTargetToHostIdList(hostReset.getTargetList());
-                Map<String, Session> resetHostTargetSessions = getJobTargetSessions(resetHostTargetIds, SessionType.Host);
                 // send job to host
                 hostReset.getTargetList().forEach(hostTarget -> {
-                    Session targetSession = resetHostTargetSessions.get(hostTarget.getHostId());
-                    validAgentSession(targetSession, jobReq, hostTarget.getJobDetailId(), messageHeader.getTraceId(),
+                    Session targetSession = sessionManager.getSession(hostTarget.getHostId());
+                    validAgentSession(targetSession, jobReq.getJobId(), hostTarget.getJobDetailId(), messageHeader.getTraceId(),
                             agentSession -> {
                                 // create job message
-                                AgentCommonMessage<?> jobMessage = buildJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
+                                AgentCommonMessage<?> jobMessage = buildAgentJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
                                         "ResetHost", messageHeader.getTraceId(), null);
                                 // send job message to agent
-                                sendJobToAgent(agentSession, jobReq, jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
+                                sendJobToAgent(agentSession, jobReq.getJobId(), jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
                             });
                 });
                 break;
             case "updateconfig":
                 JobParams.HostUpdateConfig hostUpdateConfig = JobParams.HostUpdateConfig.parseFrom(jobReq.getJobParams());
-                List<String> updateHostConfigTargetIds = hostTargetToHostIdList(hostUpdateConfig.getTargetList());
-                Map<String, Session> updateHostConfigTargetSessions = getJobTargetSessions(updateHostConfigTargetIds, SessionType.Host);
                 // send job to host
                 hostUpdateConfig.getTargetList().forEach(hostTarget -> {
-                    Session targetSession = updateHostConfigTargetSessions.get(hostTarget.getHostId());
-                    validAgentSession(targetSession, jobReq, hostTarget.getJobDetailId(), messageHeader.getTraceId(),
+                    Session targetSession = sessionManager.getSession(hostTarget.getHostId());
+                    validAgentSession(targetSession, jobReq.getJobId(), hostTarget.getJobDetailId(), messageHeader.getTraceId(),
                             agentSession -> {
                                 // create job data
                                 List<HostUpdateConfigJob.Config> configDetails = Lists.newArrayList();
@@ -66,31 +63,29 @@ public class HostJob extends HostStackJob {
                                             .build());
                                 }
                                 // create job message
-                                AgentCommonMessage<?> jobMessage = buildJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
+                                AgentCommonMessage<?> jobMessage = buildAgentJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
                                         "UpdateConfig", messageHeader.getTraceId(), configDetails);
                                 // send job message to agent
-                                sendJobToAgent(agentSession, jobReq, jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
+                                sendJobToAgent(agentSession, jobReq.getJobId(), jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
                             });
                 });
                 break;
             case "execcmd":
                 JobParams.HostExecCmd hostExecCmd = JobParams.HostExecCmd.parseFrom(jobReq.getJobParams());
-                List<String> execCmdHostTargetIds = hostTargetToHostIdList(hostExecCmd.getTargetList());
-                Map<String, Session> execCmdHostTargetIdSessions = getJobTargetSessions(execCmdHostTargetIds, SessionType.Host);
                 // send job to host
                 hostExecCmd.getTargetList().forEach(hostTarget -> {
-                    Session targetSession = execCmdHostTargetIdSessions.get(hostTarget.getHostId());
-                    validAgentSession(targetSession, jobReq, hostTarget.getJobDetailId(), messageHeader.getTraceId(),
+                    Session targetSession = sessionManager.getSession(hostTarget.getHostId());
+                    validAgentSession(targetSession, jobReq.getJobId(), hostTarget.getJobDetailId(), messageHeader.getTraceId(),
                             agentSession -> {
                                 // create job data
                                 HostExecCmdJob hostExecCmdJob = HostExecCmdJob.builder()
                                         .script(hostExecCmd.getScript())
                                         .build();
                                 // create job message
-                                AgentCommonMessage<?> jobMessage = buildJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
+                                AgentCommonMessage<?> jobMessage = buildAgentJobMessage(hostTarget.getJobDetailId(), hostTarget.getHostId(),
                                         "ExecuteCmd", messageHeader.getTraceId(), hostExecCmdJob);
                                 // send job message to agent
-                                sendJobToAgent(agentSession, jobReq, jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
+                                sendJobToAgent(agentSession, jobReq.getJobId(), jobMessage, hostTarget.getJobDetailId(), messageHeader.getTraceId());
                             });
                 });
                 break;

@@ -76,13 +76,13 @@ public class CreateContainerJobService {
         for (int i = 1; i <= dto.getCount(); i++) {
             final String createContainerJobId = UUIDUtils.fastSimpleUUID();
             jobInfos.add(JobInfo.builder()
-                    .parentJobId(parentJobInfoId)
+                    .nextJobId(parentJobInfoId)
                     .jobId(createContainerJobId)
                     .runOrder(1)
                     .jobStatus(JobStatusEnum.WAIT.getName())
                     .jobType(JobTypeEnum.CONTAINER.getName())
                     .jobSubType(JobSubTypeEnum.CREATE.getName())
-                    .jobProcess(0)
+                    .jobProgress(0)
                     .zone(host.getZone())
                     .region(host.getRegion())
                     .idc(host.getIdc())
@@ -217,13 +217,13 @@ public class CreateContainerJobService {
      */
     private static void createParentJobInfo(Long tenantId, ContainerCreateReqDTO dto, Host host, List<JobInfo> jobInfos, String parentJobInfoId, Timestamp currentTimestamp) {
         jobInfos.add(JobInfo.builder()
-                .parentJobId(null)
+                .nextJobId(null)
                 .jobId(parentJobInfoId)
                 .jobStatus(JobStatusEnum.WAIT.getName())
                 .runOrder(0)
                 .jobType(JobTypeEnum.CONTAINER.getName())
                 .jobSubType(JobSubTypeEnum.CREATE.getName())
-                .jobProcess(0)
+                .jobProgress(0)
                 .zone(host.getZone())
                 .region(host.getRegion())
                 .idc(host.getIdc())

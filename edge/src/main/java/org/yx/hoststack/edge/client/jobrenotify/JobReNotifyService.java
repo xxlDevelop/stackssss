@@ -2,12 +2,14 @@ package org.yx.hoststack.edge.client.jobrenotify;
 
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.edge.apiservice.storagesvc.resp.ListBucketResp;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.EdgeEvent;
@@ -17,6 +19,7 @@ import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.ListUtil;
+import org.yx.lib.utils.util.R;
 import org.yx.lib.utils.util.StringPool;
 import org.yx.lib.utils.util.StringUtil;
 
@@ -38,7 +41,7 @@ public class JobReNotifyService {
     private final EdgeCommonConfig edgeCommonConfig;
     private final AtomicBoolean isReSending = new AtomicBoolean(false);
 
-    public void writeToFile(List<AgentCommonMessage> commonMessageList) {
+    public void writeToFile(List<AgentCommonMessage<?>> commonMessageList) {
         try {
             Path filePath;
             String[] files = new File(edgeCommonConfig.getNotSendJobNotifySavePath()).list();
@@ -109,7 +112,7 @@ public class JobReNotifyService {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, EdgeEvent.JOB_NOTIFY_TO_FILE)
                     .p(LogFieldConstants.ACTION, "StartScanToSend")
-                    .p("FileCount", files == null ? 0 : files.length)
+                    .p("FileCount", files.length)
                     .i();
             if (!EdgeClientConnector.getInstance().isAlive()) {
                 KvLogger.instance(this)
@@ -125,20 +128,22 @@ public class JobReNotifyService {
                 readWriteLock.writeLock().lock();
                 try {
                     Path targetPath = Path.of(edgeCommonConfig.getNotSendJobNotifySavePath(), file);
-                    List<AgentCommonMessage> contentList;
+                    List<AgentCommonMessage<?>> contentList;
                     try (RandomAccessFile accessFile = new RandomAccessFile(targetPath.toString(), "rw")) {
                         try (FileChannel channel = accessFile.getChannel()) {
                             ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
                             channel.read(buffer);
                             String content = new String(buffer.array(), StandardCharsets.UTF_8);
-                            contentList = JSON.parseArray(StringPool.LEFT_SQ_BRACKET + content + StringPool.RIGHT_SQ_BRACKET, AgentCommonMessage.class);
+                            contentList = JSON.parseObject(StringPool.LEFT_SQ_BRACKET + content + StringPool.RIGHT_SQ_BRACKET,
+                                    new TypeReference<List<AgentCommonMessage<?>>>() {
+                                    });
                         }
                     }
-                    List<AgentCommonMessage> notSendMessageList = Lists.newArrayList();
+                    List<AgentCommonMessage<?>> notSendMessageList = Lists.newArrayList();
                     if (!contentList.isEmpty()) {
-                        List<List<AgentCommonMessage>> batchList = ListUtil.batchList(contentList, 100);
-                        for (List<AgentCommonMessage> messageList : batchList) {
-                            EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), null,
+                        List<List<AgentCommonMessage<?>>> batchList = ListUtil.batchList(contentList, 100);
+                        for (List<AgentCommonMessage<?>> messageList : batchList) {
+                            EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), "", null,
                                     () -> notSendMessageList.addAll(messageList));
                         }
                         if (notSendMessageList.isEmpty()) {
@@ -176,7 +181,7 @@ public class JobReNotifyService {
         }
     }
 
-    private ByteBuffer toByteBuffer(List<AgentCommonMessage> messageList) {
+    private ByteBuffer toByteBuffer(List<AgentCommonMessage<?>> messageList) {
         List<byte[]> bytesList = new ArrayList<>();
         int size = 0;
         for (AgentCommonMessage<?> message : messageList) {

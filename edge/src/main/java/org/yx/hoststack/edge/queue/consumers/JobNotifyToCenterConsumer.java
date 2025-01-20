@@ -23,16 +23,15 @@ public class JobNotifyToCenterConsumer implements Runnable {
     public void run() {
         while (true) {
             try {
-                List<AgentCommonMessage> agentCommonMessages = Lists.newArrayList();
+                List<AgentCommonMessage<?>> agentCommonMessages = Lists.newArrayList();
                 messageQueues.getJobNotifyToCenterQueue().drainTo(agentCommonMessages, 50);
                 if (!agentCommonMessages.isEmpty()) {
-                    EdgeClientConnector.getInstance().sendJobNotifyReport(agentCommonMessages, UUID.fastUUID().toString(), null,
+                    EdgeClientConnector.getInstance().sendJobNotifyReport(agentCommonMessages, UUID.fastUUID().toString(), "", null,
                             () -> messageQueues.getJobNotifyToDiskQueue().addAll(agentCommonMessages));
                 } else {
                     TimeUnit.MILLISECONDS.sleep(10);
                 }
             } catch (InterruptedException interruptedException) {
-                Thread.currentThread().interrupt();
                 KvLogger.instance(this)
                         .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
                         .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_HB)

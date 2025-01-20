@@ -63,7 +63,7 @@ public class Container implements Serializable {
     /**
      * Resource registration mode: host, container, benchmark
      */
-    private String registerMode;
+    private String agentType;
 
     /**
      * Node start time

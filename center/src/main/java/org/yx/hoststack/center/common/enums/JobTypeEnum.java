@@ -7,15 +7,16 @@ package org.yx.hoststack.center.common.enums;
 
 public enum JobTypeEnum {
     HOST("host"),
+    Image("image"),
     VOLUME("volume"),
     CONTAINER("container"),
-    FILE("file"),
-    MODULE("module");
+    MODULE("module"),
+    PARENT("parent");
 
     private final String name;
 
     JobTypeEnum(String name) {
-        this.name= name;
+        this.name = name;
     }
 
     public String getName() {

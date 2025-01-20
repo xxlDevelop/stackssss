@@ -1,12 +1,9 @@
 package org.yx.hoststack.center.ws.controller;
 
-import cn.hutool.crypto.digest.DigestUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.google.protobuf.ByteString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.AttributeKey;
@@ -15,14 +12,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.yx.hoststack.center.CenterApplicationRunner;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
+import org.yx.hoststack.center.common.properties.ApplicationsProperties;
 import org.yx.hoststack.center.common.redis.util.RedissonUtils;
 import org.yx.hoststack.center.entity.IdcInfo;
 import org.yx.hoststack.center.entity.RegionInfo;
@@ -31,7 +29,6 @@ import org.yx.hoststack.center.entity.ServiceDetail;
 import org.yx.hoststack.center.service.IdcInfoService;
 import org.yx.hoststack.center.service.RelayInfoService;
 import org.yx.hoststack.center.service.ServiceDetailService;
-import org.yx.hoststack.center.ws.CenterServer;
 import org.yx.hoststack.center.ws.common.Node;
 import org.yx.hoststack.center.ws.controller.manager.CenterControllerManager;
 import org.yx.hoststack.center.ws.heartbeat.HeartbeatMonitor;
@@ -44,25 +41,19 @@ import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.SpringContextHolder;
 
-import javax.swing.*;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static org.yx.hoststack.center.CenterApplicationRunner.address;
-import static org.yx.hoststack.center.CenterApplicationRunner.port;
 import static org.yx.hoststack.center.common.enums.RegisterNodeEnum.IDC;
 import static org.yx.hoststack.center.common.enums.RegisterNodeEnum.RELAY;
 import static org.yx.hoststack.center.common.enums.SysCode.*;
-import static org.yx.hoststack.center.common.redis.util.RedissonUtils.setLocalCachedMap;
 import static org.yx.hoststack.center.ws.CenterServer.*;
 import static org.yx.hoststack.center.ws.common.Node.findNodeByServiceId;
+import static org.yx.hoststack.center.ws.common.region.RegionInfoCache.getRegionByIp;
 
 
 /**
@@ -71,8 +62,6 @@ import static org.yx.hoststack.center.ws.common.Node.findNodeByServiceId;
 @Service
 @RequiredArgsConstructor
 public class EdgeController {
-    private final SpringContextHolder springContextHolder;
-
     {
         CenterControllerManager.add(ProtoMethodId.EdgeRegister, this::register);
         CenterControllerManager.add(ProtoMethodId.Ping, this::ping);
@@ -86,8 +75,9 @@ public class EdgeController {
     private final IdcInfoService idcInfoService;
     private final RelayInfoService relayInfoService;
     private final ServiceDetailService serviceDetailService;
-    private final RedissonUtils redissonUtils;
     private final HeartbeatMonitor monitor;
+    private final StringRedisTemplate redisTemplate;
+    private final ApplicationsProperties applicationsProperties;
 
     @Qualifier("virtualThreadExecutor")
     private final Executor virtualThreadExecutor;
@@ -117,7 +107,7 @@ public class EdgeController {
                 return;
             }
 
-            Long nodeId = checkAndRegisterNode(ctx, header, message, serviceIp, region, isErrorFlag);
+            String nodeId = checkAndRegisterNode(ctx, header, message, serviceIp, region, isErrorFlag);
 
             KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer).p(LogFieldConstants.ACTION, CenterEvent.Action.CenterWsServer_EdgeRegisterCenter).p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId()).p(HostStackConstants.CHANNEL_ID, ctx.channel().id()).p("ServiceIp", serviceIp).p("Region", region).i();
             if (isErrorFlag.get()) {
@@ -139,7 +129,7 @@ public class EdgeController {
                     .setBody(CommonMessageWrapper.Body.newBuilder().setCode(0)
                             .setPayload(
                                     C2EMessage.C2E_EdgeRegisterResp.newBuilder()
-                                            .setId(String.valueOf(nodeId))
+                                            .setId(nodeId)
                                             .setHbInterval(serverHbInterval)
                                             .build().toByteString()
                             ).build()).build();
@@ -179,8 +169,7 @@ public class EdgeController {
                             .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
                             .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
                             .setIdcSid(message.getHeader().getIdcSid())
-                            .setTraceId(message.getHeader().getTraceId())).build()
-                    ;
+                            .setTraceId(message.getHeader().getTraceId())).build();
             ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
         } catch (Exception ex) {
             sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
@@ -231,63 +220,46 @@ public class EdgeController {
 
 
     /**
-     * Get Region By Ip
-     *
-     * @author yijian
-     * @date 2024/12/16 15:50
-     */
-    private RegionInfo getRegionByIp(String serviceIp) {
-        List<RegionInfo> regionInfos = globalRegionInfoCacheMap.get(CenterServer.REGION_CACHE_KEY);
-        if (!CollectionUtils.isEmpty(regionInfos)) {
-            Optional<RegionInfo> first = regionInfos.parallelStream().filter(x -> x.getPublicIpList().contains(serviceIp)).findFirst();
-            if (first.isPresent()) {
-                return first.get();
-            }
-        }
-        return null;
-    }
-
-    /**
      *
      *check and register node
      * @author yijian
      * @date 2024/12/17 10:44
      */
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public Long checkAndRegisterNode(ChannelHandlerContext ctx, CommonMessageWrapper.Header header, CommonMessageWrapper.CommonMessage message, String serviceIp, RegionInfo region, AtomicBoolean isErrorFlag) {
+    public String checkAndRegisterNode(ChannelHandlerContext ctx, CommonMessageWrapper.Header header, CommonMessageWrapper.CommonMessage message, String serviceIp, RegionInfo region, AtomicBoolean isErrorFlag) {
         String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
         String relaySid = header.getRelaySid();
+        Long serverDetailCount = redisTemplate.opsForValue().increment("serviceDetailCount", 1);
+        String nodeId = region.getZoneCode() + "-" + region.getRegionCode() + "-" + (!StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY) + "-" + String.format("%0" + applicationsProperties.getSequenceNumber() + "d", serverDetailCount);
+
         Node relayNode = null;
         if (!ObjectUtils.isEmpty(header.getRelaySid())) {
-            saveRelayInfo(header.getRelaySid(), serviceIp, region, ctx, message, isErrorFlag);
-            RedissonUtils.setLocalCachedMap(CenterApplicationRunner.consistentHash.getShard(relaySid).toString(), relaySid, address + ":" + port);
+            saveRelayInfo(header.getRelaySid(), serviceIp, region, ctx, message, isErrorFlag, nodeId);
+            RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(relaySid).toString(), relaySid, address + ":" + port);
             relayNode = findNodeByServiceId(relaySid);
         }
 
         if (!ObjectUtils.isEmpty(header.getIdcSid())) {
             String idcSid = header.getIdcSid();
-            RedissonUtils.setLocalCachedMap(CenterApplicationRunner.consistentHash.getShard(idcSid).toString(), idcSid, address + ":" + port);
-            saveIdcInfo(idcSid, region, serviceIp, relayNode, ctx, message, isErrorFlag);
+            RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(idcSid).toString(), idcSid, address + ":" + port);
+            saveIdcInfo(idcSid, region, serviceIp, relayNode, ctx, message, isErrorFlag, nodeId);
         }
         centerNode.printNodeInfoIterative();
-
-        Long nodeId = Math.abs(new BigInteger(1, DigestUtil.md5Hex(region.getZoneCode() + region.getRegionCode() + (!StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY) + serviceIp + serviceId).getBytes()).longValue());
         saveServerDetail(nodeId, serviceIp, header, serviceId, ctx, message, isErrorFlag);
-
         return nodeId;
     }
 
 
-    private void saveRelayInfo(String serviceId, String serviceIp, RegionInfo region, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag) {
-        RelayInfo relayInfo = relayInfoCacheMap.computeIfAbsent(serviceId, key -> {
+    private void saveRelayInfo(String serviceId, String serviceIp, RegionInfo region, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag, String nodeId) {
+        RelayInfo relayInfo = relayInfoCacheMap.computeIfAbsent(nodeId, key -> {
             CountDownLatch latch = new CountDownLatch(1);
-            RelayInfo globalRelay = globalRelayInfoCacheMap.computeIfAbsent(serviceId, r -> {
+            RelayInfo globalRelay = globalRelayInfoCacheMap.computeIfAbsent(nodeId, r -> {
                 RelayInfo build = new RelayInfo().builder()
                         .zone((region.getZoneCode()))
                         .region(region.getRegionCode())
                         .relayIp(serviceIp)
                         .location(region.getLocation())
-                        .relay(r)
+                        .relay(nodeId)
                         .build();
                 CompletableFuture.supplyAsync(() -> relayInfoService.insert(build), virtualThreadExecutor).handle((result, throwable) -> {
                     try {
@@ -334,10 +306,10 @@ public class EdgeController {
                 return isErrorFlag.get() ? null : result;
             });
         }
-        relayInfoCacheMap.put(serviceId, relayInfo);
+        relayInfoCacheMap.put(nodeId, relayInfo);
     }
 
-    public void saveServerDetail(Long nodeId, String serviceIp, CommonMessageWrapper.Header header, String serviceId, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag) {
+    public void saveServerDetail(String nodeId, String serviceIp, CommonMessageWrapper.Header header, String serviceId, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag) {
         RegisterNodeEnum type = !StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY;
         ServiceDetail detail = serverDetailCacheMap.compute(serviceId, (key, existingDetail) -> {
             CountDownLatch latch = new CountDownLatch(1);
@@ -357,6 +329,9 @@ public class EdgeController {
                 ServiceDetail finalExistingDetail = existingDetail;
                 existingDetail.setHealthy(NumberUtils.BYTE_ONE);
                 existingDetail.setLastHbAt(new Date());
+                existingDetail.setEdgeId(nodeId);
+                existingDetail.setLocalIp(serviceIp);
+                existingDetail.setType(String.valueOf(type));
                 CompletableFuture.supplyAsync(() -> serviceDetailService.saveOrUpdate(finalExistingDetail), virtualThreadExecutor).handle((result, throwable) -> {
                     if (!ObjectUtils.isEmpty(throwable) || !result) {
                         try {
@@ -385,10 +360,10 @@ public class EdgeController {
         }
     }
 
-    private void saveIdcInfo(String serviceId, RegionInfo region, String serviceIp, Node relayNode, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag) {
-        IdcInfo idcInfo = idcInfoCacheMap.computeIfAbsent(serviceId, key -> {
+    private void saveIdcInfo(String serviceId, RegionInfo region, String serviceIp, Node relayNode, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag, String nodeId) {
+        IdcInfo idcInfo = idcInfoCacheMap.computeIfAbsent(nodeId, key -> {
             CountDownLatch latch = new CountDownLatch(1);
-            IdcInfo globalIdcInfo = globalIdcInfoCacheMap.computeIfAbsent(serviceId, i -> {
+            IdcInfo globalIdcInfo = globalIdcInfoCacheMap.computeIfAbsent(nodeId, i -> {
                 IdcInfo build = new IdcInfo().builder()
                         .zone((region.getZoneCode()))
                         .region(region.getRegionCode())
@@ -396,7 +371,7 @@ public class EdgeController {
                         .location(region.getLocation())
                         .createAt(new Date())
                         .lastUpdateAt(new Date())
-                        .idc(i).build();
+                        .idc(nodeId).build();
                 CompletableFuture.supplyAsync(() -> idcInfoService.save(build), virtualThreadExecutor).handle((result, throwable) -> {
                     try {
                         if (!ObjectUtils.isEmpty(throwable) || !result) {
@@ -441,7 +416,7 @@ public class EdgeController {
             });
         }
 
-        idcInfoCacheMap.put(serviceId, idcInfo);
+        idcInfoCacheMap.put(nodeId, idcInfo);
         if (!ObjectUtils.isEmpty(relayNode)) {
             relayNode.addOrUpdateNode(serviceId, IDC, ctx.channel(), relayNode);
         } else {
@@ -504,7 +479,6 @@ public class EdgeController {
         }, virtualThreadExecutor);
     }
 
-    // 提取：处理子节点的健康状态和删除缓存
     private List<String> processChildrenHealth(Node node) {
         return node.getChildren().parallelStream()
                 .peek(child -> updateNodeHealthAndCache(child))
@@ -512,23 +486,20 @@ public class EdgeController {
                 .collect(Collectors.toList());
     }
 
-    // 提取：处理节点的健康状态和删除缓存
     private void processNodeHealth(Node node) {
         updateNodeHealthAndCache(node);
         node.removeNodeRecursively(node);
     }
 
-    // 提取：更新节点健康状态和删除缓存
     private void updateNodeHealthAndCache(Node node) {
         ServiceDetail detail = serverDetailCacheMap.get(node.getServiceId());
         if (!ObjectUtils.isEmpty(detail)) {
             detail.setHealthy(NumberUtils.BYTE_ZERO);
             serverDetailCacheMap.put(node.getServiceId(), detail);
-            RedissonUtils.delLocalCachedMap(CenterApplicationRunner.consistentHash.getShard(node.getServiceId()).toString(), node.getServiceId());
+            RedissonUtils.delLocalCachedMap(serverConsistentHash.getShard(node.getServiceId()).toString(), node.getServiceId());
         }
     }
 
-    // 提取：更新服务详情
     private void updateServiceDetails(String serviceId, List<String> serviceIds) {
         ServiceDetailService service = SpringContextHolder.getBean(ServiceDetailService.class);
         serviceIds.add(serviceId);
@@ -546,7 +517,7 @@ public class EdgeController {
         }
     }
 
-    private void handleSaveError(Throwable throwable, Boolean result, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, String action, String msg, Integer code) {
+    public void handleSaveError(Throwable throwable, Boolean result, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, String action, String msg, Integer code) {
         KvLogger.instance(this)
                 .p(LogFieldConstants.ACTION, action)
                 .p(LogFieldConstants.ERR_MSG, !ObjectUtils.isEmpty(throwable) ? throwable.getMessage() : "customerThrowException")

@@ -9,6 +9,11 @@ public interface CenterEvent {
     String RELAY_EVENT = "RelayEvent";
     String FIND_LOCAL_CHANNEL_EVENT = "FindLocalChannelEvent";
     String SEND_MSG_TO_CHANNEL_EVENT = "SendMsgToChannelEvent";
+    String FETCH_CHANNEL_FROM_REMOTE_EVENT = "FetchChannelFromRemoteEvent";
+    String SYNC_CONFIG_TO_IDC_EVENT = "SYNC_CONFIG_TO_IDC_EVENT";
+    String SEND_MSG_TO_LOCAL_OR_REMOTE_CHANNEL_EVENT = "SendMsgToLocalOrRemoteChannelEvent";
+
+    String DoJob = "DoJob";
 
     public interface Action {
         String CenterWsServer_StartInit = "StartInit";
@@ -31,6 +36,11 @@ public interface CenterEvent {
         String FIND_LOCAL_CHANNEL_FAILED = "RegionInitializeFailed";
         String SEND_MSG_TO_CHANNEL_FAILED = "SendMsgToChannelFailed";
         String SEND_MSG_TO_CHANNEL_SUCCESSFULLY = "SendMsgToChannelSuccessfully";
+        String FETCH_CHANNEL_FROM_REMOTE_INIT = "FetchChannelFromRemoteInit";
+        String SEND_MSG_TO_LOCAL_OR_REMOTE_CHANNEL_REMOTE = "SendMsgToLocalOrRemoteChannelRemote";
+        String FETCH_CHANNEL_FROM_REMOTE_FAILED = "FetchChannelFromRemoteFailed";
+        String SYNC_CONFIG_TO_IDC_FAILED = "SyncConfigToIdcFailed";
+        String FETCH_CHANNEL_FROM_REMOTE_SUCCESS = "FetchChannelFromRemoteSuccess";
 
 
         String Update_IdcInfo_Failed = "UpdateIdcInfoFailed";
@@ -42,7 +52,6 @@ public interface CenterEvent {
         String TASK_REJECTED = "TaskRejected";
 
         String RELAY_EVENT_ACTION_RELAY_UPDATE = "RelayEventActionRelayUpdate";
-
     }
 
 }

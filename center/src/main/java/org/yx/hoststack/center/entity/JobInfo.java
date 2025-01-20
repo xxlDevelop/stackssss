@@ -65,7 +65,7 @@ public class JobInfo implements Serializable {
     /**
      * 任务执行进度, 范围:[0,100]
      */
-    private Integer jobProcess;
+    private Integer jobProgress;
 
     /**
      * 任务执行目标所属大区标识
@@ -76,6 +76,11 @@ public class JobInfo implements Serializable {
      * 任务执行目标所属分区
      */
     private String region;
+
+    /**
+     * 任务执行目标所属的RELAY标识
+     */
+    private String relay;
 
     /**
      * 任务执行目标所属IDC机房
@@ -108,9 +113,14 @@ public class JobInfo implements Serializable {
     private Long runTime;
 
     /**
-     * 父级任务ID
+     * 下一级任务ID
      */
-    private String parentJobId;
+    private String nextJobId;
+
+    /**
+     * 根任务ID
+     */
+    private String rootJobId;
 
     /**
      * 创建时间

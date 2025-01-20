@@ -15,6 +15,7 @@ public interface HostStackConstants {
     String RELAY_SID = "RelaySid";
     String RUN_MODE = "RunMode";
     String JOB_ID = "JobId";
+    String JOB_DETAIL_ID = "JobDetailId";
     String JOB_TYPE = "JobType";
     String JOB_SUB_TYPE = "JobSubType";
 

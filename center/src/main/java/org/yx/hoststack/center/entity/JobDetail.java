@@ -33,11 +33,6 @@ public class JobDetail implements Serializable {
     private String jobDetailId;
 
     /**
-     * Parent Subtask ID
-     */
-    private String parentJobDetailId;
-
-    /**
      * jobInfo id
      */
     private String jobId;
@@ -53,9 +48,9 @@ public class JobDetail implements Serializable {
     private String jobStatus;
 
     /**
-     * Task execution progress, scope: [0100]
+     * Task execution progress, scope: [0-100]
      */
-    private Integer jobProcess;
+    private Integer jobProgress;
 
     /**
      * Task parameters

@@ -3,6 +3,7 @@ package org.yx.hoststack.edge.common;
 public interface EdgeEvent {
     String EDGE_WS_CLIENT = "EdgeWsClient";
     String EDGE_WS_SERVER = "EdgeWsServer";
+    String EDGE_HTTP_REMOTE = "HttpRemoteCall";
     String BUSINESS = "Business";
     String WORK_QUEUE_CONSUMER = "WorkQueueConsumer";
     String FORWARDING_PROTOCOL = "ForwardingProtocol";
@@ -64,6 +65,16 @@ public interface EdgeEvent {
         String CONSUMER_HOST_HB = "ConsumerHostHb";
         String CONSUMER_NOT_SEND_JOB_NOTIFY = "ConsumerNotSendJobNotify";
         String CONSUMER_HOST_EXIT = "ConsumerHostExit";
+
+        String IMAGE_DISTRIBUTE = "ImageDistribute";
+        String IMAGE_DELETE = "ImageDelete";
+        String IMAGE_DISTRIBUTE_CALLBACK = "ImageDistributeCallback";
+
+        String BASE_VOLUME_CREATE = "BaseVolumeCreate";
+        String USER_VOLUME_CREATE = "UserVolumeCreate";
+
+        String BASE_VOLUME_DELETE = "BaseVolumeDelete";
+        String USER_VOLUME_DELETE = "UserVolumeDelete";
     }
 
 }

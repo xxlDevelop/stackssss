@@ -23,7 +23,7 @@ public class JobNotifyToLocalDiskConsumer implements Runnable {
     public void run() {
         while (true) {
             try {
-                List<AgentCommonMessage> agentCommonMessages = Lists.newArrayList();
+                List<AgentCommonMessage<?>> agentCommonMessages = Lists.newArrayList();
                 messageQueues.getJobNotifyToDiskQueue().drainTo(agentCommonMessages, 50);
                 if (!agentCommonMessages.isEmpty()) {
                     jobReNotifyService.writeToFile(agentCommonMessages);

@@ -3,13 +3,18 @@
 runMode: idc
 # runMode等于idc时upWsAddr填写区域relay公网wss接入地址
 # runMode等于relay时upWsAddr填写host-stack中心wss接入地址
-upWsAddr: ws://192.168.33.248:8761
+#upWsAddr: ws://192.168.33.248:8761
+upWsAddr: ws://localhost:1234
 # 本机IP
 localIp: 192.168.33.218
 # 未发出的job通知本地落盘目录
 notSendJobNotifySavePath: /data/host-stack/edge/notify
 # 未发出的job通知本地落盘文件占用最大磁盘空间(MB)，超过该配置，文件进行切分
 notSendJobNotifyFileMaxSize: 2
+# admin tid
+adminTid: 10000
+# storageSvcBaseUrl
+storageSvcBaseUrl: http://localhost:8099
 
 webSocket:
   # webSocket服务端配置
@@ -44,8 +49,8 @@ executor:
   capacity: 2048
   keep-alive: 60
 
-# http配置
-httpClient:
+# WebClient配置
+webClient:
   maxConnections: 500
   maxIdleTime: 3
   connectTimeout: 5

@@ -60,12 +60,12 @@ public class AgentCpu implements Serializable{
     /**
      *  CPU核心
      */
-    private String cpuCores;
+    private Integer cpuCores;
 
     /**
      *  CPU线程
      */
-    private String cpuThreads;
+    private Integer cpuThreads;
 
     /**
      *  CPU速率

@@ -141,11 +141,20 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
         sendMsg(buildSendMessage(ProtoMethodId.IdcExit.getValue(), idcExitReq.toByteString(), UUID.fastUUID().toString()), null, null);
     }
 
-    public void sendJobNotifyReport(List<AgentCommonMessage> agentReportList, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
+    public void sendJobNotifyReport(List<AgentCommonMessage<?>> agentReportList, String traceId, String output,
+                                    SendMsgCallback successCallback, SendMsgCallback failCallback) {
         E2CMessage.E2C_JobReportReq.Builder jobReportReqBuilder = E2CMessage.E2C_JobReportReq.newBuilder();
         for (AgentCommonMessage<?> agentReport : agentReportList) {
-            String jobDetailId = agentReport.getJobId();
-            String jobId = jobDetailId.split(StringPool.DASH)[0];
+            String jobId;
+            String jobDetailId;
+            String jobFullId = agentReport.getJobId();
+            if (jobFullId.contains(StringPool.DASH)) {
+                jobDetailId = agentReport.getJobId();
+                jobId = jobDetailId.split(StringPool.DASH)[0];
+            } else {
+                jobDetailId = "";
+                jobId = agentReport.getJobId();
+            }
             String jobStatus = agentReport.getStatus();
             int jobProgress = agentReport.getProgress();
             int jobCode = agentReport.getCode();
@@ -163,7 +172,7 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
                                             .setProgress(jobProgress)
                                             .setCode(jobCode)
                                             .setMsg(StringUtil.isBlank(jobMessage) ? "" : jobMessage)
-                                            .setOutput("")
+                                            .setOutput(output)
                                             .build())
                                     .build().toByteString())
                             .build());

@@ -10,15 +10,14 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.SysCode;
+import org.yx.hoststack.center.common.req.channel.SendChannelReq;
 import org.yx.hoststack.center.common.req.idc.IdcCreateReq;
 import org.yx.hoststack.center.common.req.idc.IdcListReq;
 import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
@@ -30,7 +29,9 @@ import org.yx.hoststack.center.common.resp.idc.IdcListResp;
 import org.yx.hoststack.center.entity.IdcInfo;
 import org.yx.hoststack.center.mapper.IdcInfoMapper;
 import org.yx.hoststack.center.service.IdcInfoService;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
+import org.yx.lib.utils.constant.CommonConstants;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> implements IdcInfoService {
 
 
-    private final IdcInfoMapper idcInfoMapper;
+    private final CenterService centerService;
 
 
     @Override
@@ -138,7 +139,7 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
      */
     private boolean syncConfigToIdc(IdcConfigSyncReq req) {
         try {
-            // 构建基础配置
+            // Build base configuration
             C2EMessage.EdgeBasicConfig.Builder basicBuilder = C2EMessage.EdgeBasicConfig.newBuilder()
                     .setLocalShareStorageHttpSvc(req.getConfig().getBasic().getLocalShareStorageHttpSvc())
                     .setShareStorageUser(req.getConfig().getBasic().getShareStorageUser())
@@ -148,34 +149,36 @@ public class IdcInfoServiceImpl extends ServiceImpl<IdcInfoMapper, IdcInfo> impl
                     .setSpeedTestSvc(req.getConfig().getBasic().getSpeedTestSvc())
                     .setLocation(req.getConfig().getBasic().getLocation());
 
-            // 构建网络配置列表
+            // Build a network configuration list
             List<C2EMessage.EdgeNetConfig> netConfigs = req.getConfig().getNet().stream()
                     .map(IdcNetConfigReq::toEdgeNetConfig)
                     .collect(Collectors.toList());
 
-            // 构建完整的配置同步请求
+            // Build a complete configuration synchronization request
             C2EMessage.C2E_EdgeConfigSyncReq configSyncReq = C2EMessage.C2E_EdgeConfigSyncReq.newBuilder()
                     .setBasic(basicBuilder.build())
                     .addAllNet(netConfigs)
                     .build();
 
-            // 获取IDC的Channel
-            // TODO 这里获取益健的封装好的方法
-            Channel channel = null;//channelManager.getChannel(req.getIdcId());
-            if (channel == null || !channel.isActive()) {
-                log.error("Channel not found or inactive for IDC: {}", req.getIdcId());
-                return false;
-            }
-
-            // 发送消息
-            channel.writeAndFlush(new BinaryWebSocketFrame(
-                    Unpooled.wrappedBuffer(configSyncReq.toByteArray())
-            ));
-
-            return true;
+            // post IDC Channel
+            R<?> sendMsgToLocalOrRemoteChannel = centerService.sendMsgToLocalOrRemoteChannel(
+                    SendChannelReq.builder()
+                            .serviceId(req.getIdcId())
+                            .msg(configSyncReq.toByteArray())
+                            .build()
+            );
+            return sendMsgToLocalOrRemoteChannel.getCode() == R.ok().getCode();
 
         } catch (Exception e) {
-            log.error("Error syncing config to IDC: " + req.getIdcId(), e);
+            KvLogger.instance(this)
+                    .p(LogFieldConstants.EVENT, CenterEvent.SYNC_CONFIG_TO_IDC_EVENT)
+                    .p(LogFieldConstants.ACTION, CenterEvent.Action.SYNC_CONFIG_TO_IDC_FAILED)
+                    .p(LogFieldConstants.ERR_MSG, e.getMessage())
+                    .p(LogFieldConstants.Alarm, 0)
+                    .p(LogFieldConstants.ReqData, JSON.toJSONString(req))
+                    .p(LogFieldConstants.ReqData, JSON.toJSONString(req))
+                    .p(LogFieldConstants.TRACE_ID, MDC.get(CommonConstants.TRACE_ID))
+                    .e(e);
             return false;
         }
     }

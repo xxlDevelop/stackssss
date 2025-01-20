@@ -48,3 +48,44 @@
 //	}
 //
 //}
+
+
+
+
+//        List<Mono<R<?>>> monoList = Lists.newArrayList();
+//        List<R<?>> rList = Lists.newArrayList();
+//        for (int i = 0; i < 10; i++) {
+//            monoList.add(
+//                    storageSvcApiService.createBaseVolume(new CreateBaseVolumeReq()).flatMap(r -> {
+//                        System.out.println(JSON.toJSONString(r));
+//                        rList.add(r);
+//                        return Mono.just(r);
+//                    }));
+//        }
+//        Flux.fromIterable(monoList).flatMap(rMono -> rMono).doOnComplete(() -> {
+//            System.out.println(rList.size());
+//        }).subscribe();
+
+// test
+//        executor.execute(() -> {
+//            MessageQueues messageQueues = SpringContextHolder.getBean(MessageQueues.class);
+//            for (int i = 0; i < 900000; i++) {
+//                messageQueues.getJobNotifyToDiskQueue().add(AgentCommonMessage.builder()
+//                        .method("CreateVM")
+//                        .hostId(UUID.fastUUID().toString())
+//                        .type(MessageType.NOTIFY)
+//                        .traceId(UUID.fastUUID().toString())
+//                        .jobId(UUID.fastUUID() + "-" + "hostId")
+//                        .progress(100)
+//                        .status("success")
+//                        .code(0)
+//                        .build());
+//                if (i % 100 == 0) {
+//                    try {
+//                        TimeUnit.MILLISECONDS.sleep(50);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        });

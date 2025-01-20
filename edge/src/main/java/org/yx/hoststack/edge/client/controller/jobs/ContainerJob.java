@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.yx.hoststack.edge.common.JobType;
 import org.yx.hoststack.edge.common.exception.NotFoundSessionException;
 import org.yx.hoststack.edge.common.exception.UnknownJobException;
+import org.yx.hoststack.edge.queue.MessageQueues;
 import org.yx.hoststack.edge.server.ws.session.Session;
 import org.yx.hoststack.edge.server.ws.session.SessionManager;
 import org.yx.hoststack.edge.server.ws.session.SessionType;
@@ -22,8 +23,8 @@ import org.yx.hoststack.protocol.ws.server.JobParams;
 @Service(JobType.Container)
 public class ContainerJob extends HostStackJob {
 
-    protected ContainerJob(SessionManager sessionManager) {
-        super(sessionManager);
+    protected ContainerJob(SessionManager sessionManager, MessageQueues messageQueues) {
+        super(sessionManager, messageQueues);
     }
 
     @Override
@@ -32,10 +33,10 @@ public class ContainerJob extends HostStackJob {
         switch (jobReq.getJobSubType().toLowerCase()) {
             case "create":
                 JobParams.ContainerCreate containerCreate = JobParams.ContainerCreate.parseFrom(jobReq.getJobParams());
-                Session createContainerHostTargetSession = getJobTargetSession(containerCreate.getHostId(), SessionType.Host);
+                Session createContainerHostTargetSession = sessionManager.getSession(containerCreate.getHostId());
                 // send job to host
                 containerCreate.getTargetList().forEach(target ->
-                        validAgentSession(createContainerHostTargetSession, jobReq, target.getJobDetailId(), messageHeader.getTraceId(),
+                        validAgentSession(createContainerHostTargetSession, jobReq.getJobId(), target.getJobDetailId(), messageHeader.getTraceId(),
                                 agentSession -> {
                                     // create job data
                                     CreateContainerJob createContainerJob = CreateContainerJob.builder()
@@ -56,19 +57,19 @@ public class ContainerJob extends HostStackJob {
                                                     .build()))
                                             .build();
                                     // create job message
-                                    AgentCommonMessage<?> createContainerMessage = buildJobMessage(target.getJobDetailId(),
+                                    AgentCommonMessage<?> createContainerMessage = buildAgentJobMessage(target.getJobDetailId(),
                                             containerCreate.getHostId(), "CreateVM", messageHeader.getTraceId(), createContainerJob);
                                     // send job message to agent
-                                    sendJobToAgent(agentSession, jobReq, createContainerMessage,
+                                    sendJobToAgent(agentSession, jobReq.getJobId(), createContainerMessage,
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;
             case "upgrade":
                 JobParams.ContainerUpgrade containerUpgrade = JobParams.ContainerUpgrade.parseFrom(jobReq.getJobParams());
-                Session upgradeContainerHostTargetSession = getJobTargetSession(containerUpgrade.getHostId(), SessionType.Host);
+                Session upgradeContainerHostTargetSession = sessionManager.getSession(containerUpgrade.getHostId());
                 // send job to host
                 containerUpgrade.getTargetList().forEach(target ->
-                        validAgentSession(upgradeContainerHostTargetSession, jobReq, target.getJobDetailId(), messageHeader.getTraceId(),
+                        validAgentSession(upgradeContainerHostTargetSession, jobReq.getJobId(), target.getJobDetailId(), messageHeader.getTraceId(),
                                 agentSession -> {
                                     // create job data
                                     UpgradeContainerJob upgradeContainerJob = UpgradeContainerJob.builder()
@@ -84,19 +85,19 @@ public class ContainerJob extends HostStackJob {
                                             .cids(Lists.newArrayList(target.getCid()))
                                             .build();
                                     // create job message
-                                    AgentCommonMessage<?> upgradeContainerMessage = buildJobMessage(target.getJobDetailId(),
+                                    AgentCommonMessage<?> upgradeContainerMessage = buildAgentJobMessage(target.getJobDetailId(),
                                             containerUpgrade.getHostId(), "UpgradeImage", messageHeader.getTraceId(), upgradeContainerJob);
                                     // send job message to agent
-                                    sendJobToAgent(agentSession, jobReq, upgradeContainerMessage,
+                                    sendJobToAgent(agentSession, jobReq.getJobId(), upgradeContainerMessage,
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;
             case "updateprofile":
                 JobParams.ContainerUpdateProfile containerUpdateProfile = JobParams.ContainerUpdateProfile.parseFrom(jobReq.getJobParams());
-                Session updateProfileContainerHostTargetSession = getJobTargetSession(containerUpdateProfile.getHostId(), SessionType.Host);
+                Session updateProfileContainerHostTargetSession = sessionManager.getSession(containerUpdateProfile.getHostId());
                 // send job to host
                 containerUpdateProfile.getTargetList().forEach(target ->
-                        validAgentSession(updateProfileContainerHostTargetSession, jobReq, target.getJobDetailId(), messageHeader.getTraceId(),
+                        validAgentSession(updateProfileContainerHostTargetSession, jobReq.getJobId(), target.getJobDetailId(), messageHeader.getTraceId(),
                                 agentSession -> {
                                     // create job data
                                     ContainerUpdateProfileJob containerUpdateProfileJob = ContainerUpdateProfileJob.builder()
@@ -105,19 +106,19 @@ public class ContainerJob extends HostStackJob {
                                                     .build()))
                                             .build();
                                     // create job message
-                                    AgentCommonMessage<?> upgradeProfileMessage = buildJobMessage(target.getJobDetailId(),
+                                    AgentCommonMessage<?> upgradeProfileMessage = buildAgentJobMessage(target.getJobDetailId(),
                                             containerUpdateProfile.getHostId(), "ModifyVM", messageHeader.getTraceId(), containerUpdateProfileJob);
                                     // send job message to agent
-                                    sendJobToAgent(agentSession, jobReq, upgradeProfileMessage,
+                                    sendJobToAgent(agentSession, jobReq.getJobId(), upgradeProfileMessage,
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;
             case "ctrl":
                 JobParams.ContainerCtrl containerCtrl = JobParams.ContainerCtrl.parseFrom(jobReq.getJobParams());
-                Session ctrlContainerHostTargetSession = getJobTargetSession(containerCtrl.getHostId(), SessionType.Host);
+                Session ctrlContainerHostTargetSession = sessionManager.getSession(containerCtrl.getHostId());
                 // send job to host
                 containerCtrl.getTargetList().forEach(target ->
-                        validAgentSession(ctrlContainerHostTargetSession, jobReq, target.getJobDetailId(), messageHeader.getTraceId(),
+                        validAgentSession(ctrlContainerHostTargetSession, jobReq.getJobId(), target.getJobDetailId(), messageHeader.getTraceId(),
                                 agentSession -> {
                                     // create job data
                                     CtrlContainerJob ctrlContainerJob = CtrlContainerJob.builder()
@@ -125,10 +126,10 @@ public class ContainerJob extends HostStackJob {
                                             .cids(Lists.newArrayList(target.getCid()))
                                             .build();
                                     // create job message
-                                    AgentCommonMessage<?> ctrlContainerMessage = buildJobMessage(target.getJobDetailId(),
+                                    AgentCommonMessage<?> ctrlContainerMessage = buildAgentJobMessage(target.getJobDetailId(),
                                             containerCtrl.getHostId(), "ControlVM", messageHeader.getTraceId(), ctrlContainerJob);
                                     // send job message to agent
-                                    sendJobToAgent(agentSession, jobReq, ctrlContainerMessage,
+                                    sendJobToAgent(agentSession, jobReq.getJobId(), ctrlContainerMessage,
                                             target.getJobDetailId(), messageHeader.getTraceId());
                                 }));
                 break;

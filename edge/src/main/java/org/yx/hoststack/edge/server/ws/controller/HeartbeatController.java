@@ -34,7 +34,7 @@ public class HeartbeatController extends BaseController {
     private void hostHeartBeat(ChannelHandlerContext context, AgentCommonMessage<?> agentCommonMessage) {
         String channelId = context.channel().id().toString();
         Object clientIp = getAttr(context.channel(), HostStackConstants.CLIENT_IP);
-        Session session = sessionManager.getSession(channelId);
+        Session session = sessionManager.getSession(agentCommonMessage.getHostId());
         if (session != null) {
             session.tick();
             HostHeartbeatReq hostHeartbeatReq = ((JSONObject) agentCommonMessage.getData()).toJavaObject(HostHeartbeatReq.class);

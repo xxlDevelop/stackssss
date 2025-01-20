@@ -27,6 +27,11 @@ public enum SysCode {
     x00000418("Update ServiceDetail error", 143418),
     x00000419("idc exit successful.", 143419),
 
+
+    x00000600("Agent Init Error, Agent Need to exist.", 143600),
+    x00000601("IDC/Relay Unregistered", 143601),
+
+
     // IDC Network Configuration Error Codes
     x00030001("Duplicate internal network address found", 12230001),
     x00030002("Duplicate external network address found", 12230002),
@@ -49,10 +54,12 @@ public enum SysCode {
     x00000501("Unknown column", 143501),
     x00000502("The corresponding channel was not found", 143502),
     x00000503("SendMsgError", 143503),
+    x00000504("Channel is inactive", 143504),
+    x00000505("Init SysModule、CpuInfo、GpuInfo Error", 143505),
+    x00000506("Get remoteServer is null", 143506),
 
 
 
-    x00000600("Task rejected", 143600),
 
 
 

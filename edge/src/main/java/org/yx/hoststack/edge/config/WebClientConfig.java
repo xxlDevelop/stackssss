@@ -17,6 +17,7 @@ import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.edge.common.exception.InvalidHttpStatusException;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
+import org.yx.lib.utils.util.StringUtil;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
@@ -94,7 +95,8 @@ public class WebClientConfig {
                                 .i();
 //                        StringUtils.abbreviate("",100)
                         if (clientResponse.statusCode().value() != HttpStatus.OK.value()) {
-                            return Mono.error(new InvalidHttpStatusException(clientResponse.statusCode().value(), body, traceId, EdgeSysCode.HttpCallFailed.getMsg()));
+                            return Mono.error(new InvalidHttpStatusException(clientResponse.statusCode().value(), body, traceId,
+                                    StringUtil.isBlank(body) ? EdgeSysCode.HttpCallFailed.getMsg() : body));
                         } else {
                             return Mono.just(body);
                         }

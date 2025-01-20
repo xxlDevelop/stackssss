@@ -19,38 +19,38 @@ public class SessionManager {
     /**
      * create session
      * @param context               ChannelHandlerContext
+     * @param hostId                HostId
      * @param sessionType           Host or Container
      * @param sessionTimeout        SessionTimeout
      * @return Session
      */
-    public Session createSession(ChannelHandlerContext context, SessionType sessionType, int sessionTimeout) {
-        String sessionId = context.channel().id().toString();
-        Session session = sessionMap.get(sessionId);
+    public Session createSession(ChannelHandlerContext context, String hostId, SessionType sessionType, int sessionTimeout) {
+        Session session = sessionMap.get(hostId);
         if (session == null) {
             if (sessionType == SessionType.Host) {
-                session = new HostAgentSession(context, sessionId, sessionTimeout, hashedWheelTimer);
+                session = new HostAgentSession(context, hostId, sessionTimeout, hashedWheelTimer);
             } else {
-                session = new ContainerAgentSession(context, sessionId, sessionTimeout, hashedWheelTimer);
+                session = new ContainerAgentSession(context, hostId, sessionTimeout, hashedWheelTimer);
             }
             session.initialize0();
-            sessionMap.put(sessionId, session);
+            sessionMap.put(hostId, session);
         }
         return session;
     }
 
-    public Session createSessionTest(String sessionId, SessionType sessionType, int sessionTimeout) {
-        Session session = sessionMap.get(sessionId);
-        if (session == null) {
-            if (sessionType == SessionType.Host) {
-                session = new HostAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
-            } else {
-                session = new ContainerAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
-            }
-            session.initialize0();
-            sessionMap.put(sessionId, session);
-        }
-        return session;
-    }
+//    public Session createSessionTest(String sessionId, SessionType sessionType, int sessionTimeout) {
+//        Session session = sessionMap.get(sessionId);
+//        if (session == null) {
+//            if (sessionType == SessionType.Host) {
+//                session = new HostAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
+//            } else {
+//                session = new ContainerAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
+//            }
+//            session.initialize0();
+//            sessionMap.put(sessionId, session);
+//        }
+//        return session;
+//    }
 
     public Session getSession(String sessionId) {
         return sessionMap.get(sessionId);
@@ -75,6 +75,11 @@ public class SessionManager {
     public List<Session> getSessions(SessionType sessionType) {
         return sessionMap.values().stream().filter(session -> session.getSessionType() == sessionType).collect(Collectors.toList());
     }
+
+    public List<Session> getSessions(List<String> sessionIds) {
+        return sessionMap.values().stream().filter(session -> sessionIds.contains(session.getSessionId())).collect(Collectors.toList());
+    }
+
 
     public void destroy() {
         hashedWheelTimer.stop();

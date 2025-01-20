@@ -23,4 +23,7 @@ public class EdgeCommonConfig {
 
     @Value("${notSendJobNotifyFileMaxSize:2}")
     private int notSendJobNotifyFileMaxSize;
+
+    @Value("${adminTid:10000}")
+    private Integer adminTid;
 }
