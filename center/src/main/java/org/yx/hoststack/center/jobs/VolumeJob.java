@@ -12,20 +12,25 @@ import org.yx.hoststack.center.jobs.cmd.JobInnerCmd;
 import org.yx.hoststack.center.jobs.cmd.volume.*;
 import org.yx.hoststack.center.service.JobDetailService;
 import org.yx.hoststack.center.service.JobInfoService;
+import org.yx.hoststack.center.service.biz.ServerCacheInfoServiceBiz;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.protocol.ws.server.JobParams;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.StringPool;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service("volume")
 public class VolumeJob extends BaseJob implements IJob {
 
     public VolumeJob(JobInfoService jobInfoService, JobDetailService jobDetailService,
+                     CenterService centerService, ServerCacheInfoServiceBiz serverCacheInfoServiceBiz,
                      TransactionTemplate transactionTemplate) {
-        super(jobInfoService, jobDetailService, transactionTemplate);
+        super(jobInfoService, jobDetailService, centerService, serverCacheInfoServiceBiz, transactionTemplate);
     }
 
     @Override
@@ -60,13 +65,13 @@ public class VolumeJob extends BaseJob implements IJob {
                 .p("CreateVolumeInfo", JSONObject.toJSONString(createVolumeCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.VolumeTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String volumeId : createVolumeCmdData.getVolumeId()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("volumeId", volumeId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + volumeId);
-            targetList.add(target);
+            targetList.add(JobParams.VolumeTarget.newBuilder()
+                    .setVolumeId(volumeId)
+                    .setJobDetailId(jobId + StringPool.DASH + volumeId)
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("volumeId", volumeId)
@@ -88,16 +93,21 @@ public class VolumeJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("volumeSize", createVolumeCmdData.getVolumeSize())
-                .fluentPut("volumeType", createVolumeCmdData.getVolumeType())
-                .fluentPut("diskType", createVolumeCmdData.getDiskType())
-                .fluentPut("sourceUrl", createVolumeCmdData.getSourceUrl())
-                .fluentPut("md5", createVolumeCmdData.getMd5())
-                .fluentPut("hostId", createVolumeCmdData.getHostId())
-                .fluentPut("snapshotName", createVolumeCmdData.getSnapshotName())
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.VolumeCreate jobParams = JobParams.VolumeCreate.newBuilder()
+                .setVolumeSize(createVolumeCmdData.getVolumeSize())
+                .setVolumeType(createVolumeCmdData.getVolumeType())
+                .setDiskType(createVolumeCmdData.getDiskType())
+                .setSourceUrl(createVolumeCmdData.getSourceUrl())
+                .setMd5(createVolumeCmdData.getMd5())
+                .setHostId(createVolumeCmdData.getHostId())
+                .setSnapshotName(createVolumeCmdData.getSnapshotName())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, createVolumeCmdData.getHostId(), jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     private String delete(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -108,13 +118,13 @@ public class VolumeJob extends BaseJob implements IJob {
                 .p("DeleteVolumeInfo", JSONObject.toJSONString(deleteVolumeCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.VolumeTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String volumeId : deleteVolumeCmdData.getVolumeIds()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("volumeId", volumeId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + volumeId);
-            targetList.add(target);
+            targetList.add(JobParams.VolumeTarget.newBuilder()
+                    .setVolumeId(volumeId)
+                    .setJobDetailId(jobId + StringPool.DASH + volumeId)
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("volumeId", volumeId)
@@ -132,12 +142,17 @@ public class VolumeJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("volumeType", deleteVolumeCmdData.getVolumeType())
-                .fluentPut("diskType", deleteVolumeCmdData.getDiskType())
-                .fluentPut("hostId", deleteVolumeCmdData.getHostId())
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.VolumeDelete jobParams = JobParams.VolumeDelete.newBuilder()
+                .setHostId(deleteVolumeCmdData.getHostId())
+                .setDiskType(deleteVolumeCmdData.getDiskType())
+                .setVolumeType(deleteVolumeCmdData.getVolumeType())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, deleteVolumeCmdData.getHostId(), jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     private String mount(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -148,16 +163,16 @@ public class VolumeJob extends BaseJob implements IJob {
                 .p("MountVolumeInfo", JSONObject.toJSONString(mountVolumeCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.MountInfo> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (MountVolumeCmdData.MountVolumeInfo mountInfo : mountVolumeCmdData.getMountInfoList()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("volumeId", mountInfo.getVolumeId())
-                    .fluentPut("baseVolumeId", mountInfo.getBaseVolumeId())
-                    .fluentPut("cid", mountInfo.getCid())
-                    .fluentPut("mountType", mountInfo.getMountType())
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + mountInfo.getCid());
-            targetList.add(target);
+            targetList.add(JobParams.MountInfo.newBuilder()
+                    .setVolumeId(mountInfo.getVolumeId())
+                    .setBaseVolumeId(mountInfo.getBaseVolumeId())
+                    .setCid(mountInfo.getCid())
+                    .setMountType(mountInfo.getMountType())
+                    .setJobDetailId(jobId + StringPool.DASH + mountInfo.getCid())
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("volumeId", mountInfo.getVolumeId())
@@ -176,10 +191,15 @@ public class VolumeJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("hostId", mountVolumeCmdData.getHostId())
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.VolumeMount jobParams = JobParams.VolumeMount.newBuilder()
+                .setHostId(mountVolumeCmdData.getHostId())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, mountVolumeCmdData.getHostId(), jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     private String unMount(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -190,15 +210,15 @@ public class VolumeJob extends BaseJob implements IJob {
                 .p("UnMountVolumeInfo", JSONObject.toJSONString(unMountVolumeCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.UnMountInfo> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (UnMountVolumeCmdData.UnMountVolumeInfo unMountInfo : unMountVolumeCmdData.getUnMountInfoList()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("volumeId", unMountInfo.getVolumeId())
-                    .fluentPut("cid", unMountInfo.getCid())
-                    .fluentPut("mountType", unMountInfo.getMountType())
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + unMountInfo.getCid());
-            targetList.add(target);
+            targetList.add(JobParams.UnMountInfo.newBuilder()
+                    .setVolumeId(unMountInfo.getVolumeId())
+                    .setCid(unMountInfo.getCid())
+                    .setMountType(unMountInfo.getMountType())
+                    .setJobDetailId(jobId + StringPool.DASH + unMountInfo.getVolumeId())
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("volumeId", unMountInfo.getVolumeId())
@@ -216,10 +236,15 @@ public class VolumeJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("hostId", unMountVolumeCmdData.getHostId())
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.VolumeUnMount jobParams = JobParams.VolumeUnMount.newBuilder()
+                .setHostId(unMountVolumeCmdData.getHostId())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, unMountVolumeCmdData.getHostId(), jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     private String upgrade(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -230,17 +255,15 @@ public class VolumeJob extends BaseJob implements IJob {
                 .p("UpgradeVolumeInfo", JSONObject.toJSONString(upgradeVolumeCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.VolumeUpgradeDetail> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (UpgradeVolumeCmdData.UpgradeVolumeInfo upgradeInfo : upgradeVolumeCmdData.getUpgradeInfoList()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("sourceUrl", upgradeVolumeCmdData.getSourceUrl())
-                    .fluentPut("md5", upgradeVolumeCmdData.getMd5())
-                    .fluentPut("originVolumeId", upgradeInfo.getOriginVolumeId())
-                    .fluentPut("newVolumeId", upgradeInfo.getNewVolumeId())
-                    .fluentPut("keepOrigin", upgradeInfo.isKeepOrigin())
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + upgradeInfo.getOriginVolumeId());
-            targetList.add(target);
+            targetList.add(JobParams.VolumeUpgradeDetail.newBuilder()
+                    .setOriginVolumeId(upgradeInfo.getOriginVolumeId())
+                    .setNewVolumeId(upgradeInfo.getNewVolumeId())
+                    .setKeepOrigin(upgradeInfo.isKeepOrigin())
+                    .setJobDetailId(jobId + StringPool.DASH + upgradeInfo.getOriginVolumeId())
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("sourceUrl", upgradeVolumeCmdData.getSourceUrl())
@@ -260,26 +283,33 @@ public class VolumeJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("hostId", upgradeVolumeCmdData.getHostId())
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.VolumeUpgrade jobParams = JobParams.VolumeUpgrade.newBuilder()
+                .setHostId(upgradeVolumeCmdData.getHostId())
+                .setSourceUrl(upgradeVolumeCmdData.getSourceUrl())
+                .setMd5(upgradeVolumeCmdData.getMd5())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, upgradeVolumeCmdData.getHostId(), jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
-    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList, KvLogger kvLogger) {
+    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList,
+                               Consumer<String> consumer, Consumer<Exception> exceptionConsumer) {
         if (safety) {
             try {
                 safetyPersistenceJob(jobId, jobCmd, null, "", jobDetailList);
-                kvLogger.i();
+                consumer.accept(jobId);
                 return jobId;
             } catch (Exception ex) {
-                kvLogger.p(LogFieldConstants.ERR_MSG, ex.getMessage())
-                        .e(ex);
+                exceptionConsumer.accept(ex);
                 return "";
             }
         } else {
             persistenceJob(jobId, jobCmd, null, "", jobDetailList);
-            kvLogger.i();
+            consumer.accept(jobId);
             return jobId;
         }
     }

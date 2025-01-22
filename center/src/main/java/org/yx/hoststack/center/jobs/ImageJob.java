@@ -14,19 +14,26 @@ import org.yx.hoststack.center.jobs.cmd.image.CreateImageCmdData;
 import org.yx.hoststack.center.jobs.cmd.image.DeleteImageCmdData;
 import org.yx.hoststack.center.service.JobDetailService;
 import org.yx.hoststack.center.service.JobInfoService;
+import org.yx.hoststack.center.service.biz.ServerCacheInfoServiceBiz;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.protocol.ws.server.JobParams;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.StringPool;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service("image")
 public class ImageJob extends BaseJob implements IJob {
+
     public ImageJob(JobInfoService jobInfoService, JobDetailService jobDetailService,
+                    CenterService centerService, ServerCacheInfoServiceBiz serverCacheInfoServiceBiz,
                     TransactionTemplate transactionTemplate) {
-        super(jobInfoService, jobDetailService, transactionTemplate);
+        super(jobInfoService, jobDetailService, centerService, serverCacheInfoServiceBiz, transactionTemplate);
     }
 
     @Override
@@ -54,15 +61,20 @@ public class ImageJob extends BaseJob implements IJob {
                 .p(LogFieldConstants.ACTION, String.format("%s-%s", jobCmd.getJobType().getName(), jobCmd.getJobSubType().getName()))
                 .flat("CreateImageInfo", createImageCmdData)
                 .p(HostStackConstants.JOB_ID, jobId);
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("imageId", createImageCmdData.getImageId())
-                .fluentPut("imageName", createImageCmdData.getImageName())
-                .fluentPut("imageVer", createImageCmdData.getImageVer())
-                .fluentPut("downloadUrl", createImageCmdData.getDownloadUrl())
-                .fluentPut("md5", createImageCmdData.getMd5())
-                .fluentPut("bucket", createImageCmdData.getBucket())
-                .fluentPut("idc", createImageCmdData.getIdc());
-        return persistence(safety, jobId, jobCmd, null, kvLogger);
+
+        JobParams.ImageCreate jobParams = JobParams.ImageCreate.newBuilder()
+                .setImageId(createImageCmdData.getImageId())
+                .setImageName(createImageCmdData.getImageName())
+                .setImageVer(createImageCmdData.getImageVer())
+                .setDownloadUrl(createImageCmdData.getDownloadUrl())
+                .setMd5(createImageCmdData.getMd5())
+                .setBucket(createImageCmdData.getBucket())
+                .build();
+        return persistence(safety, jobId, jobCmd, null, (JSONObject) JSONObject.toJSON(createImageCmdData),
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToEdge(jobCmd, jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     private String delete(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -73,14 +85,14 @@ public class ImageJob extends BaseJob implements IJob {
                 .p("DeleteImageInfo", JSON.toJSONString(deleteImageCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.ImageDeleteTarget> targetList = new ArrayList<>();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (DeleteImageCmdData cmdData : deleteImageCmdData) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("imageId", cmdData.getImageId())
-                    .fluentPut("bucket", cmdData.getBucket())
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + cmdData.getImageId());
-            targetList.add(target);
+            targetList.add(JobParams.ImageDeleteTarget.newBuilder()
+                    .setImageId(cmdData.getImageId())
+                    .setBucket(cmdData.getBucket())
+                    .setJobDetailId(jobId + StringPool.DASH + cmdData.getImageId())
+                    .build());
 
             jobDetailList.add(JobDetail.builder()
                     .jobId(jobId)
@@ -92,25 +104,32 @@ public class ImageJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+
+
+        JobParams.ImageDelete jobParams = JobParams.ImageDelete.newBuilder()
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList, null,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToEdge(jobCmd, jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
-    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList, KvLogger kvLogger) {
+    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList, JSONObject jobParams,
+                               Consumer<String> consumer, Consumer<Exception> exceptionConsumer) {
         if (safety) {
             try {
-                safetyPersistenceJob(jobId, jobCmd, null, "", jobDetailList);
-                kvLogger.i();
+                safetyPersistenceJob(jobId, jobCmd, jobParams, "", jobDetailList);
+                consumer.accept(jobId);
                 return jobId;
             } catch (Exception ex) {
-                kvLogger.p(LogFieldConstants.ERR_MSG, ex.getMessage())
-                        .e(ex);
+                exceptionConsumer.accept(ex);
                 return "";
             }
         } else {
-            persistenceJob(jobId, jobCmd, null, "", jobDetailList);
-            kvLogger.i();
+            persistenceJob(jobId, jobCmd, jobParams, "", jobDetailList);
+            consumer.accept(jobId);
             return jobId;
         }
     }

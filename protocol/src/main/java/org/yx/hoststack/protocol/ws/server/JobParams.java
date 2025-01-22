@@ -4299,6 +4299,30 @@ java.lang.String defaultValue) {
      */
     com.google.protobuf.ByteString
         getDownloadUrlBytes();
+
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The md5.
+     */
+    java.lang.String getMd5();
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The bytes for md5.
+     */
+    com.google.protobuf.ByteString
+        getMd5Bytes();
+
+    /**
+     * <code>string bucket = 6;</code>
+     * @return The bucket.
+     */
+    java.lang.String getBucket();
+    /**
+     * <code>string bucket = 6;</code>
+     * @return The bytes for bucket.
+     */
+    com.google.protobuf.ByteString
+        getBucketBytes();
   }
   /**
    * Protobuf type {@code org.yx.hoststack.protocol.ws.server.ImageCreate}
@@ -4326,6 +4350,8 @@ java.lang.String defaultValue) {
       imageName_ = "";
       imageVer_ = "";
       downloadUrl_ = "";
+      md5_ = "";
+      bucket_ = "";
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
@@ -4497,6 +4523,84 @@ java.lang.String defaultValue) {
       }
     }
 
+    public static final int MD5_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object md5_ = "";
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The md5.
+     */
+    @java.lang.Override
+    public java.lang.String getMd5() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        md5_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The bytes for md5.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMd5Bytes() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        md5_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BUCKET_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object bucket_ = "";
+    /**
+     * <code>string bucket = 6;</code>
+     * @return The bucket.
+     */
+    @java.lang.Override
+    public java.lang.String getBucket() {
+      java.lang.Object ref = bucket_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        bucket_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string bucket = 6;</code>
+     * @return The bytes for bucket.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getBucketBytes() {
+      java.lang.Object ref = bucket_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        bucket_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4523,6 +4627,12 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(downloadUrl_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 4, downloadUrl_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 5, md5_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(bucket_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 6, bucket_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4543,6 +4653,12 @@ java.lang.String defaultValue) {
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(downloadUrl_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(4, downloadUrl_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, md5_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(bucket_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, bucket_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4567,6 +4683,10 @@ java.lang.String defaultValue) {
           .equals(other.getImageVer())) return false;
       if (!getDownloadUrl()
           .equals(other.getDownloadUrl())) return false;
+      if (!getMd5()
+          .equals(other.getMd5())) return false;
+      if (!getBucket()
+          .equals(other.getBucket())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -4586,6 +4706,10 @@ java.lang.String defaultValue) {
       hash = (53 * hash) + getImageVer().hashCode();
       hash = (37 * hash) + DOWNLOADURL_FIELD_NUMBER;
       hash = (53 * hash) + getDownloadUrl().hashCode();
+      hash = (37 * hash) + MD5_FIELD_NUMBER;
+      hash = (53 * hash) + getMd5().hashCode();
+      hash = (37 * hash) + BUCKET_FIELD_NUMBER;
+      hash = (53 * hash) + getBucket().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4721,6 +4845,8 @@ java.lang.String defaultValue) {
         imageName_ = "";
         imageVer_ = "";
         downloadUrl_ = "";
+        md5_ = "";
+        bucket_ = "";
         return this;
       }
 
@@ -4766,6 +4892,12 @@ java.lang.String defaultValue) {
         if (((from_bitField0_ & 0x00000008) != 0)) {
           result.downloadUrl_ = downloadUrl_;
         }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.md5_ = md5_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.bucket_ = bucket_;
+        }
       }
 
       @java.lang.Override
@@ -4798,6 +4930,16 @@ java.lang.String defaultValue) {
         if (!other.getDownloadUrl().isEmpty()) {
           downloadUrl_ = other.downloadUrl_;
           bitField0_ |= 0x00000008;
+          onChanged();
+        }
+        if (!other.getMd5().isEmpty()) {
+          md5_ = other.md5_;
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
+        if (!other.getBucket().isEmpty()) {
+          bucket_ = other.bucket_;
+          bitField0_ |= 0x00000020;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -4846,6 +4988,16 @@ java.lang.String defaultValue) {
                 bitField0_ |= 0x00000008;
                 break;
               } // case 34
+              case 42: {
+                md5_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              case 50: {
+                bucket_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5147,6 +5299,150 @@ java.lang.String defaultValue) {
         checkByteStringIsUtf8(value);
         downloadUrl_ = value;
         bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object md5_ = "";
+      /**
+       * <code>string md5 = 5;</code>
+       * @return The md5.
+       */
+      public java.lang.String getMd5() {
+        java.lang.Object ref = md5_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          md5_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @return The bytes for md5.
+       */
+      public com.google.protobuf.ByteString
+          getMd5Bytes() {
+        java.lang.Object ref = md5_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          md5_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @param value The md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        md5_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMd5() {
+        md5_ = getDefaultInstance().getMd5();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @param value The bytes for md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        md5_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object bucket_ = "";
+      /**
+       * <code>string bucket = 6;</code>
+       * @return The bucket.
+       */
+      public java.lang.String getBucket() {
+        java.lang.Object ref = bucket_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          bucket_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string bucket = 6;</code>
+       * @return The bytes for bucket.
+       */
+      public com.google.protobuf.ByteString
+          getBucketBytes() {
+        java.lang.Object ref = bucket_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          bucket_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string bucket = 6;</code>
+       * @param value The bucket to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBucket(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        bucket_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string bucket = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearBucket() {
+        bucket_ = getDefaultInstance().getBucket();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string bucket = 6;</code>
+       * @param value The bytes for bucket to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBucketBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        bucket_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -5959,12 +6255,24 @@ java.lang.String defaultValue) {
         getImageIdBytes();
 
     /**
-     * <code>string jobDetailId = 2;</code>
+     * <code>string bucket = 2;</code>
+     * @return The bucket.
+     */
+    java.lang.String getBucket();
+    /**
+     * <code>string bucket = 2;</code>
+     * @return The bytes for bucket.
+     */
+    com.google.protobuf.ByteString
+        getBucketBytes();
+
+    /**
+     * <code>string jobDetailId = 3;</code>
      * @return The jobDetailId.
      */
     java.lang.String getJobDetailId();
     /**
-     * <code>string jobDetailId = 2;</code>
+     * <code>string jobDetailId = 3;</code>
      * @return The bytes for jobDetailId.
      */
     com.google.protobuf.ByteString
@@ -5993,6 +6301,7 @@ java.lang.String defaultValue) {
     }
     private ImageDeleteTarget() {
       imageId_ = "";
+      bucket_ = "";
       jobDetailId_ = "";
     }
 
@@ -6048,11 +6357,50 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int JOBDETAILID_FIELD_NUMBER = 2;
+    public static final int BUCKET_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object bucket_ = "";
+    /**
+     * <code>string bucket = 2;</code>
+     * @return The bucket.
+     */
+    @java.lang.Override
+    public java.lang.String getBucket() {
+      java.lang.Object ref = bucket_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        bucket_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string bucket = 2;</code>
+     * @return The bytes for bucket.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getBucketBytes() {
+      java.lang.Object ref = bucket_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        bucket_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int JOBDETAILID_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
     private volatile java.lang.Object jobDetailId_ = "";
     /**
-     * <code>string jobDetailId = 2;</code>
+     * <code>string jobDetailId = 3;</code>
      * @return The jobDetailId.
      */
     @java.lang.Override
@@ -6069,7 +6417,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string jobDetailId = 2;</code>
+     * <code>string jobDetailId = 3;</code>
      * @return The bytes for jobDetailId.
      */
     @java.lang.Override
@@ -6104,8 +6452,11 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(imageId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 1, imageId_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(bucket_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, bucket_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, jobDetailId_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, jobDetailId_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6119,8 +6470,11 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(imageId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(1, imageId_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(bucket_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, bucket_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, jobDetailId_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, jobDetailId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -6139,6 +6493,8 @@ java.lang.String defaultValue) {
 
       if (!getImageId()
           .equals(other.getImageId())) return false;
+      if (!getBucket()
+          .equals(other.getBucket())) return false;
       if (!getJobDetailId()
           .equals(other.getJobDetailId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -6154,6 +6510,8 @@ java.lang.String defaultValue) {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + IMAGEID_FIELD_NUMBER;
       hash = (53 * hash) + getImageId().hashCode();
+      hash = (37 * hash) + BUCKET_FIELD_NUMBER;
+      hash = (53 * hash) + getBucket().hashCode();
       hash = (37 * hash) + JOBDETAILID_FIELD_NUMBER;
       hash = (53 * hash) + getJobDetailId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -6288,6 +6646,7 @@ java.lang.String defaultValue) {
         super.clear();
         bitField0_ = 0;
         imageId_ = "";
+        bucket_ = "";
         jobDetailId_ = "";
         return this;
       }
@@ -6326,6 +6685,9 @@ java.lang.String defaultValue) {
           result.imageId_ = imageId_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.bucket_ = bucket_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.jobDetailId_ = jobDetailId_;
         }
       }
@@ -6347,9 +6709,14 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000001;
           onChanged();
         }
+        if (!other.getBucket().isEmpty()) {
+          bucket_ = other.bucket_;
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         if (!other.getJobDetailId().isEmpty()) {
           jobDetailId_ = other.jobDetailId_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -6384,10 +6751,15 @@ java.lang.String defaultValue) {
                 break;
               } // case 10
               case 18: {
-                jobDetailId_ = input.readStringRequireUtf8();
+                bucket_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
+              case 26: {
+                jobDetailId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6477,9 +6849,81 @@ java.lang.String defaultValue) {
         return this;
       }
 
+      private java.lang.Object bucket_ = "";
+      /**
+       * <code>string bucket = 2;</code>
+       * @return The bucket.
+       */
+      public java.lang.String getBucket() {
+        java.lang.Object ref = bucket_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          bucket_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string bucket = 2;</code>
+       * @return The bytes for bucket.
+       */
+      public com.google.protobuf.ByteString
+          getBucketBytes() {
+        java.lang.Object ref = bucket_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          bucket_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string bucket = 2;</code>
+       * @param value The bucket to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBucket(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        bucket_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string bucket = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearBucket() {
+        bucket_ = getDefaultInstance().getBucket();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string bucket = 2;</code>
+       * @param value The bytes for bucket to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBucketBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        bucket_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object jobDetailId_ = "";
       /**
-       * <code>string jobDetailId = 2;</code>
+       * <code>string jobDetailId = 3;</code>
        * @return The jobDetailId.
        */
       public java.lang.String getJobDetailId() {
@@ -6495,7 +6939,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string jobDetailId = 2;</code>
+       * <code>string jobDetailId = 3;</code>
        * @return The bytes for jobDetailId.
        */
       public com.google.protobuf.ByteString
@@ -6512,7 +6956,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string jobDetailId = 2;</code>
+       * <code>string jobDetailId = 3;</code>
        * @param value The jobDetailId to set.
        * @return This builder for chaining.
        */
@@ -6520,22 +6964,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         jobDetailId_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>string jobDetailId = 2;</code>
+       * <code>string jobDetailId = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearJobDetailId() {
         jobDetailId_ = getDefaultInstance().getJobDetailId();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>string jobDetailId = 2;</code>
+       * <code>string jobDetailId = 3;</code>
        * @param value The bytes for jobDetailId to set.
        * @return This builder for chaining.
        */
@@ -6544,7 +6988,7 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         jobDetailId_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6647,37 +7091,61 @@ java.lang.String defaultValue) {
         getSourceUrlBytes();
 
     /**
-     * <code>string hostId = 5;</code>
+     * <code>string md5 = 5;</code>
+     * @return The md5.
+     */
+    java.lang.String getMd5();
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The bytes for md5.
+     */
+    com.google.protobuf.ByteString
+        getMd5Bytes();
+
+    /**
+     * <code>string hostId = 6;</code>
      * @return The hostId.
      */
     java.lang.String getHostId();
     /**
-     * <code>string hostId = 5;</code>
+     * <code>string hostId = 6;</code>
      * @return The bytes for hostId.
      */
     com.google.protobuf.ByteString
         getHostIdBytes();
 
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>string snapshotName = 7;</code>
+     * @return The snapshotName.
+     */
+    java.lang.String getSnapshotName();
+    /**
+     * <code>string snapshotName = 7;</code>
+     * @return The bytes for snapshotName.
+     */
+    com.google.protobuf.ByteString
+        getSnapshotNameBytes();
+
+    /**
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> 
         getTargetList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index);
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     int getTargetCount();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
         getTargetOrBuilderList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
         int index);
@@ -6707,7 +7175,9 @@ java.lang.String defaultValue) {
       volumeType_ = "";
       diskType_ = "";
       sourceUrl_ = "";
+      md5_ = "";
       hostId_ = "";
+      snapshotName_ = "";
       target_ = java.util.Collections.emptyList();
     }
 
@@ -6852,11 +7322,50 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int HOSTID_FIELD_NUMBER = 5;
+    public static final int MD5_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object md5_ = "";
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The md5.
+     */
+    @java.lang.Override
+    public java.lang.String getMd5() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        md5_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string md5 = 5;</code>
+     * @return The bytes for md5.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMd5Bytes() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        md5_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int HOSTID_FIELD_NUMBER = 6;
     @SuppressWarnings("serial")
     private volatile java.lang.Object hostId_ = "";
     /**
-     * <code>string hostId = 5;</code>
+     * <code>string hostId = 6;</code>
      * @return The hostId.
      */
     @java.lang.Override
@@ -6873,7 +7382,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string hostId = 5;</code>
+     * <code>string hostId = 6;</code>
      * @return The bytes for hostId.
      */
     @java.lang.Override
@@ -6891,18 +7400,57 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int TARGET_FIELD_NUMBER = 6;
+    public static final int SNAPSHOTNAME_FIELD_NUMBER = 7;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object snapshotName_ = "";
+    /**
+     * <code>string snapshotName = 7;</code>
+     * @return The snapshotName.
+     */
+    @java.lang.Override
+    public java.lang.String getSnapshotName() {
+      java.lang.Object ref = snapshotName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        snapshotName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string snapshotName = 7;</code>
+     * @return The bytes for snapshotName.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSnapshotNameBytes() {
+      java.lang.Object ref = snapshotName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        snapshotName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TARGET_FIELD_NUMBER = 8;
     @SuppressWarnings("serial")
     private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> target_;
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     @java.lang.Override
     public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> getTargetList() {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     @java.lang.Override
     public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
@@ -6910,21 +7458,21 @@ java.lang.String defaultValue) {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     @java.lang.Override
     public int getTargetCount() {
       return target_.size();
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index) {
       return target_.get(index);
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
@@ -6958,11 +7506,17 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(sourceUrl_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 4, sourceUrl_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 5, md5_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 5, hostId_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 6, hostId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(snapshotName_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 7, snapshotName_);
       }
       for (int i = 0; i < target_.size(); i++) {
-        output.writeMessage(6, target_.get(i));
+        output.writeMessage(8, target_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -6986,12 +7540,18 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(sourceUrl_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(4, sourceUrl_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, md5_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, hostId_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, hostId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(snapshotName_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(7, snapshotName_);
       }
       for (int i = 0; i < target_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, target_.get(i));
+          .computeMessageSize(8, target_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -7016,8 +7576,12 @@ java.lang.String defaultValue) {
           .equals(other.getDiskType())) return false;
       if (!getSourceUrl()
           .equals(other.getSourceUrl())) return false;
+      if (!getMd5()
+          .equals(other.getMd5())) return false;
       if (!getHostId()
           .equals(other.getHostId())) return false;
+      if (!getSnapshotName()
+          .equals(other.getSnapshotName())) return false;
       if (!getTargetList()
           .equals(other.getTargetList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -7039,8 +7603,12 @@ java.lang.String defaultValue) {
       hash = (53 * hash) + getDiskType().hashCode();
       hash = (37 * hash) + SOURCEURL_FIELD_NUMBER;
       hash = (53 * hash) + getSourceUrl().hashCode();
+      hash = (37 * hash) + MD5_FIELD_NUMBER;
+      hash = (53 * hash) + getMd5().hashCode();
       hash = (37 * hash) + HOSTID_FIELD_NUMBER;
       hash = (53 * hash) + getHostId().hashCode();
+      hash = (37 * hash) + SNAPSHOTNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getSnapshotName().hashCode();
       if (getTargetCount() > 0) {
         hash = (37 * hash) + TARGET_FIELD_NUMBER;
         hash = (53 * hash) + getTargetList().hashCode();
@@ -7180,14 +7748,16 @@ java.lang.String defaultValue) {
         volumeType_ = "";
         diskType_ = "";
         sourceUrl_ = "";
+        md5_ = "";
         hostId_ = "";
+        snapshotName_ = "";
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
         } else {
           target_ = null;
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -7222,9 +7792,9 @@ java.lang.String defaultValue) {
 
       private void buildPartialRepeatedFields(org.yx.hoststack.protocol.ws.server.JobParams.VolumeCreate result) {
         if (targetBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) != 0)) {
+          if (((bitField0_ & 0x00000080) != 0)) {
             target_ = java.util.Collections.unmodifiableList(target_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000080);
           }
           result.target_ = target_;
         } else {
@@ -7247,7 +7817,13 @@ java.lang.String defaultValue) {
           result.sourceUrl_ = sourceUrl_;
         }
         if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.md5_ = md5_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
           result.hostId_ = hostId_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.snapshotName_ = snapshotName_;
         }
       }
 
@@ -7281,16 +7857,26 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000008;
           onChanged();
         }
+        if (!other.getMd5().isEmpty()) {
+          md5_ = other.md5_;
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         if (!other.getHostId().isEmpty()) {
           hostId_ = other.hostId_;
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
+        if (!other.getSnapshotName().isEmpty()) {
+          snapshotName_ = other.snapshotName_;
+          bitField0_ |= 0x00000040;
           onChanged();
         }
         if (targetBuilder_ == null) {
           if (!other.target_.isEmpty()) {
             if (target_.isEmpty()) {
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000080);
             } else {
               ensureTargetIsMutable();
               target_.addAll(other.target_);
@@ -7303,7 +7889,7 @@ java.lang.String defaultValue) {
               targetBuilder_.dispose();
               targetBuilder_ = null;
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000080);
               targetBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTargetFieldBuilder() : null;
@@ -7359,11 +7945,21 @@ java.lang.String defaultValue) {
                 break;
               } // case 34
               case 42: {
-                hostId_ = input.readStringRequireUtf8();
+                md5_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000010;
                 break;
               } // case 42
               case 50: {
+                hostId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              case 58: {
+                snapshotName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 58
+              case 66: {
                 org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget m =
                     input.readMessage(
                         org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.parser(),
@@ -7375,7 +7971,7 @@ java.lang.String defaultValue) {
                   targetBuilder_.addMessage(m);
                 }
                 break;
-              } // case 50
+              } // case 66
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -7641,9 +8237,81 @@ java.lang.String defaultValue) {
         return this;
       }
 
+      private java.lang.Object md5_ = "";
+      /**
+       * <code>string md5 = 5;</code>
+       * @return The md5.
+       */
+      public java.lang.String getMd5() {
+        java.lang.Object ref = md5_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          md5_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @return The bytes for md5.
+       */
+      public com.google.protobuf.ByteString
+          getMd5Bytes() {
+        java.lang.Object ref = md5_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          md5_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @param value The md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        md5_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMd5() {
+        md5_ = getDefaultInstance().getMd5();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 5;</code>
+       * @param value The bytes for md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        md5_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object hostId_ = "";
       /**
-       * <code>string hostId = 5;</code>
+       * <code>string hostId = 6;</code>
        * @return The hostId.
        */
       public java.lang.String getHostId() {
@@ -7659,7 +8327,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string hostId = 5;</code>
+       * <code>string hostId = 6;</code>
        * @return The bytes for hostId.
        */
       public com.google.protobuf.ByteString
@@ -7676,7 +8344,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string hostId = 5;</code>
+       * <code>string hostId = 6;</code>
        * @param value The hostId to set.
        * @return This builder for chaining.
        */
@@ -7684,22 +8352,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         hostId_ = value;
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
       /**
-       * <code>string hostId = 5;</code>
+       * <code>string hostId = 6;</code>
        * @return This builder for chaining.
        */
       public Builder clearHostId() {
         hostId_ = getDefaultInstance().getHostId();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
       /**
-       * <code>string hostId = 5;</code>
+       * <code>string hostId = 6;</code>
        * @param value The bytes for hostId to set.
        * @return This builder for chaining.
        */
@@ -7708,7 +8376,79 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         hostId_ = value;
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object snapshotName_ = "";
+      /**
+       * <code>string snapshotName = 7;</code>
+       * @return The snapshotName.
+       */
+      public java.lang.String getSnapshotName() {
+        java.lang.Object ref = snapshotName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          snapshotName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string snapshotName = 7;</code>
+       * @return The bytes for snapshotName.
+       */
+      public com.google.protobuf.ByteString
+          getSnapshotNameBytes() {
+        java.lang.Object ref = snapshotName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          snapshotName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string snapshotName = 7;</code>
+       * @param value The snapshotName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSnapshotName(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        snapshotName_ = value;
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string snapshotName = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSnapshotName() {
+        snapshotName_ = getDefaultInstance().getSnapshotName();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string snapshotName = 7;</code>
+       * @param value The bytes for snapshotName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSnapshotNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        snapshotName_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -7716,9 +8456,9 @@ java.lang.String defaultValue) {
       private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> target_ =
         java.util.Collections.emptyList();
       private void ensureTargetIsMutable() {
-        if (!((bitField0_ & 0x00000020) != 0)) {
+        if (!((bitField0_ & 0x00000080) != 0)) {
           target_ = new java.util.ArrayList<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget>(target_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000080;
          }
       }
 
@@ -7726,7 +8466,7 @@ java.lang.String defaultValue) {
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> targetBuilder_;
 
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> getTargetList() {
         if (targetBuilder_ == null) {
@@ -7736,7 +8476,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public int getTargetCount() {
         if (targetBuilder_ == null) {
@@ -7746,7 +8486,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index) {
         if (targetBuilder_ == null) {
@@ -7756,7 +8496,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
@@ -7773,7 +8513,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -7787,7 +8527,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder addTarget(org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
         if (targetBuilder_ == null) {
@@ -7803,7 +8543,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
@@ -7820,7 +8560,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder addTarget(
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -7834,7 +8574,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -7848,7 +8588,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder addAllTarget(
           java.lang.Iterable<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> values) {
@@ -7863,12 +8603,12 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder clearTarget() {
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000080);
           onChanged();
         } else {
           targetBuilder_.clear();
@@ -7876,7 +8616,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public Builder removeTarget(int index) {
         if (targetBuilder_ == null) {
@@ -7889,14 +8629,14 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder getTargetBuilder(
           int index) {
         return getTargetFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
           int index) {
@@ -7906,7 +8646,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
            getTargetOrBuilderList() {
@@ -7917,14 +8657,14 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder addTargetBuilder() {
         return getTargetFieldBuilder().addBuilder(
             org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder addTargetBuilder(
           int index) {
@@ -7932,7 +8672,7 @@ java.lang.String defaultValue) {
             index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 6;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 8;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder> 
            getTargetBuilderList() {
@@ -7945,7 +8685,7 @@ java.lang.String defaultValue) {
           targetBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder>(
                   target_,
-                  ((bitField0_ & 0x00000020) != 0),
+                  ((bitField0_ & 0x00000080) != 0),
                   getParentForChildren(),
                   isClean());
           target_ = null;
@@ -8679,25 +9419,49 @@ java.lang.String defaultValue) {
         getHostIdBytes();
 
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>string diskType = 2;</code>
+     * @return The diskType.
+     */
+    java.lang.String getDiskType();
+    /**
+     * <code>string diskType = 2;</code>
+     * @return The bytes for diskType.
+     */
+    com.google.protobuf.ByteString
+        getDiskTypeBytes();
+
+    /**
+     * <code>string volumeType = 3;</code>
+     * @return The volumeType.
+     */
+    java.lang.String getVolumeType();
+    /**
+     * <code>string volumeType = 3;</code>
+     * @return The bytes for volumeType.
+     */
+    com.google.protobuf.ByteString
+        getVolumeTypeBytes();
+
+    /**
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> 
         getTargetList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index);
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     int getTargetCount();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
         getTargetOrBuilderList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
         int index);
@@ -8725,6 +9489,8 @@ java.lang.String defaultValue) {
     }
     private VolumeDelete() {
       hostId_ = "";
+      diskType_ = "";
+      volumeType_ = "";
       target_ = java.util.Collections.emptyList();
     }
 
@@ -8780,18 +9546,96 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int TARGET_FIELD_NUMBER = 2;
+    public static final int DISKTYPE_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object diskType_ = "";
+    /**
+     * <code>string diskType = 2;</code>
+     * @return The diskType.
+     */
+    @java.lang.Override
+    public java.lang.String getDiskType() {
+      java.lang.Object ref = diskType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        diskType_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string diskType = 2;</code>
+     * @return The bytes for diskType.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getDiskTypeBytes() {
+      java.lang.Object ref = diskType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        diskType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int VOLUMETYPE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object volumeType_ = "";
+    /**
+     * <code>string volumeType = 3;</code>
+     * @return The volumeType.
+     */
+    @java.lang.Override
+    public java.lang.String getVolumeType() {
+      java.lang.Object ref = volumeType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        volumeType_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string volumeType = 3;</code>
+     * @return The bytes for volumeType.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getVolumeTypeBytes() {
+      java.lang.Object ref = volumeType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        volumeType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TARGET_FIELD_NUMBER = 4;
     @SuppressWarnings("serial")
     private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> target_;
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     @java.lang.Override
     public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> getTargetList() {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     @java.lang.Override
     public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
@@ -8799,21 +9643,21 @@ java.lang.String defaultValue) {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     @java.lang.Override
     public int getTargetCount() {
       return target_.size();
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index) {
       return target_.get(index);
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
@@ -8838,8 +9682,14 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 1, hostId_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(diskType_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, diskType_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(volumeType_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, volumeType_);
+      }
       for (int i = 0; i < target_.size(); i++) {
-        output.writeMessage(2, target_.get(i));
+        output.writeMessage(4, target_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -8853,9 +9703,15 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(1, hostId_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(diskType_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, diskType_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(volumeType_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, volumeType_);
+      }
       for (int i = 0; i < target_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, target_.get(i));
+          .computeMessageSize(4, target_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -8874,6 +9730,10 @@ java.lang.String defaultValue) {
 
       if (!getHostId()
           .equals(other.getHostId())) return false;
+      if (!getDiskType()
+          .equals(other.getDiskType())) return false;
+      if (!getVolumeType()
+          .equals(other.getVolumeType())) return false;
       if (!getTargetList()
           .equals(other.getTargetList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -8889,6 +9749,10 @@ java.lang.String defaultValue) {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + HOSTID_FIELD_NUMBER;
       hash = (53 * hash) + getHostId().hashCode();
+      hash = (37 * hash) + DISKTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getDiskType().hashCode();
+      hash = (37 * hash) + VOLUMETYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getVolumeType().hashCode();
       if (getTargetCount() > 0) {
         hash = (37 * hash) + TARGET_FIELD_NUMBER;
         hash = (53 * hash) + getTargetList().hashCode();
@@ -9025,13 +9889,15 @@ java.lang.String defaultValue) {
         super.clear();
         bitField0_ = 0;
         hostId_ = "";
+        diskType_ = "";
+        volumeType_ = "";
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
         } else {
           target_ = null;
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -9066,9 +9932,9 @@ java.lang.String defaultValue) {
 
       private void buildPartialRepeatedFields(org.yx.hoststack.protocol.ws.server.JobParams.VolumeDelete result) {
         if (targetBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             target_ = java.util.Collections.unmodifiableList(target_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.target_ = target_;
         } else {
@@ -9080,6 +9946,12 @@ java.lang.String defaultValue) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.hostId_ = hostId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.diskType_ = diskType_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.volumeType_ = volumeType_;
         }
       }
 
@@ -9100,11 +9972,21 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000001;
           onChanged();
         }
+        if (!other.getDiskType().isEmpty()) {
+          diskType_ = other.diskType_;
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
+        if (!other.getVolumeType().isEmpty()) {
+          volumeType_ = other.volumeType_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         if (targetBuilder_ == null) {
           if (!other.target_.isEmpty()) {
             if (target_.isEmpty()) {
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureTargetIsMutable();
               target_.addAll(other.target_);
@@ -9117,7 +9999,7 @@ java.lang.String defaultValue) {
               targetBuilder_.dispose();
               targetBuilder_ = null;
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000008);
               targetBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTargetFieldBuilder() : null;
@@ -9158,6 +10040,16 @@ java.lang.String defaultValue) {
                 break;
               } // case 10
               case 18: {
+                diskType_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                volumeType_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
                 org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget m =
                     input.readMessage(
                         org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.parser(),
@@ -9169,7 +10061,7 @@ java.lang.String defaultValue) {
                   targetBuilder_.addMessage(m);
                 }
                 break;
-              } // case 18
+              } // case 34
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -9259,12 +10151,156 @@ java.lang.String defaultValue) {
         return this;
       }
 
+      private java.lang.Object diskType_ = "";
+      /**
+       * <code>string diskType = 2;</code>
+       * @return The diskType.
+       */
+      public java.lang.String getDiskType() {
+        java.lang.Object ref = diskType_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          diskType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string diskType = 2;</code>
+       * @return The bytes for diskType.
+       */
+      public com.google.protobuf.ByteString
+          getDiskTypeBytes() {
+        java.lang.Object ref = diskType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          diskType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string diskType = 2;</code>
+       * @param value The diskType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDiskType(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        diskType_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string diskType = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDiskType() {
+        diskType_ = getDefaultInstance().getDiskType();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string diskType = 2;</code>
+       * @param value The bytes for diskType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDiskTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        diskType_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object volumeType_ = "";
+      /**
+       * <code>string volumeType = 3;</code>
+       * @return The volumeType.
+       */
+      public java.lang.String getVolumeType() {
+        java.lang.Object ref = volumeType_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          volumeType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string volumeType = 3;</code>
+       * @return The bytes for volumeType.
+       */
+      public com.google.protobuf.ByteString
+          getVolumeTypeBytes() {
+        java.lang.Object ref = volumeType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          volumeType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string volumeType = 3;</code>
+       * @param value The volumeType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setVolumeType(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        volumeType_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string volumeType = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearVolumeType() {
+        volumeType_ = getDefaultInstance().getVolumeType();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string volumeType = 3;</code>
+       * @param value The bytes for volumeType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setVolumeTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        volumeType_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> target_ =
         java.util.Collections.emptyList();
       private void ensureTargetIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           target_ = new java.util.ArrayList<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget>(target_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -9272,7 +10308,7 @@ java.lang.String defaultValue) {
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> targetBuilder_;
 
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> getTargetList() {
         if (targetBuilder_ == null) {
@@ -9282,7 +10318,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public int getTargetCount() {
         if (targetBuilder_ == null) {
@@ -9292,7 +10328,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget getTarget(int index) {
         if (targetBuilder_ == null) {
@@ -9302,7 +10338,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
@@ -9319,7 +10355,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -9333,7 +10369,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder addTarget(org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
         if (targetBuilder_ == null) {
@@ -9349,7 +10385,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget value) {
@@ -9366,7 +10402,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder addTarget(
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -9380,7 +10416,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder builderForValue) {
@@ -9394,7 +10430,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder addAllTarget(
           java.lang.Iterable<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget> values) {
@@ -9409,12 +10445,12 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder clearTarget() {
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           targetBuilder_.clear();
@@ -9422,7 +10458,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public Builder removeTarget(int index) {
         if (targetBuilder_ == null) {
@@ -9435,14 +10471,14 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder getTargetBuilder(
           int index) {
         return getTargetFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder getTargetOrBuilder(
           int index) {
@@ -9452,7 +10488,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder> 
            getTargetOrBuilderList() {
@@ -9463,14 +10499,14 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder addTargetBuilder() {
         return getTargetFieldBuilder().addBuilder(
             org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder addTargetBuilder(
           int index) {
@@ -9478,7 +10514,7 @@ java.lang.String defaultValue) {
             index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 2;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeTarget target = 4;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder> 
            getTargetBuilderList() {
@@ -9491,7 +10527,7 @@ java.lang.String defaultValue) {
           targetBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeTargetOrBuilder>(
                   target_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           target_ = null;
@@ -12457,12 +13493,24 @@ java.lang.String defaultValue) {
         getCidBytes();
 
     /**
-     * <code>string jobDetailId = 3;</code>
+     * <code>string mountType = 3;</code>
+     * @return The mountType.
+     */
+    java.lang.String getMountType();
+    /**
+     * <code>string mountType = 3;</code>
+     * @return The bytes for mountType.
+     */
+    com.google.protobuf.ByteString
+        getMountTypeBytes();
+
+    /**
+     * <code>string jobDetailId = 4;</code>
      * @return The jobDetailId.
      */
     java.lang.String getJobDetailId();
     /**
-     * <code>string jobDetailId = 3;</code>
+     * <code>string jobDetailId = 4;</code>
      * @return The bytes for jobDetailId.
      */
     com.google.protobuf.ByteString
@@ -12492,6 +13540,7 @@ java.lang.String defaultValue) {
     private UnMountInfo() {
       volumeId_ = "";
       cid_ = "";
+      mountType_ = "";
       jobDetailId_ = "";
     }
 
@@ -12586,11 +13635,50 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int JOBDETAILID_FIELD_NUMBER = 3;
+    public static final int MOUNTTYPE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object mountType_ = "";
+    /**
+     * <code>string mountType = 3;</code>
+     * @return The mountType.
+     */
+    @java.lang.Override
+    public java.lang.String getMountType() {
+      java.lang.Object ref = mountType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        mountType_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string mountType = 3;</code>
+     * @return The bytes for mountType.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMountTypeBytes() {
+      java.lang.Object ref = mountType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        mountType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int JOBDETAILID_FIELD_NUMBER = 4;
     @SuppressWarnings("serial")
     private volatile java.lang.Object jobDetailId_ = "";
     /**
-     * <code>string jobDetailId = 3;</code>
+     * <code>string jobDetailId = 4;</code>
      * @return The jobDetailId.
      */
     @java.lang.Override
@@ -12607,7 +13695,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string jobDetailId = 3;</code>
+     * <code>string jobDetailId = 4;</code>
      * @return The bytes for jobDetailId.
      */
     @java.lang.Override
@@ -12645,8 +13733,11 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(cid_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 2, cid_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mountType_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, mountType_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, jobDetailId_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 4, jobDetailId_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -12663,8 +13754,11 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(cid_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(2, cid_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mountType_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, mountType_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, jobDetailId_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(4, jobDetailId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -12685,6 +13779,8 @@ java.lang.String defaultValue) {
           .equals(other.getVolumeId())) return false;
       if (!getCid()
           .equals(other.getCid())) return false;
+      if (!getMountType()
+          .equals(other.getMountType())) return false;
       if (!getJobDetailId()
           .equals(other.getJobDetailId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -12702,6 +13798,8 @@ java.lang.String defaultValue) {
       hash = (53 * hash) + getVolumeId().hashCode();
       hash = (37 * hash) + CID_FIELD_NUMBER;
       hash = (53 * hash) + getCid().hashCode();
+      hash = (37 * hash) + MOUNTTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getMountType().hashCode();
       hash = (37 * hash) + JOBDETAILID_FIELD_NUMBER;
       hash = (53 * hash) + getJobDetailId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -12837,6 +13935,7 @@ java.lang.String defaultValue) {
         bitField0_ = 0;
         volumeId_ = "";
         cid_ = "";
+        mountType_ = "";
         jobDetailId_ = "";
         return this;
       }
@@ -12878,6 +13977,9 @@ java.lang.String defaultValue) {
           result.cid_ = cid_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.mountType_ = mountType_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           result.jobDetailId_ = jobDetailId_;
         }
       }
@@ -12904,9 +14006,14 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000002;
           onChanged();
         }
+        if (!other.getMountType().isEmpty()) {
+          mountType_ = other.mountType_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         if (!other.getJobDetailId().isEmpty()) {
           jobDetailId_ = other.jobDetailId_;
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -12946,10 +14053,15 @@ java.lang.String defaultValue) {
                 break;
               } // case 18
               case 26: {
-                jobDetailId_ = input.readStringRequireUtf8();
+                mountType_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000004;
                 break;
               } // case 26
+              case 34: {
+                jobDetailId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -13111,9 +14223,81 @@ java.lang.String defaultValue) {
         return this;
       }
 
+      private java.lang.Object mountType_ = "";
+      /**
+       * <code>string mountType = 3;</code>
+       * @return The mountType.
+       */
+      public java.lang.String getMountType() {
+        java.lang.Object ref = mountType_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          mountType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string mountType = 3;</code>
+       * @return The bytes for mountType.
+       */
+      public com.google.protobuf.ByteString
+          getMountTypeBytes() {
+        java.lang.Object ref = mountType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          mountType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string mountType = 3;</code>
+       * @param value The mountType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMountType(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        mountType_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string mountType = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMountType() {
+        mountType_ = getDefaultInstance().getMountType();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string mountType = 3;</code>
+       * @param value The bytes for mountType to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMountTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        mountType_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object jobDetailId_ = "";
       /**
-       * <code>string jobDetailId = 3;</code>
+       * <code>string jobDetailId = 4;</code>
        * @return The jobDetailId.
        */
       public java.lang.String getJobDetailId() {
@@ -13129,7 +14313,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string jobDetailId = 3;</code>
+       * <code>string jobDetailId = 4;</code>
        * @return The bytes for jobDetailId.
        */
       public com.google.protobuf.ByteString
@@ -13146,7 +14330,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string jobDetailId = 3;</code>
+       * <code>string jobDetailId = 4;</code>
        * @param value The jobDetailId to set.
        * @return This builder for chaining.
        */
@@ -13154,22 +14338,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         jobDetailId_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>string jobDetailId = 3;</code>
+       * <code>string jobDetailId = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearJobDetailId() {
         jobDetailId_ = getDefaultInstance().getJobDetailId();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
       /**
-       * <code>string jobDetailId = 3;</code>
+       * <code>string jobDetailId = 4;</code>
        * @param value The bytes for jobDetailId to set.
        * @return This builder for chaining.
        */
@@ -13178,7 +14362,7 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         jobDetailId_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -13263,25 +14447,37 @@ java.lang.String defaultValue) {
         getSourceUrlBytes();
 
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>string md5 = 3;</code>
+     * @return The md5.
+     */
+    java.lang.String getMd5();
+    /**
+     * <code>string md5 = 3;</code>
+     * @return The bytes for md5.
+     */
+    com.google.protobuf.ByteString
+        getMd5Bytes();
+
+    /**
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> 
         getTargetList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail getTarget(int index);
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     int getTargetCount();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder> 
         getTargetOrBuilderList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder getTargetOrBuilder(
         int index);
@@ -13310,6 +14506,7 @@ java.lang.String defaultValue) {
     private VolumeUpgrade() {
       hostId_ = "";
       sourceUrl_ = "";
+      md5_ = "";
       target_ = java.util.Collections.emptyList();
     }
 
@@ -13404,18 +14601,57 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int TARGET_FIELD_NUMBER = 3;
+    public static final int MD5_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object md5_ = "";
+    /**
+     * <code>string md5 = 3;</code>
+     * @return The md5.
+     */
+    @java.lang.Override
+    public java.lang.String getMd5() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        md5_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string md5 = 3;</code>
+     * @return The bytes for md5.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMd5Bytes() {
+      java.lang.Object ref = md5_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        md5_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TARGET_FIELD_NUMBER = 4;
     @SuppressWarnings("serial")
     private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> target_;
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     @java.lang.Override
     public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> getTargetList() {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     @java.lang.Override
     public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder> 
@@ -13423,21 +14659,21 @@ java.lang.String defaultValue) {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     @java.lang.Override
     public int getTargetCount() {
       return target_.size();
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail getTarget(int index) {
       return target_.get(index);
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder getTargetOrBuilder(
@@ -13465,8 +14701,11 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(sourceUrl_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 2, sourceUrl_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, md5_);
+      }
       for (int i = 0; i < target_.size(); i++) {
-        output.writeMessage(3, target_.get(i));
+        output.writeMessage(4, target_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -13483,9 +14722,12 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(sourceUrl_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(2, sourceUrl_);
       }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, md5_);
+      }
       for (int i = 0; i < target_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, target_.get(i));
+          .computeMessageSize(4, target_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -13506,6 +14748,8 @@ java.lang.String defaultValue) {
           .equals(other.getHostId())) return false;
       if (!getSourceUrl()
           .equals(other.getSourceUrl())) return false;
+      if (!getMd5()
+          .equals(other.getMd5())) return false;
       if (!getTargetList()
           .equals(other.getTargetList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -13523,6 +14767,8 @@ java.lang.String defaultValue) {
       hash = (53 * hash) + getHostId().hashCode();
       hash = (37 * hash) + SOURCEURL_FIELD_NUMBER;
       hash = (53 * hash) + getSourceUrl().hashCode();
+      hash = (37 * hash) + MD5_FIELD_NUMBER;
+      hash = (53 * hash) + getMd5().hashCode();
       if (getTargetCount() > 0) {
         hash = (37 * hash) + TARGET_FIELD_NUMBER;
         hash = (53 * hash) + getTargetList().hashCode();
@@ -13660,13 +14906,14 @@ java.lang.String defaultValue) {
         bitField0_ = 0;
         hostId_ = "";
         sourceUrl_ = "";
+        md5_ = "";
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
         } else {
           target_ = null;
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -13701,9 +14948,9 @@ java.lang.String defaultValue) {
 
       private void buildPartialRepeatedFields(org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgrade result) {
         if (targetBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             target_ = java.util.Collections.unmodifiableList(target_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.target_ = target_;
         } else {
@@ -13718,6 +14965,9 @@ java.lang.String defaultValue) {
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.sourceUrl_ = sourceUrl_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.md5_ = md5_;
         }
       }
 
@@ -13743,11 +14993,16 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000002;
           onChanged();
         }
+        if (!other.getMd5().isEmpty()) {
+          md5_ = other.md5_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         if (targetBuilder_ == null) {
           if (!other.target_.isEmpty()) {
             if (target_.isEmpty()) {
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureTargetIsMutable();
               target_.addAll(other.target_);
@@ -13760,7 +15015,7 @@ java.lang.String defaultValue) {
               targetBuilder_.dispose();
               targetBuilder_ = null;
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
               targetBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTargetFieldBuilder() : null;
@@ -13806,6 +15061,11 @@ java.lang.String defaultValue) {
                 break;
               } // case 18
               case 26: {
+                md5_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
                 org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail m =
                     input.readMessage(
                         org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.parser(),
@@ -13817,7 +15077,7 @@ java.lang.String defaultValue) {
                   targetBuilder_.addMessage(m);
                 }
                 break;
-              } // case 26
+              } // case 34
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -13979,12 +15239,84 @@ java.lang.String defaultValue) {
         return this;
       }
 
+      private java.lang.Object md5_ = "";
+      /**
+       * <code>string md5 = 3;</code>
+       * @return The md5.
+       */
+      public java.lang.String getMd5() {
+        java.lang.Object ref = md5_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          md5_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 3;</code>
+       * @return The bytes for md5.
+       */
+      public com.google.protobuf.ByteString
+          getMd5Bytes() {
+        java.lang.Object ref = md5_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          md5_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string md5 = 3;</code>
+       * @param value The md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        md5_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMd5() {
+        md5_ = getDefaultInstance().getMd5();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string md5 = 3;</code>
+       * @param value The bytes for md5 to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMd5Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        md5_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> target_ =
         java.util.Collections.emptyList();
       private void ensureTargetIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           target_ = new java.util.ArrayList<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail>(target_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -13992,7 +15324,7 @@ java.lang.String defaultValue) {
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder> targetBuilder_;
 
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> getTargetList() {
         if (targetBuilder_ == null) {
@@ -14002,7 +15334,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public int getTargetCount() {
         if (targetBuilder_ == null) {
@@ -14012,7 +15344,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail getTarget(int index) {
         if (targetBuilder_ == null) {
@@ -14022,7 +15354,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail value) {
@@ -14039,7 +15371,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder builderForValue) {
@@ -14053,7 +15385,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder addTarget(org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail value) {
         if (targetBuilder_ == null) {
@@ -14069,7 +15401,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail value) {
@@ -14086,7 +15418,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder addTarget(
           org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder builderForValue) {
@@ -14100,7 +15432,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder builderForValue) {
@@ -14114,7 +15446,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder addAllTarget(
           java.lang.Iterable<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail> values) {
@@ -14129,12 +15461,12 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder clearTarget() {
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           targetBuilder_.clear();
@@ -14142,7 +15474,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public Builder removeTarget(int index) {
         if (targetBuilder_ == null) {
@@ -14155,14 +15487,14 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder getTargetBuilder(
           int index) {
         return getTargetFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder getTargetOrBuilder(
           int index) {
@@ -14172,7 +15504,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder> 
            getTargetOrBuilderList() {
@@ -14183,14 +15515,14 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder addTargetBuilder() {
         return getTargetFieldBuilder().addBuilder(
             org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder addTargetBuilder(
           int index) {
@@ -14198,7 +15530,7 @@ java.lang.String defaultValue) {
             index, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 3;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.VolumeUpgradeDetail target = 4;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder> 
            getTargetBuilderList() {
@@ -14211,7 +15543,7 @@ java.lang.String defaultValue) {
           targetBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetail.Builder, org.yx.hoststack.protocol.ws.server.JobParams.VolumeUpgradeDetailOrBuilder>(
                   target_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           target_ = null;
@@ -19651,16 +20983,16 @@ java.lang.String defaultValue) {
         getHostIdBytes();
 
     /**
-     * <code>string containerType = 2;</code>
-     * @return The containerType.
+     * <code>string vmType = 2;</code>
+     * @return The vmType.
      */
-    java.lang.String getContainerType();
+    java.lang.String getVmType();
     /**
-     * <code>string containerType = 2;</code>
-     * @return The bytes for containerType.
+     * <code>string vmType = 2;</code>
+     * @return The bytes for vmType.
      */
     com.google.protobuf.ByteString
-        getContainerTypeBytes();
+        getVmTypeBytes();
 
     /**
      * <code>.org.yx.hoststack.protocol.ws.server.ImageOfContainerCreate image = 3;</code>
@@ -19724,7 +21056,7 @@ java.lang.String defaultValue) {
     }
     private ContainerUpgrade() {
       hostId_ = "";
-      containerType_ = "";
+      vmType_ = "";
       target_ = java.util.Collections.emptyList();
     }
 
@@ -19781,39 +21113,39 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int CONTAINERTYPE_FIELD_NUMBER = 2;
+    public static final int VMTYPE_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
-    private volatile java.lang.Object containerType_ = "";
+    private volatile java.lang.Object vmType_ = "";
     /**
-     * <code>string containerType = 2;</code>
-     * @return The containerType.
+     * <code>string vmType = 2;</code>
+     * @return The vmType.
      */
     @java.lang.Override
-    public java.lang.String getContainerType() {
-      java.lang.Object ref = containerType_;
+    public java.lang.String getVmType() {
+      java.lang.Object ref = vmType_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        containerType_ = s;
+        vmType_ = s;
         return s;
       }
     }
     /**
-     * <code>string containerType = 2;</code>
-     * @return The bytes for containerType.
+     * <code>string vmType = 2;</code>
+     * @return The bytes for vmType.
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getContainerTypeBytes() {
-      java.lang.Object ref = containerType_;
+        getVmTypeBytes() {
+      java.lang.Object ref = vmType_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        containerType_ = b;
+        vmType_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -19904,8 +21236,8 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 1, hostId_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(containerType_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, containerType_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(vmType_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, vmType_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(3, getImage());
@@ -19925,8 +21257,8 @@ java.lang.String defaultValue) {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(1, hostId_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(containerType_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, containerType_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(vmType_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, vmType_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
@@ -19953,8 +21285,8 @@ java.lang.String defaultValue) {
 
       if (!getHostId()
           .equals(other.getHostId())) return false;
-      if (!getContainerType()
-          .equals(other.getContainerType())) return false;
+      if (!getVmType()
+          .equals(other.getVmType())) return false;
       if (hasImage() != other.hasImage()) return false;
       if (hasImage()) {
         if (!getImage()
@@ -19975,8 +21307,8 @@ java.lang.String defaultValue) {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + HOSTID_FIELD_NUMBER;
       hash = (53 * hash) + getHostId().hashCode();
-      hash = (37 * hash) + CONTAINERTYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getContainerType().hashCode();
+      hash = (37 * hash) + VMTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getVmType().hashCode();
       if (hasImage()) {
         hash = (37 * hash) + IMAGE_FIELD_NUMBER;
         hash = (53 * hash) + getImage().hashCode();
@@ -20124,7 +21456,7 @@ java.lang.String defaultValue) {
         super.clear();
         bitField0_ = 0;
         hostId_ = "";
-        containerType_ = "";
+        vmType_ = "";
         image_ = null;
         if (imageBuilder_ != null) {
           imageBuilder_.dispose();
@@ -20187,7 +21519,7 @@ java.lang.String defaultValue) {
           result.hostId_ = hostId_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.containerType_ = containerType_;
+          result.vmType_ = vmType_;
         }
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000004) != 0)) {
@@ -20216,8 +21548,8 @@ java.lang.String defaultValue) {
           bitField0_ |= 0x00000001;
           onChanged();
         }
-        if (!other.getContainerType().isEmpty()) {
-          containerType_ = other.containerType_;
+        if (!other.getVmType().isEmpty()) {
+          vmType_ = other.vmType_;
           bitField0_ |= 0x00000002;
           onChanged();
         }
@@ -20282,7 +21614,7 @@ java.lang.String defaultValue) {
                 break;
               } // case 10
               case 18: {
-                containerType_ = input.readStringRequireUtf8();
+                vmType_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
@@ -20395,73 +21727,73 @@ java.lang.String defaultValue) {
         return this;
       }
 
-      private java.lang.Object containerType_ = "";
+      private java.lang.Object vmType_ = "";
       /**
-       * <code>string containerType = 2;</code>
-       * @return The containerType.
+       * <code>string vmType = 2;</code>
+       * @return The vmType.
        */
-      public java.lang.String getContainerType() {
-        java.lang.Object ref = containerType_;
+      public java.lang.String getVmType() {
+        java.lang.Object ref = vmType_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          containerType_ = s;
+          vmType_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string containerType = 2;</code>
-       * @return The bytes for containerType.
+       * <code>string vmType = 2;</code>
+       * @return The bytes for vmType.
        */
       public com.google.protobuf.ByteString
-          getContainerTypeBytes() {
-        java.lang.Object ref = containerType_;
+          getVmTypeBytes() {
+        java.lang.Object ref = vmType_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          containerType_ = b;
+          vmType_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string containerType = 2;</code>
-       * @param value The containerType to set.
+       * <code>string vmType = 2;</code>
+       * @param value The vmType to set.
        * @return This builder for chaining.
        */
-      public Builder setContainerType(
+      public Builder setVmType(
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
-        containerType_ = value;
+        vmType_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>string containerType = 2;</code>
+       * <code>string vmType = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearContainerType() {
-        containerType_ = getDefaultInstance().getContainerType();
+      public Builder clearVmType() {
+        vmType_ = getDefaultInstance().getVmType();
         bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>string containerType = 2;</code>
-       * @param value The bytes for containerType to set.
+       * <code>string vmType = 2;</code>
+       * @param value The bytes for vmType to set.
        * @return This builder for chaining.
        */
-      public Builder setContainerTypeBytes(
+      public Builder setVmTypeBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
-        containerType_ = value;
+        vmType_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
@@ -24420,61 +25752,73 @@ java.lang.String defaultValue) {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string version = 1;</code>
+     * <code>string moduleName = 1;</code>
+     * @return The moduleName.
+     */
+    java.lang.String getModuleName();
+    /**
+     * <code>string moduleName = 1;</code>
+     * @return The bytes for moduleName.
+     */
+    com.google.protobuf.ByteString
+        getModuleNameBytes();
+
+    /**
+     * <code>string version = 2;</code>
      * @return The version.
      */
     java.lang.String getVersion();
     /**
-     * <code>string version = 1;</code>
+     * <code>string version = 2;</code>
      * @return The bytes for version.
      */
     com.google.protobuf.ByteString
         getVersionBytes();
 
     /**
-     * <code>string downloadUrl = 2;</code>
+     * <code>string downloadUrl = 3;</code>
      * @return The downloadUrl.
      */
     java.lang.String getDownloadUrl();
     /**
-     * <code>string downloadUrl = 2;</code>
+     * <code>string downloadUrl = 3;</code>
      * @return The bytes for downloadUrl.
      */
     com.google.protobuf.ByteString
         getDownloadUrlBytes();
 
     /**
-     * <code>string md5 = 3;</code>
+     * <code>string md5 = 4;</code>
      * @return The md5.
      */
     java.lang.String getMd5();
     /**
-     * <code>string md5 = 3;</code>
+     * <code>string md5 = 4;</code>
      * @return The bytes for md5.
      */
     com.google.protobuf.ByteString
         getMd5Bytes();
 
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> 
         getTargetList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget getTarget(int index);
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     int getTargetCount();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder> 
         getTargetOrBuilderList();
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder getTargetOrBuilder(
         int index);
@@ -24501,6 +25845,7 @@ java.lang.String defaultValue) {
       super(builder);
     }
     private ModuleUpgrade() {
+      moduleName_ = "";
       version_ = "";
       downloadUrl_ = "";
       md5_ = "";
@@ -24520,11 +25865,50 @@ java.lang.String defaultValue) {
               org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade.class, org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade.Builder.class);
     }
 
-    public static final int VERSION_FIELD_NUMBER = 1;
+    public static final int MODULENAME_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object moduleName_ = "";
+    /**
+     * <code>string moduleName = 1;</code>
+     * @return The moduleName.
+     */
+    @java.lang.Override
+    public java.lang.String getModuleName() {
+      java.lang.Object ref = moduleName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        moduleName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string moduleName = 1;</code>
+     * @return The bytes for moduleName.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getModuleNameBytes() {
+      java.lang.Object ref = moduleName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        moduleName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int VERSION_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
     private volatile java.lang.Object version_ = "";
     /**
-     * <code>string version = 1;</code>
+     * <code>string version = 2;</code>
      * @return The version.
      */
     @java.lang.Override
@@ -24541,7 +25925,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string version = 1;</code>
+     * <code>string version = 2;</code>
      * @return The bytes for version.
      */
     @java.lang.Override
@@ -24559,11 +25943,11 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int DOWNLOADURL_FIELD_NUMBER = 2;
+    public static final int DOWNLOADURL_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
     private volatile java.lang.Object downloadUrl_ = "";
     /**
-     * <code>string downloadUrl = 2;</code>
+     * <code>string downloadUrl = 3;</code>
      * @return The downloadUrl.
      */
     @java.lang.Override
@@ -24580,7 +25964,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string downloadUrl = 2;</code>
+     * <code>string downloadUrl = 3;</code>
      * @return The bytes for downloadUrl.
      */
     @java.lang.Override
@@ -24598,11 +25982,11 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int MD5_FIELD_NUMBER = 3;
+    public static final int MD5_FIELD_NUMBER = 4;
     @SuppressWarnings("serial")
     private volatile java.lang.Object md5_ = "";
     /**
-     * <code>string md5 = 3;</code>
+     * <code>string md5 = 4;</code>
      * @return The md5.
      */
     @java.lang.Override
@@ -24619,7 +26003,7 @@ java.lang.String defaultValue) {
       }
     }
     /**
-     * <code>string md5 = 3;</code>
+     * <code>string md5 = 4;</code>
      * @return The bytes for md5.
      */
     @java.lang.Override
@@ -24637,18 +26021,18 @@ java.lang.String defaultValue) {
       }
     }
 
-    public static final int TARGET_FIELD_NUMBER = 4;
+    public static final int TARGET_FIELD_NUMBER = 5;
     @SuppressWarnings("serial")
     private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> target_;
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     @java.lang.Override
     public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> getTargetList() {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     @java.lang.Override
     public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder> 
@@ -24656,21 +26040,21 @@ java.lang.String defaultValue) {
       return target_;
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     @java.lang.Override
     public int getTargetCount() {
       return target_.size();
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget getTarget(int index) {
       return target_.get(index);
     }
     /**
-     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+     * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
      */
     @java.lang.Override
     public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder getTargetOrBuilder(
@@ -24692,17 +26076,20 @@ java.lang.String defaultValue) {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(moduleName_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, moduleName_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(version_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, version_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, version_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(downloadUrl_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, downloadUrl_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, downloadUrl_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, md5_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 4, md5_);
       }
       for (int i = 0; i < target_.size(); i++) {
-        output.writeMessage(4, target_.get(i));
+        output.writeMessage(5, target_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -24713,18 +26100,21 @@ java.lang.String defaultValue) {
       if (size != -1) return size;
 
       size = 0;
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(moduleName_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, moduleName_);
+      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(version_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, version_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, version_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(downloadUrl_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, downloadUrl_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, downloadUrl_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(md5_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, md5_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(4, md5_);
       }
       for (int i = 0; i < target_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, target_.get(i));
+          .computeMessageSize(5, target_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -24741,6 +26131,8 @@ java.lang.String defaultValue) {
       }
       org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade other = (org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade) obj;
 
+      if (!getModuleName()
+          .equals(other.getModuleName())) return false;
       if (!getVersion()
           .equals(other.getVersion())) return false;
       if (!getDownloadUrl()
@@ -24760,6 +26152,8 @@ java.lang.String defaultValue) {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MODULENAME_FIELD_NUMBER;
+      hash = (53 * hash) + getModuleName().hashCode();
       hash = (37 * hash) + VERSION_FIELD_NUMBER;
       hash = (53 * hash) + getVersion().hashCode();
       hash = (37 * hash) + DOWNLOADURL_FIELD_NUMBER;
@@ -24901,6 +26295,7 @@ java.lang.String defaultValue) {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
+        moduleName_ = "";
         version_ = "";
         downloadUrl_ = "";
         md5_ = "";
@@ -24910,7 +26305,7 @@ java.lang.String defaultValue) {
           target_ = null;
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -24945,9 +26340,9 @@ java.lang.String defaultValue) {
 
       private void buildPartialRepeatedFields(org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade result) {
         if (targetBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             target_ = java.util.Collections.unmodifiableList(target_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.target_ = target_;
         } else {
@@ -24958,12 +26353,15 @@ java.lang.String defaultValue) {
       private void buildPartial0(org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.version_ = version_;
+          result.moduleName_ = moduleName_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.downloadUrl_ = downloadUrl_;
+          result.version_ = version_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.downloadUrl_ = downloadUrl_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           result.md5_ = md5_;
         }
       }
@@ -24980,26 +26378,31 @@ java.lang.String defaultValue) {
 
       public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade other) {
         if (other == org.yx.hoststack.protocol.ws.server.JobParams.ModuleUpgrade.getDefaultInstance()) return this;
+        if (!other.getModuleName().isEmpty()) {
+          moduleName_ = other.moduleName_;
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         if (!other.getVersion().isEmpty()) {
           version_ = other.version_;
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getDownloadUrl().isEmpty()) {
           downloadUrl_ = other.downloadUrl_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (!other.getMd5().isEmpty()) {
           md5_ = other.md5_;
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (targetBuilder_ == null) {
           if (!other.target_.isEmpty()) {
             if (target_.isEmpty()) {
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureTargetIsMutable();
               target_.addAll(other.target_);
@@ -25012,7 +26415,7 @@ java.lang.String defaultValue) {
               targetBuilder_.dispose();
               targetBuilder_ = null;
               target_ = other.target_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
               targetBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTargetFieldBuilder() : null;
@@ -25048,21 +26451,26 @@ java.lang.String defaultValue) {
                 done = true;
                 break;
               case 10: {
-                version_ = input.readStringRequireUtf8();
+                moduleName_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
-                downloadUrl_ = input.readStringRequireUtf8();
+                version_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
-                md5_ = input.readStringRequireUtf8();
+                downloadUrl_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 34: {
+                md5_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
                 org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget m =
                     input.readMessage(
                         org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.parser(),
@@ -25074,7 +26482,7 @@ java.lang.String defaultValue) {
                   targetBuilder_.addMessage(m);
                 }
                 break;
-              } // case 34
+              } // case 42
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -25092,9 +26500,81 @@ java.lang.String defaultValue) {
       }
       private int bitField0_;
 
+      private java.lang.Object moduleName_ = "";
+      /**
+       * <code>string moduleName = 1;</code>
+       * @return The moduleName.
+       */
+      public java.lang.String getModuleName() {
+        java.lang.Object ref = moduleName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          moduleName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string moduleName = 1;</code>
+       * @return The bytes for moduleName.
+       */
+      public com.google.protobuf.ByteString
+          getModuleNameBytes() {
+        java.lang.Object ref = moduleName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          moduleName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string moduleName = 1;</code>
+       * @param value The moduleName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setModuleName(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        moduleName_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string moduleName = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearModuleName() {
+        moduleName_ = getDefaultInstance().getModuleName();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string moduleName = 1;</code>
+       * @param value The bytes for moduleName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setModuleNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        moduleName_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object version_ = "";
       /**
-       * <code>string version = 1;</code>
+       * <code>string version = 2;</code>
        * @return The version.
        */
       public java.lang.String getVersion() {
@@ -25110,7 +26590,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string version = 1;</code>
+       * <code>string version = 2;</code>
        * @return The bytes for version.
        */
       public com.google.protobuf.ByteString
@@ -25127,7 +26607,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string version = 1;</code>
+       * <code>string version = 2;</code>
        * @param value The version to set.
        * @return This builder for chaining.
        */
@@ -25135,22 +26615,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         version_ = value;
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>string version = 1;</code>
+       * <code>string version = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearVersion() {
         version_ = getDefaultInstance().getVersion();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>string version = 1;</code>
+       * <code>string version = 2;</code>
        * @param value The bytes for version to set.
        * @return This builder for chaining.
        */
@@ -25159,14 +26639,14 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         version_ = value;
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
       private java.lang.Object downloadUrl_ = "";
       /**
-       * <code>string downloadUrl = 2;</code>
+       * <code>string downloadUrl = 3;</code>
        * @return The downloadUrl.
        */
       public java.lang.String getDownloadUrl() {
@@ -25182,7 +26662,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string downloadUrl = 2;</code>
+       * <code>string downloadUrl = 3;</code>
        * @return The bytes for downloadUrl.
        */
       public com.google.protobuf.ByteString
@@ -25199,7 +26679,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string downloadUrl = 2;</code>
+       * <code>string downloadUrl = 3;</code>
        * @param value The downloadUrl to set.
        * @return This builder for chaining.
        */
@@ -25207,22 +26687,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         downloadUrl_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>string downloadUrl = 2;</code>
+       * <code>string downloadUrl = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearDownloadUrl() {
         downloadUrl_ = getDefaultInstance().getDownloadUrl();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>string downloadUrl = 2;</code>
+       * <code>string downloadUrl = 3;</code>
        * @param value The bytes for downloadUrl to set.
        * @return This builder for chaining.
        */
@@ -25231,14 +26711,14 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         downloadUrl_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
 
       private java.lang.Object md5_ = "";
       /**
-       * <code>string md5 = 3;</code>
+       * <code>string md5 = 4;</code>
        * @return The md5.
        */
       public java.lang.String getMd5() {
@@ -25254,7 +26734,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string md5 = 3;</code>
+       * <code>string md5 = 4;</code>
        * @return The bytes for md5.
        */
       public com.google.protobuf.ByteString
@@ -25271,7 +26751,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>string md5 = 3;</code>
+       * <code>string md5 = 4;</code>
        * @param value The md5 to set.
        * @return This builder for chaining.
        */
@@ -25279,22 +26759,22 @@ java.lang.String defaultValue) {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         md5_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>string md5 = 3;</code>
+       * <code>string md5 = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearMd5() {
         md5_ = getDefaultInstance().getMd5();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
       /**
-       * <code>string md5 = 3;</code>
+       * <code>string md5 = 4;</code>
        * @param value The bytes for md5 to set.
        * @return This builder for chaining.
        */
@@ -25303,7 +26783,7 @@ java.lang.String defaultValue) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         md5_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -25311,9 +26791,9 @@ java.lang.String defaultValue) {
       private java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> target_ =
         java.util.Collections.emptyList();
       private void ensureTargetIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           target_ = new java.util.ArrayList<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget>(target_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -25321,7 +26801,7 @@ java.lang.String defaultValue) {
           org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder> targetBuilder_;
 
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> getTargetList() {
         if (targetBuilder_ == null) {
@@ -25331,7 +26811,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public int getTargetCount() {
         if (targetBuilder_ == null) {
@@ -25341,7 +26821,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget getTarget(int index) {
         if (targetBuilder_ == null) {
@@ -25351,7 +26831,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget value) {
@@ -25368,7 +26848,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder setTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder builderForValue) {
@@ -25382,7 +26862,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder addTarget(org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget value) {
         if (targetBuilder_ == null) {
@@ -25398,7 +26878,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget value) {
@@ -25415,7 +26895,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder addTarget(
           org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder builderForValue) {
@@ -25429,7 +26909,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder addTarget(
           int index, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder builderForValue) {
@@ -25443,7 +26923,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder addAllTarget(
           java.lang.Iterable<? extends org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget> values) {
@@ -25458,12 +26938,12 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder clearTarget() {
         if (targetBuilder_ == null) {
           target_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           targetBuilder_.clear();
@@ -25471,7 +26951,7 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public Builder removeTarget(int index) {
         if (targetBuilder_ == null) {
@@ -25484,14 +26964,14 @@ java.lang.String defaultValue) {
         return this;
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder getTargetBuilder(
           int index) {
         return getTargetFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder getTargetOrBuilder(
           int index) {
@@ -25501,7 +26981,7 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public java.util.List<? extends org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder> 
            getTargetOrBuilderList() {
@@ -25512,14 +26992,14 @@ java.lang.String defaultValue) {
         }
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder addTargetBuilder() {
         return getTargetFieldBuilder().addBuilder(
             org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder addTargetBuilder(
           int index) {
@@ -25527,7 +27007,7 @@ java.lang.String defaultValue) {
             index, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.getDefaultInstance());
       }
       /**
-       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 4;</code>
+       * <code>repeated .org.yx.hoststack.protocol.ws.server.ModuleTarget target = 5;</code>
        */
       public java.util.List<org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder> 
            getTargetBuilderList() {
@@ -25540,7 +27020,7 @@ java.lang.String defaultValue) {
           targetBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTargetOrBuilder>(
                   target_,
-                  ((bitField0_ & 0x00000008) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           target_ = null;
@@ -25604,16 +27084,16 @@ java.lang.String defaultValue) {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string moduleId = 1;</code>
-     * @return The moduleId.
+     * <code>string hostId = 1;</code>
+     * @return The hostId.
      */
-    java.lang.String getModuleId();
+    java.lang.String getHostId();
     /**
-     * <code>string moduleId = 1;</code>
-     * @return The bytes for moduleId.
+     * <code>string hostId = 1;</code>
+     * @return The bytes for hostId.
      */
     com.google.protobuf.ByteString
-        getModuleIdBytes();
+        getHostIdBytes();
 
     /**
      * <code>string jobDetailId = 2;</code>
@@ -25649,7 +27129,7 @@ java.lang.String defaultValue) {
       super(builder);
     }
     private ModuleTarget() {
-      moduleId_ = "";
+      hostId_ = "";
       jobDetailId_ = "";
     }
 
@@ -25666,39 +27146,39 @@ java.lang.String defaultValue) {
               org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.class, org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.Builder.class);
     }
 
-    public static final int MODULEID_FIELD_NUMBER = 1;
+    public static final int HOSTID_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
-    private volatile java.lang.Object moduleId_ = "";
+    private volatile java.lang.Object hostId_ = "";
     /**
-     * <code>string moduleId = 1;</code>
-     * @return The moduleId.
+     * <code>string hostId = 1;</code>
+     * @return The hostId.
      */
     @java.lang.Override
-    public java.lang.String getModuleId() {
-      java.lang.Object ref = moduleId_;
+    public java.lang.String getHostId() {
+      java.lang.Object ref = hostId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        moduleId_ = s;
+        hostId_ = s;
         return s;
       }
     }
     /**
-     * <code>string moduleId = 1;</code>
-     * @return The bytes for moduleId.
+     * <code>string hostId = 1;</code>
+     * @return The bytes for hostId.
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getModuleIdBytes() {
-      java.lang.Object ref = moduleId_;
+        getHostIdBytes() {
+      java.lang.Object ref = hostId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        moduleId_ = b;
+        hostId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -25758,8 +27238,8 @@ java.lang.String defaultValue) {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(moduleId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, moduleId_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, hostId_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 2, jobDetailId_);
@@ -25773,8 +27253,8 @@ java.lang.String defaultValue) {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(moduleId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, moduleId_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(hostId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, hostId_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jobDetailId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(2, jobDetailId_);
@@ -25794,8 +27274,8 @@ java.lang.String defaultValue) {
       }
       org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget other = (org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget) obj;
 
-      if (!getModuleId()
-          .equals(other.getModuleId())) return false;
+      if (!getHostId()
+          .equals(other.getHostId())) return false;
       if (!getJobDetailId()
           .equals(other.getJobDetailId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -25809,8 +27289,8 @@ java.lang.String defaultValue) {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MODULEID_FIELD_NUMBER;
-      hash = (53 * hash) + getModuleId().hashCode();
+      hash = (37 * hash) + HOSTID_FIELD_NUMBER;
+      hash = (53 * hash) + getHostId().hashCode();
       hash = (37 * hash) + JOBDETAILID_FIELD_NUMBER;
       hash = (53 * hash) + getJobDetailId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -25944,7 +27424,7 @@ java.lang.String defaultValue) {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        moduleId_ = "";
+        hostId_ = "";
         jobDetailId_ = "";
         return this;
       }
@@ -25980,7 +27460,7 @@ java.lang.String defaultValue) {
       private void buildPartial0(org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.moduleId_ = moduleId_;
+          result.hostId_ = hostId_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.jobDetailId_ = jobDetailId_;
@@ -25999,8 +27479,8 @@ java.lang.String defaultValue) {
 
       public Builder mergeFrom(org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget other) {
         if (other == org.yx.hoststack.protocol.ws.server.JobParams.ModuleTarget.getDefaultInstance()) return this;
-        if (!other.getModuleId().isEmpty()) {
-          moduleId_ = other.moduleId_;
+        if (!other.getHostId().isEmpty()) {
+          hostId_ = other.hostId_;
           bitField0_ |= 0x00000001;
           onChanged();
         }
@@ -26036,7 +27516,7 @@ java.lang.String defaultValue) {
                 done = true;
                 break;
               case 10: {
-                moduleId_ = input.readStringRequireUtf8();
+                hostId_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 10
@@ -26062,73 +27542,73 @@ java.lang.String defaultValue) {
       }
       private int bitField0_;
 
-      private java.lang.Object moduleId_ = "";
+      private java.lang.Object hostId_ = "";
       /**
-       * <code>string moduleId = 1;</code>
-       * @return The moduleId.
+       * <code>string hostId = 1;</code>
+       * @return The hostId.
        */
-      public java.lang.String getModuleId() {
-        java.lang.Object ref = moduleId_;
+      public java.lang.String getHostId() {
+        java.lang.Object ref = hostId_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          moduleId_ = s;
+          hostId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string moduleId = 1;</code>
-       * @return The bytes for moduleId.
+       * <code>string hostId = 1;</code>
+       * @return The bytes for hostId.
        */
       public com.google.protobuf.ByteString
-          getModuleIdBytes() {
-        java.lang.Object ref = moduleId_;
+          getHostIdBytes() {
+        java.lang.Object ref = hostId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          moduleId_ = b;
+          hostId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string moduleId = 1;</code>
-       * @param value The moduleId to set.
+       * <code>string hostId = 1;</code>
+       * @param value The hostId to set.
        * @return This builder for chaining.
        */
-      public Builder setModuleId(
+      public Builder setHostId(
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
-        moduleId_ = value;
+        hostId_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>string moduleId = 1;</code>
+       * <code>string hostId = 1;</code>
        * @return This builder for chaining.
        */
-      public Builder clearModuleId() {
-        moduleId_ = getDefaultInstance().getModuleId();
+      public Builder clearHostId() {
+        hostId_ = getDefaultInstance().getHostId();
         bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string moduleId = 1;</code>
-       * @param value The bytes for moduleId to set.
+       * <code>string hostId = 1;</code>
+       * @param value The bytes for hostId to set.
        * @return This builder for chaining.
        */
-      public Builder setModuleIdBytes(
+      public Builder setHostIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
-        moduleId_ = value;
+        hostId_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
         return this;
@@ -26426,69 +27906,73 @@ java.lang.String defaultValue) {
       "ntry\032.\n\014ContextEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val" +
       "ue\030\002 \001(\t:\0028\001\"^\n\013HostExecCmd\022\016\n\006script\030\001 " +
       "\001(\t\022?\n\006target\030\002 \003(\0132/.org.yx.hoststack.p" +
-      "rotocol.ws.server.HostTarget\"X\n\013ImageCre" +
+      "rotocol.ws.server.HostTarget\"u\n\013ImageCre" +
       "ate\022\017\n\007imageId\030\001 \001(\t\022\021\n\timageName\030\002 \001(\t\022" +
-      "\020\n\010imageVer\030\003 \001(\t\022\023\n\013downloadUrl\030\004 \001(\t\"U" +
-      "\n\013ImageDelete\022F\n\006target\030\001 \003(\01326.org.yx.h" +
-      "oststack.protocol.ws.server.ImageDeleteT" +
-      "arget\"9\n\021ImageDeleteTarget\022\017\n\007imageId\030\001 " +
-      "\001(\t\022\023\n\013jobDetailId\030\002 \001(\t\"\256\001\n\014VolumeCreat" +
-      "e\022\022\n\nvolumeSize\030\001 \001(\r\022\022\n\nvolumeType\030\002 \001(" +
-      "\t\022\020\n\010diskType\030\003 \001(\t\022\021\n\tsourceUrl\030\004 \001(\t\022\016" +
-      "\n\006hostId\030\005 \001(\t\022A\n\006target\030\006 \003(\01321.org.yx." +
+      "\020\n\010imageVer\030\003 \001(\t\022\023\n\013downloadUrl\030\004 \001(\t\022\013" +
+      "\n\003md5\030\005 \001(\t\022\016\n\006bucket\030\006 \001(\t\"U\n\013ImageDele" +
+      "te\022F\n\006target\030\001 \003(\01326.org.yx.hoststack.pr" +
+      "otocol.ws.server.ImageDeleteTarget\"I\n\021Im" +
+      "ageDeleteTarget\022\017\n\007imageId\030\001 \001(\t\022\016\n\006buck" +
+      "et\030\002 \001(\t\022\023\n\013jobDetailId\030\003 \001(\t\"\321\001\n\014Volume" +
+      "Create\022\022\n\nvolumeSize\030\001 \001(\r\022\022\n\nvolumeType" +
+      "\030\002 \001(\t\022\020\n\010diskType\030\003 \001(\t\022\021\n\tsourceUrl\030\004 " +
+      "\001(\t\022\013\n\003md5\030\005 \001(\t\022\016\n\006hostId\030\006 \001(\t\022\024\n\014snap" +
+      "shotName\030\007 \001(\t\022A\n\006target\030\010 \003(\01321.org.yx." +
       "hoststack.protocol.ws.server.VolumeTarge" +
       "t\"5\n\014VolumeTarget\022\020\n\010volumeId\030\001 \001(\t\022\023\n\013j" +
-      "obDetailId\030\002 \001(\t\"a\n\014VolumeDelete\022\016\n\006host" +
-      "Id\030\001 \001(\t\022A\n\006target\030\002 \003(\01321.org.yx.hostst" +
-      "ack.protocol.ws.server.VolumeTarget\"]\n\013V" +
-      "olumeMount\022\016\n\006hostId\030\001 \001(\t\022>\n\006target\030\002 \003" +
-      "(\0132..org.yx.hoststack.protocol.ws.server" +
-      ".MountInfo\"h\n\tMountInfo\022\020\n\010volumeId\030\001 \001(" +
-      "\t\022\024\n\014baseVolumeId\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\021\n\t" +
-      "mountType\030\004 \001(\t\022\023\n\013jobDetailId\030\005 \001(\t\"a\n\r" +
-      "VolumeUnMount\022\016\n\006hostId\030\001 \001(\t\022@\n\006target\030" +
-      "\003 \003(\01320.org.yx.hoststack.protocol.ws.ser" +
-      "ver.UnMountInfo\"A\n\013UnMountInfo\022\020\n\010volume" +
-      "Id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\023\n\013jobDetailId\030\003 \001" +
-      "(\t\"|\n\rVolumeUpgrade\022\016\n\006hostId\030\001 \001(\t\022\021\n\ts" +
-      "ourceUrl\030\002 \001(\t\022H\n\006target\030\003 \003(\01328.org.yx." +
-      "hoststack.protocol.ws.server.VolumeUpgra" +
-      "deDetail\"k\n\023VolumeUpgradeDetail\022\026\n\016origi" +
-      "nVolumeId\030\001 \001(\t\022\023\n\013newVolumeId\030\002 \001(\t\022\022\n\n" +
-      "keepOrigin\030\003 \001(\010\022\023\n\013jobDetailId\030\004 \001(\t\"\343\001" +
-      "\n\017ContainerCreate\022\016\n\006hostId\030\001 \001(\t\022\016\n\006vmT" +
-      "ype\030\002 \001(\t\022J\n\005image\030\003 \001(\0132;.org.yx.hostst" +
-      "ack.protocol.ws.server.ImageOfContainerC" +
-      "reate\022\027\n\017profileTemplate\030\004 \001(\t\022K\n\006target" +
-      "\030\005 \003(\0132;.org.yx.hoststack.protocol.ws.se" +
-      "rver.ContainerProfileTarget\"z\n\026ImageOfCo" +
-      "ntainerCreate\022\n\n\002id\030\001 \001(\t\022\013\n\003url\030\002 \001(\t\022\013" +
-      "\n\003ver\030\003 \001(\t\022\013\n\003md5\030\004 \001(\t\022\014\n\004user\030\005 \001(\t\022\013" +
-      "\n\003pwd\030\006 \001(\t\022\022\n\nsourceType\030\007 \001(\t\"K\n\026Conta" +
-      "inerProfileTarget\022\013\n\003cid\030\001 \001(\t\022\017\n\007profil" +
-      "e\030\002 \001(\t\022\023\n\013jobDetailId\030\003 \001(\t\"u\n\026Containe" +
-      "rUpdateProfile\022\016\n\006hostId\030\001 \001(\t\022K\n\006target" +
-      "\030\002 \003(\0132;.org.yx.hoststack.protocol.ws.se" +
-      "rver.ContainerProfileTarget\"\313\001\n\020Containe" +
-      "rUpgrade\022\016\n\006hostId\030\001 \001(\t\022\025\n\rcontainerTyp" +
-      "e\030\002 \001(\t\022J\n\005image\030\003 \001(\0132;.org.yx.hoststac" +
-      "k.protocol.ws.server.ImageOfContainerCre" +
-      "ate\022D\n\006target\030\004 \003(\01324.org.yx.hoststack.p" +
-      "rotocol.ws.server.ContainerTarget\"s\n\rCon" +
-      "tainerCtrl\022\016\n\006hostId\030\001 \001(\t\022\014\n\004ctrl\030\002 \001(\t" +
-      "\022D\n\006target\030\003 \003(\01324.org.yx.hoststack.prot" +
-      "ocol.ws.server.ContainerTarget\"3\n\017Contai" +
-      "nerTarget\022\013\n\003cid\030\001 \001(\t\022\023\n\013jobDetailId\030\002 " +
-      "\001(\t\"h\n\020ContainerExecCmd\022\016\n\006script\030\001 \001(\t\022" +
-      "D\n\006target\030\002 \003(\01324.org.yx.hoststack.proto" +
-      "col.ws.server.ContainerTarget\"V\n\014ModuleC" +
-      "reate\022\017\n\007version\030\001 \001(\t\022\023\n\013downloadUrl\030\002 " +
-      "\001(\t\022\013\n\003md5\030\003 \001(\t\022\023\n\013jobDetailId\030\004 \001(\t\"\205\001" +
-      "\n\rModuleUpgrade\022\017\n\007version\030\001 \001(\t\022\023\n\013down" +
-      "loadUrl\030\002 \001(\t\022\013\n\003md5\030\003 \001(\t\022A\n\006target\030\004 \003" +
-      "(\01321.org.yx.hoststack.protocol.ws.server" +
-      ".ModuleTarget\"5\n\014ModuleTarget\022\020\n\010moduleI" +
-      "d\030\001 \001(\t\022\023\n\013jobDetailId\030\002 \001(\tb\006proto3"
+      "obDetailId\030\002 \001(\t\"\207\001\n\014VolumeDelete\022\016\n\006hos" +
+      "tId\030\001 \001(\t\022\020\n\010diskType\030\002 \001(\t\022\022\n\nvolumeTyp" +
+      "e\030\003 \001(\t\022A\n\006target\030\004 \003(\01321.org.yx.hoststa" +
+      "ck.protocol.ws.server.VolumeTarget\"]\n\013Vo" +
+      "lumeMount\022\016\n\006hostId\030\001 \001(\t\022>\n\006target\030\002 \003(" +
+      "\0132..org.yx.hoststack.protocol.ws.server." +
+      "MountInfo\"h\n\tMountInfo\022\020\n\010volumeId\030\001 \001(\t" +
+      "\022\024\n\014baseVolumeId\030\002 \001(\t\022\013\n\003cid\030\003 \001(\t\022\021\n\tm" +
+      "ountType\030\004 \001(\t\022\023\n\013jobDetailId\030\005 \001(\t\"a\n\rV" +
+      "olumeUnMount\022\016\n\006hostId\030\001 \001(\t\022@\n\006target\030\003" +
+      " \003(\01320.org.yx.hoststack.protocol.ws.serv" +
+      "er.UnMountInfo\"T\n\013UnMountInfo\022\020\n\010volumeI" +
+      "d\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\021\n\tmountType\030\003 \001(\t\022" +
+      "\023\n\013jobDetailId\030\004 \001(\t\"\211\001\n\rVolumeUpgrade\022\016" +
+      "\n\006hostId\030\001 \001(\t\022\021\n\tsourceUrl\030\002 \001(\t\022\013\n\003md5" +
+      "\030\003 \001(\t\022H\n\006target\030\004 \003(\01328.org.yx.hoststac" +
+      "k.protocol.ws.server.VolumeUpgradeDetail" +
+      "\"k\n\023VolumeUpgradeDetail\022\026\n\016originVolumeI" +
+      "d\030\001 \001(\t\022\023\n\013newVolumeId\030\002 \001(\t\022\022\n\nkeepOrig" +
+      "in\030\003 \001(\010\022\023\n\013jobDetailId\030\004 \001(\t\"\343\001\n\017Contai" +
+      "nerCreate\022\016\n\006hostId\030\001 \001(\t\022\016\n\006vmType\030\002 \001(" +
+      "\t\022J\n\005image\030\003 \001(\0132;.org.yx.hoststack.prot" +
+      "ocol.ws.server.ImageOfContainerCreate\022\027\n" +
+      "\017profileTemplate\030\004 \001(\t\022K\n\006target\030\005 \003(\0132;" +
+      ".org.yx.hoststack.protocol.ws.server.Con" +
+      "tainerProfileTarget\"z\n\026ImageOfContainerC" +
+      "reate\022\n\n\002id\030\001 \001(\t\022\013\n\003url\030\002 \001(\t\022\013\n\003ver\030\003 " +
+      "\001(\t\022\013\n\003md5\030\004 \001(\t\022\014\n\004user\030\005 \001(\t\022\013\n\003pwd\030\006 " +
+      "\001(\t\022\022\n\nsourceType\030\007 \001(\t\"K\n\026ContainerProf" +
+      "ileTarget\022\013\n\003cid\030\001 \001(\t\022\017\n\007profile\030\002 \001(\t\022" +
+      "\023\n\013jobDetailId\030\003 \001(\t\"u\n\026ContainerUpdateP" +
+      "rofile\022\016\n\006hostId\030\001 \001(\t\022K\n\006target\030\002 \003(\0132;" +
+      ".org.yx.hoststack.protocol.ws.server.Con" +
+      "tainerProfileTarget\"\304\001\n\020ContainerUpgrade" +
+      "\022\016\n\006hostId\030\001 \001(\t\022\016\n\006vmType\030\002 \001(\t\022J\n\005imag" +
+      "e\030\003 \001(\0132;.org.yx.hoststack.protocol.ws.s" +
+      "erver.ImageOfContainerCreate\022D\n\006target\030\004" +
+      " \003(\01324.org.yx.hoststack.protocol.ws.serv" +
+      "er.ContainerTarget\"s\n\rContainerCtrl\022\016\n\006h" +
+      "ostId\030\001 \001(\t\022\014\n\004ctrl\030\002 \001(\t\022D\n\006target\030\003 \003(" +
+      "\01324.org.yx.hoststack.protocol.ws.server." +
+      "ContainerTarget\"3\n\017ContainerTarget\022\013\n\003ci" +
+      "d\030\001 \001(\t\022\023\n\013jobDetailId\030\002 \001(\t\"h\n\020Containe" +
+      "rExecCmd\022\016\n\006script\030\001 \001(\t\022D\n\006target\030\002 \003(\013" +
+      "24.org.yx.hoststack.protocol.ws.server.C" +
+      "ontainerTarget\"V\n\014ModuleCreate\022\017\n\007versio" +
+      "n\030\001 \001(\t\022\023\n\013downloadUrl\030\002 \001(\t\022\013\n\003md5\030\003 \001(" +
+      "\t\022\023\n\013jobDetailId\030\004 \001(\t\"\231\001\n\rModuleUpgrade" +
+      "\022\022\n\nmoduleName\030\001 \001(\t\022\017\n\007version\030\002 \001(\t\022\023\n" +
+      "\013downloadUrl\030\003 \001(\t\022\013\n\003md5\030\004 \001(\t\022A\n\006targe" +
+      "t\030\005 \003(\01321.org.yx.hoststack.protocol.ws.s" +
+      "erver.ModuleTarget\"3\n\014ModuleTarget\022\016\n\006ho" +
+      "stId\030\001 \001(\t\022\023\n\013jobDetailId\030\002 \001(\tb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -26535,7 +28019,7 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_ImageCreate_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_ImageCreate_descriptor,
-        new java.lang.String[] { "ImageId", "ImageName", "ImageVer", "DownloadUrl", });
+        new java.lang.String[] { "ImageId", "ImageName", "ImageVer", "DownloadUrl", "Md5", "Bucket", });
     internal_static_org_yx_hoststack_protocol_ws_server_ImageDelete_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_org_yx_hoststack_protocol_ws_server_ImageDelete_fieldAccessorTable = new
@@ -26547,13 +28031,13 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_ImageDeleteTarget_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_ImageDeleteTarget_descriptor,
-        new java.lang.String[] { "ImageId", "JobDetailId", });
+        new java.lang.String[] { "ImageId", "Bucket", "JobDetailId", });
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeCreate_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeCreate_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_VolumeCreate_descriptor,
-        new java.lang.String[] { "VolumeSize", "VolumeType", "DiskType", "SourceUrl", "HostId", "Target", });
+        new java.lang.String[] { "VolumeSize", "VolumeType", "DiskType", "SourceUrl", "Md5", "HostId", "SnapshotName", "Target", });
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeTarget_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeTarget_fieldAccessorTable = new
@@ -26565,7 +28049,7 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeDelete_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_VolumeDelete_descriptor,
-        new java.lang.String[] { "HostId", "Target", });
+        new java.lang.String[] { "HostId", "DiskType", "VolumeType", "Target", });
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeMount_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeMount_fieldAccessorTable = new
@@ -26589,13 +28073,13 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_UnMountInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_UnMountInfo_descriptor,
-        new java.lang.String[] { "VolumeId", "Cid", "JobDetailId", });
+        new java.lang.String[] { "VolumeId", "Cid", "MountType", "JobDetailId", });
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeUpgrade_descriptor =
       getDescriptor().getMessageTypes().get(15);
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeUpgrade_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_VolumeUpgrade_descriptor,
-        new java.lang.String[] { "HostId", "SourceUrl", "Target", });
+        new java.lang.String[] { "HostId", "SourceUrl", "Md5", "Target", });
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeUpgradeDetail_descriptor =
       getDescriptor().getMessageTypes().get(16);
     internal_static_org_yx_hoststack_protocol_ws_server_VolumeUpgradeDetail_fieldAccessorTable = new
@@ -26631,7 +28115,7 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_ContainerUpgrade_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_ContainerUpgrade_descriptor,
-        new java.lang.String[] { "HostId", "ContainerType", "Image", "Target", });
+        new java.lang.String[] { "HostId", "VmType", "Image", "Target", });
     internal_static_org_yx_hoststack_protocol_ws_server_ContainerCtrl_descriptor =
       getDescriptor().getMessageTypes().get(22);
     internal_static_org_yx_hoststack_protocol_ws_server_ContainerCtrl_fieldAccessorTable = new
@@ -26661,13 +28145,13 @@ java.lang.String defaultValue) {
     internal_static_org_yx_hoststack_protocol_ws_server_ModuleUpgrade_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_ModuleUpgrade_descriptor,
-        new java.lang.String[] { "Version", "DownloadUrl", "Md5", "Target", });
+        new java.lang.String[] { "ModuleName", "Version", "DownloadUrl", "Md5", "Target", });
     internal_static_org_yx_hoststack_protocol_ws_server_ModuleTarget_descriptor =
       getDescriptor().getMessageTypes().get(27);
     internal_static_org_yx_hoststack_protocol_ws_server_ModuleTarget_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_org_yx_hoststack_protocol_ws_server_ModuleTarget_descriptor,
-        new java.lang.String[] { "ModuleId", "JobDetailId", });
+        new java.lang.String[] { "HostId", "JobDetailId", });
     descriptor.resolveAllFeaturesImmutable();
   }
 

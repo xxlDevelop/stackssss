@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
+import org.yx.hoststack.center.common.enums.SysCode;
 import org.yx.hoststack.center.common.properties.ApplicationsProperties;
 import org.yx.hoststack.center.common.redis.util.RedissonUtils;
 import org.yx.hoststack.center.entity.IdcInfo;
@@ -32,7 +32,6 @@ import org.yx.hoststack.center.service.ServiceDetailService;
 import org.yx.hoststack.center.ws.common.Node;
 import org.yx.hoststack.center.ws.controller.manager.CenterControllerManager;
 import org.yx.hoststack.center.ws.heartbeat.HeartbeatMonitor;
-import org.yx.hoststack.common.HostStackConstants;
 import org.yx.hoststack.protocol.ws.server.C2EMessage;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
@@ -46,6 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static org.yx.hoststack.center.common.enums.RegisterNodeEnum.IDC;
@@ -95,7 +95,6 @@ public class EdgeController {
             ByteString payload = message.getBody().getPayload();
             CommonMessageWrapper.Header header = message.getHeader();
             E2CMessage.E2C_EdgeRegisterReq edgeRegister = E2CMessage.E2C_EdgeRegisterReq.parseFrom(payload);
-            final AtomicBoolean isErrorFlag = new AtomicBoolean(false);
 
             String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
             ctx.channel().attr(AttributeKey.valueOf("innerServiceId")).set(serviceId);
@@ -107,34 +106,8 @@ public class EdgeController {
                 return;
             }
 
-            String nodeId = checkAndRegisterNode(ctx, header, message, serviceIp, region, isErrorFlag);
+            SpringContextHolder.getBean(EdgeController.class).checkAndRegisterNode(ctx, header, message, serviceIp, region);
 
-            KvLogger.instance(this).p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer).p(LogFieldConstants.ACTION, CenterEvent.Action.CenterWsServer_EdgeRegisterCenter).p(LogFieldConstants.TRACE_ID, message.getHeader().getTraceId()).p(HostStackConstants.CHANNEL_ID, ctx.channel().id()).p("ServiceIp", serviceIp).p("Region", region).i();
-            if (isErrorFlag.get()) {
-                return;
-            }
-
-            CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
-                    .setHeader(CommonMessageWrapper.CommonMessage.newBuilder()
-                            .getHeaderBuilder()
-                            .setMethId(message.getHeader().getMethId())
-                            .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
-                            .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
-                            .setZone(region.getZoneCode())
-                            .setRegion(region.getRegionCode())
-                            .setIdcSid(message.getHeader().getIdcSid())
-                            .setRelaySid(message.getHeader().getRelaySid())
-                            .setMethId(message.getHeader().getMethId())
-                            .setTraceId(message.getHeader().getTraceId()))
-                    .setBody(CommonMessageWrapper.Body.newBuilder().setCode(0)
-                            .setPayload(
-                                    C2EMessage.C2E_EdgeRegisterResp.newBuilder()
-                                            .setId(nodeId)
-                                            .setHbInterval(serverHbInterval)
-                                            .build().toByteString()
-                            ).build()).build();
-
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
         } catch (Exception ex) {
             sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
         }
@@ -161,19 +134,23 @@ public class EdgeController {
 
             offline(idcSid);
 
-            CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
-                    .setBody(CommonMessageWrapper.Body.newBuilder().setMsg(x00000419.getMsg()).setCode(x00000419.getValue()).build())
-                    .setHeader(CommonMessageWrapper.CommonMessage.newBuilder()
-                            .getHeaderBuilder()
-                            .setMethId(message.getHeader().getMethId())
-                            .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
-                            .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
-                            .setIdcSid(message.getHeader().getIdcSid())
-                            .setTraceId(message.getHeader().getTraceId())).build();
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
+            sendSuccessCommonMessage(ctx, message, x00000419);
         } catch (Exception ex) {
             sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
         }
+    }
+
+    static void sendSuccessCommonMessage(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, SysCode sysCode) {
+        CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
+                .setBody(CommonMessageWrapper.Body.newBuilder().setMsg(sysCode.getMsg()).setCode(sysCode.getValue()).build())
+                .setHeader(CommonMessageWrapper.CommonMessage.newBuilder()
+                        .getHeaderBuilder()
+                        .setMethId(message.getHeader().getMethId())
+                        .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
+                        .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
+                        .setIdcSid(message.getHeader().getIdcSid())
+                        .setTraceId(message.getHeader().getTraceId())).build();
+        ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
     }
 
     /**
@@ -196,26 +173,30 @@ public class EdgeController {
                 monitor.updateHeartbeat(serviceId, type, expirationTime -> offline(serviceId));
                 return existingDetail;
             });
-            CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
-                    .setHeader(CommonMessageWrapper.CommonMessage.newBuilder().getHeaderBuilder()
-                            .setMethId(ProtoMethodId.Pong.getValue())
-                            .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
-                            .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
-                            .setZone(message.getHeader().getZone())
-                            .setRegion(message.getHeader().getRegion())
-                            .setIdcSid(message.getHeader().getIdcSid())
-                            .setRelaySid(message.getHeader().getRelaySid())
-                            .setTraceId(message.getHeader().getTraceId()))
-
-                    .setBody(CommonMessageWrapper.Body.newBuilder().setCode(x00000000.getValue()).setMsg(x00000000.getMsg()).build())
-                    .build();
-            byte[] protobufMessage = returnMessage.toByteArray();
-            ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
-            ctx.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
+            sendSuccessCommonMessage(ctx, message);
 
         } catch (Exception ex) {
             sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
         }
+    }
+
+    static void sendSuccessCommonMessage(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
+        CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
+                .setHeader(CommonMessageWrapper.CommonMessage.newBuilder().getHeaderBuilder()
+                        .setMethId(ProtoMethodId.Pong.getValue())
+                        .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
+                        .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
+                        .setZone(message.getHeader().getZone())
+                        .setRegion(message.getHeader().getRegion())
+                        .setIdcSid(message.getHeader().getIdcSid())
+                        .setRelaySid(message.getHeader().getRelaySid())
+                        .setTraceId(message.getHeader().getTraceId()))
+
+                .setBody(CommonMessageWrapper.Body.newBuilder().setCode(x00000000.getValue()).setMsg(x00000000.getMsg()).build())
+                .build();
+        byte[] protobufMessage = returnMessage.toByteArray();
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(protobufMessage);
+        ctx.writeAndFlush(new BinaryWebSocketFrame(byteBuf));
     }
 
 
@@ -225,146 +206,163 @@ public class EdgeController {
      * @author yijian
      * @date 2024/12/17 10:44
      */
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public String checkAndRegisterNode(ChannelHandlerContext ctx, CommonMessageWrapper.Header header, CommonMessageWrapper.CommonMessage message, String serviceIp, RegionInfo region, AtomicBoolean isErrorFlag) {
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void checkAndRegisterNode(ChannelHandlerContext ctx, CommonMessageWrapper.Header header, CommonMessageWrapper.CommonMessage message, String serviceIp, RegionInfo region) {
         String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
         String relaySid = header.getRelaySid();
-        Long serverDetailCount = redisTemplate.opsForValue().increment("serviceDetailCount", 1);
-        String nodeId = region.getZoneCode() + "-" + region.getRegionCode() + "-" + (!StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY) + "-" + String.format("%0" + applicationsProperties.getSequenceNumber() + "d", serverDetailCount);
+        saveServerDetail(region, serviceIp, header, serviceId, ctx, message).thenAccept(result -> {
+            if (result) {
+                String edgeId = serverDetailCacheMap.get(serviceId).getEdgeId();
+                CompletableFuture<Boolean> relayFuture = CompletableFuture.completedFuture(true);
+                if (!ObjectUtils.isEmpty(header.getRelaySid()) && ObjectUtils.isEmpty(header.getIdcSid())) {
+                    relayFuture = saveRelayInfo(header.getRelaySid(), serviceIp, region, ctx, message, edgeId);
+                    RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(relaySid).toString(), relaySid, address + ":" + port);
+                }
 
-        Node relayNode = null;
-        if (!ObjectUtils.isEmpty(header.getRelaySid())) {
-            saveRelayInfo(header.getRelaySid(), serviceIp, region, ctx, message, isErrorFlag, nodeId);
-            RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(relaySid).toString(), relaySid, address + ":" + port);
-            relayNode = findNodeByServiceId(relaySid);
-        }
+                Node relayNode = findNodeByServiceId(relaySid);
+                CompletableFuture<Boolean> idcInfoFuture = CompletableFuture.completedFuture(true);
+                if (!ObjectUtils.isEmpty(header.getIdcSid())) {
+                    String idcSid = header.getIdcSid();
+                    RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(idcSid).toString(), idcSid, address + ":" + port);
+                    idcInfoFuture = saveIdcInfo(idcSid, region, serviceIp, relayNode, ctx, message, edgeId);
+                }
+                CompletableFuture<Boolean> finalRelayFuture = relayFuture;
+                CompletableFuture<Boolean> finalIdcInfoFuture = idcInfoFuture;
+                CompletableFuture.allOf(relayFuture, idcInfoFuture).thenRun(() -> {
+                    Boolean relayFlag = finalRelayFuture.join();
+                    Boolean idcFlag = finalIdcInfoFuture.join();
+                    if (relayFlag && idcFlag) {
+                        centerNode.printNodeInfoIterative();
+                        CommonMessageWrapper.CommonMessage returnMessage = CommonMessageWrapper.CommonMessage.newBuilder()
+                                .setHeader(CommonMessageWrapper.CommonMessage.newBuilder()
+                                        .getHeaderBuilder()
+                                        .setMethId(message.getHeader().getMethId())
+                                        .setLinkSide(CommonMessageWrapper.ENUM_LINK_SIDE.CENTER_TO_EDGE_VALUE)
+                                        .setProtocolVer(CommonMessageWrapper.ENUM_PROTOCOL_VER.PROTOCOL_V1_VALUE)
+                                        .setZone(region.getZoneCode())
+                                        .setRegion(region.getRegionCode())
+                                        .setIdcSid(message.getHeader().getIdcSid())
+                                        .setRelaySid(message.getHeader().getRelaySid())
+                                        .setMethId(message.getHeader().getMethId())
+                                        .setTraceId(message.getHeader().getTraceId()))
+                                .setBody(CommonMessageWrapper.Body.newBuilder().setCode(0)
+                                        .setPayload(
+                                                C2EMessage.C2E_EdgeRegisterResp.newBuilder()
+                                                        .setId(edgeId)
+                                                        .setHbInterval(serverHbInterval)
+                                                        .build().toByteString()
+                                        ).build()).build();
 
-        if (!ObjectUtils.isEmpty(header.getIdcSid())) {
-            String idcSid = header.getIdcSid();
-            RedissonUtils.setLocalCachedMap(serverConsistentHash.getShard(idcSid).toString(), idcSid, address + ":" + port);
-            saveIdcInfo(idcSid, region, serviceIp, relayNode, ctx, message, isErrorFlag, nodeId);
-        }
-        centerNode.printNodeInfoIterative();
-        saveServerDetail(nodeId, serviceIp, header, serviceId, ctx, message, isErrorFlag);
-        return nodeId;
+                        ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(returnMessage.toByteArray())));
+                    }
+                });
+            }
+        });
     }
 
 
-    private void saveRelayInfo(String serviceId, String serviceIp, RegionInfo region, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag, String nodeId) {
-        RelayInfo relayInfo = relayInfoCacheMap.computeIfAbsent(nodeId, key -> {
-            CountDownLatch latch = new CountDownLatch(1);
-            RelayInfo globalRelay = globalRelayInfoCacheMap.computeIfAbsent(nodeId, r -> {
-                RelayInfo build = new RelayInfo().builder()
+    private CompletableFuture<Boolean> saveRelayInfo(String serviceId, String serviceIp, RegionInfo region, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, String nodeId) {
+        AtomicReference<CompletableFuture<Boolean>> completableFuture = new AtomicReference<>(CompletableFuture.completedFuture(true));
+        RelayInfo relayInfo = relayInfoCacheMap.get(nodeId);
+        if (ObjectUtils.isEmpty(relayInfo)) {
+            relayInfo = globalRelayInfoCacheMap.get(nodeId);
+            if (ObjectUtils.isEmpty(relayInfo)) {
+                relayInfo = RelayInfo.builder()
                         .zone((region.getZoneCode()))
                         .region(region.getRegionCode())
                         .relayIp(serviceIp)
                         .location(region.getLocation())
                         .relay(nodeId)
                         .build();
-                CompletableFuture.supplyAsync(() -> relayInfoService.insert(build), virtualThreadExecutor).handle((result, throwable) -> {
-                    try {
-                        if (!ObjectUtils.isEmpty(throwable) || !result) {
-                            handleSaveError(throwable, result, ctx, message, "SaveRelayInfo", x00000415.getMsg(), x00000415.getValue());
-                            isErrorFlag.set(true);
-                        }
-                    } finally {
-                        latch.countDown();
+                RelayInfo finalRelayInfo = relayInfo;
+                completableFuture.set(CompletableFuture.supplyAsync(() -> relayInfoService.insert(finalRelayInfo), virtualThreadExecutor).handle((result, throwable) -> {
+                    if (!ObjectUtils.isEmpty(throwable) || !result) {
+                        handleSaveError(throwable, result, ctx, message, "SaveRelayInfoError", x00000416.getMsg(), x00000416.getValue());
+                        return false;
                     }
-                    return result;
-                });
-                try {
-                    latch.await(100, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    isErrorFlag.set(true);
-                }
+                    relayInfoCacheMap.put(nodeId, finalRelayInfo);
+                    globalRelayInfoCacheMap.put(nodeId, finalRelayInfo);
+                    return true;
+                }));
+            }
+        }
 
-                return isErrorFlag.get() ? null : build;
-            });
-
-            return globalRelay;
-        });
         centerNode.addOrUpdateNode(serviceId, RELAY, ctx.channel());
 
         int hashCode = Objects.hash(region.getZoneCode(), region.getRegionCode(), serviceId, serviceIp);
         if (hashCode != relayInfo.hashCode()) {
-            CountDownLatch updateLatch = new CountDownLatch(1);
             relayInfo.setZone(region.getZoneCode());
             relayInfo.setRegion(region.getRegionCode());
             relayInfo.setRelayIp(serviceIp);
             RelayInfo finalRelayInfo = relayInfo;
-            CompletableFuture.supplyAsync(() -> relayInfoService.update(finalRelayInfo), virtualThreadExecutor).handle((result, throwable) -> {
-                try {
-                    if (!ObjectUtils.isEmpty(throwable) || !result) {
-                        handleSaveError(throwable, result, ctx, message, "UpdateRelayInfo", x00000416.getMsg(), x00000416.getValue());
-                        isErrorFlag.set(true);
-                        updateLatch.countDown();
-                    }
-                    updateLatch.await(100, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    isErrorFlag.set(true);
+            completableFuture.set(CompletableFuture.supplyAsync(() -> relayInfoService.update(finalRelayInfo), virtualThreadExecutor).handle((result, throwable) -> {
+                if (!ObjectUtils.isEmpty(throwable) || !result) {
+                    handleSaveError(throwable, result, ctx, message, "UpdateRelayInfo", x00000416.getMsg(), x00000416.getValue());
+                    return false;
                 }
-                return isErrorFlag.get() ? null : result;
-            });
+                relayInfoCacheMap.put(nodeId, finalRelayInfo);
+                globalRelayInfoCacheMap.put(nodeId, finalRelayInfo);
+                return true;
+            }));
         }
-        relayInfoCacheMap.put(nodeId, relayInfo);
+        return completableFuture.get();
     }
 
-    public void saveServerDetail(String nodeId, String serviceIp, CommonMessageWrapper.Header header, String serviceId, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag) {
+    public CompletableFuture<Boolean> saveServerDetail(RegionInfo region, String serviceIp, CommonMessageWrapper.Header header, String serviceId, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
         RegisterNodeEnum type = !StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY;
-        ServiceDetail detail = serverDetailCacheMap.compute(serviceId, (key, existingDetail) -> {
-            CountDownLatch latch = new CountDownLatch(1);
-            if (ObjectUtils.isEmpty(existingDetail)) {
-                existingDetail = globalServerDetailCacheMap.computeIfAbsent(serviceId, s -> ServiceDetail.builder()
-                        .edgeId(nodeId)
-                        .localIp(serviceIp)
+        AtomicReference<CompletableFuture<Boolean>> completableFuture = new AtomicReference<>(CompletableFuture.completedFuture(true));
+        ServiceDetail serviceDetail = serverDetailCacheMap.get(serviceId);
+        if (ObjectUtils.isEmpty(serviceDetail)) {
+            serviceDetail = globalServerDetailCacheMap.get(serviceId);
+            if (ObjectUtils.isEmpty(serviceDetail)) {
+                serviceDetail = ServiceDetail.builder()
                         .version("1.0")
-                        .type(String.valueOf(type))
-                        .serviceId(s)
-                        .healthy(NumberUtils.BYTE_ONE)
-                        .lastHbAt(new Date())
-                        .build());
+                        .serviceId(serviceId)
+                        .build();
             }
-
-            if (ObjectUtils.isEmpty(existingDetail.getId()) || NumberUtils.BYTE_ZERO.equals(existingDetail.getHealthy())) {
-                ServiceDetail finalExistingDetail = existingDetail;
-                existingDetail.setHealthy(NumberUtils.BYTE_ONE);
-                existingDetail.setLastHbAt(new Date());
-                existingDetail.setEdgeId(nodeId);
-                existingDetail.setLocalIp(serviceIp);
-                existingDetail.setType(String.valueOf(type));
-                CompletableFuture.supplyAsync(() -> serviceDetailService.saveOrUpdate(finalExistingDetail), virtualThreadExecutor).handle((result, throwable) -> {
-                    if (!ObjectUtils.isEmpty(throwable) || !result) {
-                        try {
-                            handleSaveError(throwable, result, ctx, message, "SaveOrUpdateServiceDetail", x00000417.getMsg(), x00000417.getValue());
-                            isErrorFlag.set(true);
-                        } finally {
-                            latch.countDown();
-                        }
-                    }
-                    return result;
-                });
-                try {
-                    latch.await(100, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    isErrorFlag.set(true);
-                }
-            }
-
-            return isErrorFlag.get() ? null : existingDetail;
-        });
-        if (!ObjectUtils.isEmpty(detail)) {
-            SpringContextHolder.getBean(HeartbeatMonitor.class).updateHeartbeat(serviceId, type, expirationTime -> {
-                EdgeController bean = SpringContextHolder.getBean(EdgeController.class);
-                bean.offline(serviceId);
-            });
         }
+
+        if (ObjectUtils.isEmpty(serviceDetail.getId()) || NumberUtils.BYTE_ZERO.equals(serviceDetail.getHealthy())) {
+            serviceDetail.setHealthy(NumberUtils.BYTE_ONE);
+            serviceDetail.setLastHbAt(new Date());
+            serviceDetail.setLocalIp(serviceIp);
+            serviceDetail.setType(String.valueOf(type));
+            ServiceDetail finalServiceDetail = serviceDetail;
+            completableFuture.set(CompletableFuture.supplyAsync(() -> {
+                boolean result = serviceDetailService.saveOrUpdate(finalServiceDetail);
+                if (ObjectUtils.isEmpty(finalServiceDetail.getEdgeId())) {
+                    finalServiceDetail.setEdgeId(region.getZoneCode() + "-" + region.getRegionCode() + "-" + (!StringUtils.isEmpty(header.getIdcSid()) ? IDC : RELAY) + "-" + String.format("%0" + applicationsProperties.getSequenceNumber() + "d", finalServiceDetail.getId()));
+                    result = serviceDetailService.saveOrUpdate(finalServiceDetail);
+                }
+                return result;
+            }, virtualThreadExecutor).handle((result, throwable) -> {
+                if (!ObjectUtils.isEmpty(throwable) || !result) {
+                    handleSaveError(throwable, result, ctx, message, "SaveOrUpdateServiceDetail", x00000417.getMsg(), x00000417.getValue());
+                    return false;
+                }
+                serverDetailCacheMap.put(serviceId, finalServiceDetail);
+                globalServerDetailCacheMap.put(serviceId, finalServiceDetail);
+
+                SpringContextHolder.getBean(HeartbeatMonitor.class).updateHeartbeat(serviceId, type, expirationTime -> {
+                    EdgeController bean = SpringContextHolder.getBean(EdgeController.class);
+                    bean.offline(serviceId);
+                });
+                return true;
+            }));
+
+
+        }
+
+        return completableFuture.get();
     }
 
-    private void saveIdcInfo(String serviceId, RegionInfo region, String serviceIp, Node relayNode, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, AtomicBoolean isErrorFlag, String nodeId) {
-        IdcInfo idcInfo = idcInfoCacheMap.computeIfAbsent(nodeId, key -> {
-            CountDownLatch latch = new CountDownLatch(1);
-            IdcInfo globalIdcInfo = globalIdcInfoCacheMap.computeIfAbsent(nodeId, i -> {
-                IdcInfo build = new IdcInfo().builder()
+    private CompletableFuture<Boolean> saveIdcInfo(String serviceId, RegionInfo region, String serviceIp, Node relayNode, ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message, String nodeId) {
+        AtomicReference<CompletableFuture<Boolean>> completableFuture = new AtomicReference<>(CompletableFuture.completedFuture(true));
+        IdcInfo idcInfo = idcInfoCacheMap.get(nodeId);
+        if (ObjectUtils.isEmpty(idcInfo)) {
+            idcInfo = globalIdcInfoCacheMap.get(nodeId);
+            if (ObjectUtils.isEmpty(idcInfo)) {
+                idcInfo = new IdcInfo().builder()
                         .zone((region.getZoneCode()))
                         .region(region.getRegionCode())
                         .idcIp(serviceIp)
@@ -372,56 +370,41 @@ public class EdgeController {
                         .createAt(new Date())
                         .lastUpdateAt(new Date())
                         .idc(nodeId).build();
-                CompletableFuture.supplyAsync(() -> idcInfoService.save(build), virtualThreadExecutor).handle((result, throwable) -> {
-                    try {
-                        if (!ObjectUtils.isEmpty(throwable) || !result) {
-                            handleSaveError(throwable, result, ctx, message, "SaveIdcInfo", x00000413.getMsg(), x00000413.getValue());
-                            isErrorFlag.set(true);
-                        }
-                    } finally {
-                        latch.countDown();
+                IdcInfo finalIdcInfo = idcInfo;
+                completableFuture.set(CompletableFuture.supplyAsync(() -> idcInfoService.save(finalIdcInfo), virtualThreadExecutor).handle((result, throwable) -> {
+                    if (!ObjectUtils.isEmpty(throwable) || !result) {
+                        handleSaveError(throwable, result, ctx, message, "SaveIdcInfoError", x00000413.getMsg(), x00000413.getValue());
+                        return false;
                     }
-                    return result;
-                });
-                try {
-                    latch.await(100, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    isErrorFlag.set(true);
-                }
-                return isErrorFlag.get() ? null : build;
-            });
-            return globalIdcInfo;
-        });
-
+                    idcInfoCacheMap.put(nodeId, finalIdcInfo);
+                    globalIdcInfoCacheMap.put(nodeId, finalIdcInfo);
+                    return true;
+                }));
+            }
+        }
         int hashCode = Objects.hash(region.getZoneCode(), region.getRegionCode(), serviceId, serviceIp);
         if (hashCode != idcInfo.hashCode()) {
-            CountDownLatch updateCountLatch = new CountDownLatch(1);
             idcInfo.setZone(region.getZoneCode());
             idcInfo.setRegion(region.getRegionCode());
             idcInfo.setIdcIp(serviceIp);
             idcInfo.setLastUpdateAt(new Date());
-            CompletableFuture.supplyAsync(() -> idcInfoService.updateById(idcInfo), virtualThreadExecutor).handle((result, throwable) -> {
-                try {
-                    if (!ObjectUtils.isEmpty(throwable) || !result) {
-                        handleSaveError(throwable, result, ctx, message, "UpdateIdcInfo", x00000414.getMsg(), x00000414.getValue());
-                        isErrorFlag.set(true);
-                        updateCountLatch.countDown();
-                    }
-                    updateCountLatch.await(100, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    isErrorFlag.set(true);
+            IdcInfo finalIdcInfo = idcInfo;
+            completableFuture.set(CompletableFuture.supplyAsync(() -> idcInfoService.updateById(finalIdcInfo), virtualThreadExecutor).handle((result, throwable) -> {
+                if (!ObjectUtils.isEmpty(throwable) || !result) {
+                    handleSaveError(throwable, result, ctx, message, "UpdateIdcInfo", x00000414.getMsg(), x00000414.getValue());
+                    return false;
                 }
-
-                return isErrorFlag.get() ? null : result;
-            });
+                idcInfoCacheMap.put(nodeId, finalIdcInfo);
+                globalIdcInfoCacheMap.put(nodeId, finalIdcInfo);
+                return true;
+            }));
         }
-
-        idcInfoCacheMap.put(nodeId, idcInfo);
         if (!ObjectUtils.isEmpty(relayNode)) {
             relayNode.addOrUpdateNode(serviceId, IDC, ctx.channel(), relayNode);
         } else {
             centerNode.addOrUpdateNode(serviceId, IDC, ctx.channel());
         }
+        return completableFuture.get();
     }
 
     /**
@@ -462,11 +445,8 @@ public class EdgeController {
                     return;
                 }
                 List<String> serviceIds = processChildrenHealth(node);
-
                 processNodeHealth(node);
-
                 updateServiceDetails(serviceId, serviceIds);
-
                 centerNode.printNodeInfoIterative();
                 node.getChannel().disconnect();
             } catch (Exception e) {

@@ -13,7 +13,10 @@ import org.yx.hoststack.center.jobs.cmd.JobInnerCmd;
 import org.yx.hoststack.center.jobs.cmd.module.UpgradeModuleCmdData;
 import org.yx.hoststack.center.service.JobDetailService;
 import org.yx.hoststack.center.service.JobInfoService;
+import org.yx.hoststack.center.service.biz.ServerCacheInfoServiceBiz;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.protocol.ws.server.JobParams;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.StringPool;
@@ -24,8 +27,9 @@ import java.util.List;
 @Service("module")
 public class ModuleJob extends BaseJob implements IJob {
     public ModuleJob(JobInfoService jobInfoService, JobDetailService jobDetailService,
+                     CenterService centerService, ServerCacheInfoServiceBiz serverCacheInfoServiceBiz,
                      TransactionTemplate transactionTemplate) {
-        super(jobInfoService, jobDetailService, transactionTemplate);
+        super(jobInfoService, jobDetailService, centerService, serverCacheInfoServiceBiz, transactionTemplate);
     }
 
     @Override
@@ -58,13 +62,13 @@ public class ModuleJob extends BaseJob implements IJob {
                 .p("UpgradeModuleData", JSON.toJSONString(upgradeModuleCmdData))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.ModuleTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String hostId : upgradeModuleCmdData.getHostIds()) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("hostId", hostId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + hostId);
-            targetList.add(target);
+            targetList.add(JobParams.ModuleTarget.newBuilder()
+                    .setHostId(hostId)
+                    .setJobDetailId(jobId + StringPool.DASH + hostId)
+                    .build());
 
             JSONObject jobDetailParam = new JSONObject()
                     .fluentPut("hostId", hostId)
@@ -83,16 +87,18 @@ public class ModuleJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("moduleName", upgradeModuleCmdData.getModuleName())
-                .fluentPut("version", upgradeModuleCmdData.getVersion())
-                .fluentPut("downloadUrl", upgradeModuleCmdData.getDownloadUrl())
-                .fluentPut("md5", upgradeModuleCmdData.getMd5())
-                .fluentPut("target", targetList);
+        JobParams.ModuleUpgrade jobParams = JobParams.ModuleUpgrade.newBuilder()
+                .setModuleName(upgradeModuleCmdData.getModuleName())
+                .setVersion(upgradeModuleCmdData.getVersion())
+                .setDownloadUrl(upgradeModuleCmdData.getDownloadUrl())
+                .setMd5(upgradeModuleCmdData.getMd5())
+                .addAllTarget(targetList)
+                .build();
         if (safety) {
             try {
                 safetyPersistenceJob(jobId, jobCmd, null, "", jobDetailList);
                 kvLogger.i();
+                sendJobToAgent(jobCmd, upgradeModuleCmdData.getHostIds(), jobParams.getDownloadUrlBytes());
                 return jobId;
             } catch (Exception ex) {
                 kvLogger.p(LogFieldConstants.ERR_MSG, ex.getMessage())
@@ -102,6 +108,7 @@ public class ModuleJob extends BaseJob implements IJob {
         } else {
             persistenceJob(jobId, jobCmd, null, "", jobDetailList);
             kvLogger.i();
+            sendJobToAgent(jobCmd, upgradeModuleCmdData.getHostIds(), jobParams.toByteString());
             return jobId;
         }
     }

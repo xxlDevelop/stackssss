@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Configuration;
 public class ChannelSendConfig {
     @Value("${server.center.sendMsgUrl:/hs-core/v1/center/channel}")
     private String sendMsgUrl;
-    @Value("${webSocket.client.retryNumber:3}")
+    @Value("${server.center.sendCreateImageUrl:/hs-core/v1/image/createImageFromRemote}")
+    private String createImageUrl;
+    @Value("${webSocket.center.retryNumber:3}")
     private int retryNumber;
-    @Value("${webSocket.client.retryInterval:10}")
+    @Value("${webSocket.center.retryInterval:10}")
     private int retryInterval;
 }

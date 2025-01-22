@@ -6,6 +6,8 @@ import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.jobs.cmd.JobInnerCmd;
 import org.yx.hoststack.center.service.JobDetailService;
 import org.yx.hoststack.center.service.JobInfoService;
+import org.yx.hoststack.center.service.biz.ServerCacheInfoServiceBiz;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.common.HostStackConstants;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
@@ -13,8 +15,9 @@ import org.yx.lib.utils.logger.LogFieldConstants;
 @Service("parent")
 public class ParentJob extends BaseJob implements IJob {
     public ParentJob(JobInfoService jobInfoService, JobDetailService jobDetailService,
+                     CenterService centerService, ServerCacheInfoServiceBiz serverCacheInfoServiceBiz,
                      TransactionTemplate transactionTemplate) {
-        super(jobInfoService, jobDetailService, transactionTemplate);
+        super(jobInfoService, jobDetailService, centerService, serverCacheInfoServiceBiz, transactionTemplate);
     }
 
     @Override

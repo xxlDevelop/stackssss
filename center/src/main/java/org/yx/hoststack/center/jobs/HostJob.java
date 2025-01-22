@@ -1,7 +1,6 @@
 package org.yx.hoststack.center.jobs;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
@@ -15,20 +14,25 @@ import org.yx.hoststack.center.jobs.cmd.host.HostResetCmdData;
 import org.yx.hoststack.center.jobs.cmd.host.HostUpdateConfigCmdData;
 import org.yx.hoststack.center.service.JobDetailService;
 import org.yx.hoststack.center.service.JobInfoService;
+import org.yx.hoststack.center.service.biz.ServerCacheInfoServiceBiz;
+import org.yx.hoststack.center.service.center.CenterService;
 import org.yx.hoststack.common.HostStackConstants;
+import org.yx.hoststack.protocol.ws.server.JobParams;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.StringPool;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service("host")
 public class HostJob extends BaseJob implements IJob {
 
     public HostJob(JobInfoService jobInfoService, JobDetailService jobDetailService,
+                   CenterService centerService, ServerCacheInfoServiceBiz serverCacheInfoServiceBiz,
                    TransactionTemplate transactionTemplate) {
-        super(jobInfoService, jobDetailService, transactionTemplate);
+        super(jobInfoService, jobDetailService, centerService, serverCacheInfoServiceBiz, transactionTemplate);
     }
 
     @Override
@@ -60,13 +64,13 @@ public class HostJob extends BaseJob implements IJob {
                 .p("HostIds", String.join(StringPool.COMMA, hotIdArray))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.HostTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String hostId : hotIdArray) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("hostId", hostId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + hostId);
-            targetList.add(target);
+            targetList.add(JobParams.HostTarget.newBuilder()
+                    .setHostId(hostId)
+                    .setJobDetailId(jobId + StringPool.DASH + hostId)
+                    .build());
 
             jobDetailList.add(JobDetail.builder()
                     .jobId(jobId)
@@ -78,9 +82,14 @@ public class HostJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.HostReset jobParams = JobParams.HostReset.newBuilder()
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, hotIdArray, jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     public String updateConfig(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -94,13 +103,21 @@ public class HostJob extends BaseJob implements IJob {
                 .p("Configs", JSON.toJSONString(configs))
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.HostToUpdateConfigDetail> configDetails = Lists.newArrayList();
+        for (HostUpdateConfigCmdData.HostConfig config : configs) {
+            configDetails.add(JobParams.HostToUpdateConfigDetail.newBuilder()
+                    .setType(config.getType())
+                    .putAllContext(config.getContext())
+                    .build());
+        }
+
+        List<JobParams.HostTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String hostId : hotIdArray) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("hostId", hostId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + hostId);
-            targetList.add(target);
+            targetList.add(JobParams.HostTarget.newBuilder()
+                    .setHostId(hostId)
+                    .setJobDetailId(jobId + StringPool.DASH + hostId)
+                    .build());
 
             jobDetailList.add(JobDetail.builder()
                     .jobId(jobId)
@@ -112,10 +129,15 @@ public class HostJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("config", configs)
-                .fluentPut("target", targetList);
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.HostUpdateConfig jobParams = JobParams.HostUpdateConfig.newBuilder()
+                .addAllConfig(configDetails)
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, hotIdArray, jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
     public String execCmd(JobInnerCmd<?> jobCmd, boolean safety) {
@@ -128,13 +150,13 @@ public class HostJob extends BaseJob implements IJob {
                 .p("Script", execCmdData.getScript())
                 .p(HostStackConstants.JOB_ID, jobId);
 
-        List<JSONObject> targetList = Lists.newArrayList();
+        List<JobParams.HostTarget> targetList = Lists.newArrayList();
         List<JobDetail> jobDetailList = Lists.newArrayList();
         for (String hostId : hotIdArray) {
-            JSONObject target = new JSONObject()
-                    .fluentPut("hostId", hostId)
-                    .fluentPut("jobDetailId", jobId + StringPool.DASH + hostId);
-            targetList.add(target);
+            targetList.add(JobParams.HostTarget.newBuilder()
+                    .setHostId(hostId)
+                    .setJobDetailId(jobId + StringPool.DASH + hostId)
+                    .build());
 
             jobDetailList.add(JobDetail.builder()
                     .jobId(jobId)
@@ -146,27 +168,31 @@ public class HostJob extends BaseJob implements IJob {
                     .createAt(new Timestamp(System.currentTimeMillis()))
                     .build());
         }
-        JSONObject jobParams = new JSONObject()
-                .fluentPut("script", execCmdData.getScript())
-                .fluentPut("target", targetList);
-
-        return persistence(safety, jobId, jobCmd, jobDetailList, kvLogger);
+        JobParams.HostExecCmd jobParams = JobParams.HostExecCmd.newBuilder()
+                .setScript(execCmdData.getScript())
+                .addAllTarget(targetList)
+                .build();
+        return persistence(safety, jobId, jobCmd, jobDetailList,
+                successJobId -> {
+                    kvLogger.i();
+                    sendJobToAgent(jobCmd, hotIdArray, jobParams.toByteString());
+                }, error -> kvLogger.p(LogFieldConstants.ERR_MSG, error.getMessage()).e(error));
     }
 
-    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList, KvLogger kvLogger) {
+    private String persistence(boolean safety, String jobId, JobInnerCmd<?> jobCmd, List<JobDetail> jobDetailList,
+                               Consumer<String> consumer, Consumer<Exception> exceptionConsumer) {
         if (safety) {
             try {
                 safetyPersistenceJob(jobId, jobCmd, null, "", jobDetailList);
-                kvLogger.i();
+                consumer.accept(jobId);
                 return jobId;
             } catch (Exception ex) {
-                kvLogger.p(LogFieldConstants.ERR_MSG, ex.getMessage())
-                        .e(ex);
+                exceptionConsumer.accept(ex);
                 return "";
             }
         } else {
             persistenceJob(jobId, jobCmd, null, "", jobDetailList);
-            kvLogger.i();
+            consumer.accept(jobId);
             return jobId;
         }
     }

@@ -1,8 +1,17 @@
 package org.yx.hoststack.center.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.yx.hoststack.center.common.constant.RequestMappingBase;
+import org.yx.hoststack.center.common.req.image.CreateImageReq;
+import org.yx.hoststack.center.common.req.image.ImageListReq;
+import org.yx.hoststack.center.common.req.image.ImageStatusReq;
+import org.yx.hoststack.center.common.req.image.UpdateImageReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.image.ImageListResp;
 import org.yx.hoststack.center.entity.ImageInfo;
 import org.yx.hoststack.center.service.ImageInfoService;
 import org.yx.lib.utils.util.R;
@@ -16,7 +25,7 @@ import java.util.List;
  * @since 2024-12-09 15:15:18
  */
 @RestController
-@RequestMapping("/imageInfo")
+@RequestMapping(RequestMappingBase.admin + RequestMappingBase.image)
 @RequiredArgsConstructor
 public class ImageInfoController {
 
@@ -71,18 +80,6 @@ public class ImageInfoController {
     }
 
     /**
-     * 修改
-     *
-     * @param imageInfo
-     * @return
-     */
-    @PutMapping
-    public R<Boolean> update(@RequestBody ImageInfo imageInfo) {
-        boolean result = imageInfoService.update(imageInfo);
-        return R.ok(result);
-    }
-
-    /**
      * 删除
      *
      * @param id
@@ -92,6 +89,31 @@ public class ImageInfoController {
     public R<Integer> delete(@PathVariable("id") Long id) {
         int result = imageInfoService.delete(id);
         return R.ok(result);
+    }
+
+    @PostMapping("/create")
+    public R<?> createImage(@RequestBody @Valid CreateImageReq req) {
+        return imageInfoService.createImage(req);
+    }
+
+    @PostMapping("/createImageFromRemote")
+    public R<?> createImageFromRemote(@RequestBody @Valid CreateImageReq req) {
+        return imageInfoService.createImageFromRemote(req);
+    }
+
+    @PostMapping("/update")
+    public R<?> updateImage(@RequestBody @Valid UpdateImageReq req) {
+        return imageInfoService.updateImage(req);
+    }
+
+    @PostMapping("/list")
+    public R<PageResp<ImageListResp>> list(@RequestBody @Validated ImageListReq imageListReq) {
+        return imageInfoService.list(imageListReq);
+    }
+
+    @PostMapping("/status")
+    public R<?> updateStatus(@RequestBody @Validated ImageStatusReq req) {
+        return imageInfoService.updateStatus(req);
     }
 
 }

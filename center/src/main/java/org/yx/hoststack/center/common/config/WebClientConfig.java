@@ -12,8 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.center.common.exception.InvalidHttpStatusException;
+import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 import reactor.core.publisher.Mono;
@@ -37,10 +37,10 @@ public class WebClientConfig {
         // 配置HTTP客户端
         HttpClient httpClient = HttpClient.create(provider)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .responseTimeout(Duration.ofSeconds(5))
+                .responseTimeout(Duration.ofSeconds(10))
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(5))
-                                .addHandlerLast(new WriteTimeoutHandler(5)));
+                        conn.addHandlerLast(new ReadTimeoutHandler(10))
+                                .addHandlerLast(new WriteTimeoutHandler(10)));
 
         // 构建WebClient实例
         return WebClient.builder()

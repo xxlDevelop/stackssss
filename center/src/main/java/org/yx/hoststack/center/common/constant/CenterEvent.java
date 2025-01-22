@@ -12,6 +12,8 @@ public interface CenterEvent {
     String FETCH_CHANNEL_FROM_REMOTE_EVENT = "FetchChannelFromRemoteEvent";
     String SYNC_CONFIG_TO_IDC_EVENT = "SYNC_CONFIG_TO_IDC_EVENT";
     String SEND_MSG_TO_LOCAL_OR_REMOTE_CHANNEL_EVENT = "SendMsgToLocalOrRemoteChannelEvent";
+    String JOB_CONTROLLER_EVENT = "JobControllerEvent";
+    String CREATE_IMAGE_EVENT = "CreateImageEvent";
 
     String DoJob = "DoJob";
 
@@ -39,8 +41,15 @@ public interface CenterEvent {
         String FETCH_CHANNEL_FROM_REMOTE_INIT = "FetchChannelFromRemoteInit";
         String SEND_MSG_TO_LOCAL_OR_REMOTE_CHANNEL_REMOTE = "SendMsgToLocalOrRemoteChannelRemote";
         String FETCH_CHANNEL_FROM_REMOTE_FAILED = "FetchChannelFromRemoteFailed";
+        String SEND_ALL_SERVER = "SendAllServer";
+        String SEND_REMOTE_SERVER = "SendRemoteServer";
         String SYNC_CONFIG_TO_IDC_FAILED = "SyncConfigToIdcFailed";
         String FETCH_CHANNEL_FROM_REMOTE_SUCCESS = "FetchChannelFromRemoteSuccess";
+        String JOB_CONTROLLER_SAVE_IMAGE_INFO_SUCCESS = "JobControllerSaveImageInfoSuccess";
+        String JOB_CONTROLLER_FAIL = "JobControllerFail";
+        String CREATE_IMAGE_FAIL = "CreateImageFail";
+        String CREATE_IMAGE_POST_REMOTE_SUCCESS = "CreateImagePostRemoteSuccess";
+        String DUPLICATE_IMAGE_FOUNT = "DuplicateImageFound";
 
 
         String Update_IdcInfo_Failed = "UpdateIdcInfoFailed";

@@ -69,6 +69,7 @@ public class CenterServer implements Runnable {
     private final SysModuleService sysModuleService;
     private final AgentCpuService agentCpuService;
     private final AgentGpuService agentGpuService;
+    private final AgentSessionService agentSessionService;
 
     private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
@@ -78,9 +79,9 @@ public class CenterServer implements Runnable {
     public static final ConsistentHashing gpuInfoConsistentHash = new ConsistentHashing(1);
     public static final ConsistentHashing cpuInfoConsistentHash = new ConsistentHashing(1);
     public static final ConsistentHashing containerConsistentHash = new ConsistentHashing(1);
+    public static final ConsistentHashing agentSessionConsistentHash = new ConsistentHashing(1);
 
     public static String address;
-    public static String hostName;
     public static int port;
     public static Node centerNode;
 
@@ -133,8 +134,6 @@ public class CenterServer implements Runnable {
     }
 
     private void init() throws InterruptedException {
-
-
         // init project params
         applicationInit();
         initShard();
@@ -154,7 +153,7 @@ public class CenterServer implements Runnable {
                 .childOption(ChannelOption.SO_SNDBUF, edgeServerConfig.getSendBuf())
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childOption(ChannelOption.SO_REUSEADDR, true)
+                .childOption(ChannelOption.SO_REUSEADDR, false)
                 .childHandler(centerServerChannelInitializer);
 //                    .handler(new LoggingHandler(msgServerConfig.getLogLevel() == 2 ? LogLevel.INFO : LogLevel.DEBUG));
 
@@ -281,13 +280,11 @@ public class CenterServer implements Runnable {
 
         globalServerDetailCacheMap = serviceDetailService.list().parallelStream().collect(Collectors.toMap(ServiceDetail::getServiceId, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
 
-        hostName = nacosDiscoveryProperties.getUsername();
-
         address = nacosDiscoveryProperties.getIp();
 
         port = nacosDiscoveryProperties.getPort();
 
-        centerNode = new Node(hostName == null ? "center" : hostName, RegisterNodeEnum.CENTER, null);
+        centerNode = new Node(String.valueOf(RegisterNodeEnum.CENTER) , RegisterNodeEnum.CENTER, null);
 
     }
 
@@ -318,6 +315,7 @@ public class CenterServer implements Runnable {
                 sysModules.forEach(host -> {
                     initGpuInfo(futures, host.getHostId());
                     initCpuInfo(futures, host.getHostId());
+                    initAgentSession(futures, host.getHostId());
                     String shardKey = hostConsistentHash.getShard(host.getDevSn()).toString();
                     if (shardKey != null && !shardKey.isEmpty()) {
                         RedissonUtils.setLocalCachedMap(shardKey, host.getDevSn(), host);
@@ -344,6 +342,7 @@ public class CenterServer implements Runnable {
                 containers.forEach(c -> {
                     initGpuInfo(futures, c.getContainerId());
                     initCpuInfo(futures, c.getContainerId());
+                    initAgentSession(futures, c.getContainerId());
                     String shardKey = containerConsistentHash.getShard(c.getDevSn()).toString();
                     if (shardKey != null && !shardKey.isEmpty()) {
                         RedissonUtils.setLocalCachedMap(shardKey, c.getContainerId(), c);
@@ -415,6 +414,21 @@ public class CenterServer implements Runnable {
         futures.add(future);
     }
 
+    public void initAgentSession(List<CompletableFuture<Void>> futures, String agentId) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            AgentSession agentSession = agentSessionService.getOne(new LambdaQueryWrapper<AgentSession>().eq(AgentSession::getAgentId, agentId),false);
+
+            if(!ObjectUtils.isEmpty(agentSession)){
+                String shardKey = agentSessionConsistentHash.getShard(agentId).toString();
+                if (shardKey != null && !shardKey.isEmpty()) {
+                    RedissonUtils.setLocalCachedMap(shardKey, agentId, agentSession);
+                }
+            }
+        }, virtualThreadExecutor);
+
+        futures.add(future);
+    }
+
     public void initShard(){
         for (int i = 0; i < 10; i++) { serverConsistentHash.addShard(String.format("host_stack_center:server_shard_%s", i));};
         for (int i = 0; i < 50; i++) { hostConsistentHash.addShard(String.format("host_stack_center:host_shard_%s", i));};
@@ -422,5 +436,6 @@ public class CenterServer implements Runnable {
         for (int i = 0; i < 50; i++) { gpuInfoConsistentHash.addShard(String.format("host_stack_center:gpuInfo_shard_%s", i));};
         for (int i = 0; i < 50; i++) { cpuInfoConsistentHash.addShard(String.format("host_stack_center:cpuInfo_shard_%s", i));};
         for (int i = 0; i < 50; i++) { containerConsistentHash.addShard(String.format("host_stack_center:container_shard_%s", i));};
+        for (int i = 0; i < 50; i++) { agentSessionConsistentHash.addShard(String.format("host_stack_center:agentSession_shard_%s", i));};
     }
 }

@@ -23,13 +23,15 @@ public enum SysCode {
     x00000414("Update IdcInfo error", 143414),
     x00000415("Save RelayInfo error", 143415),
     x00000416("Update RelayInfo error", 143416),
-    x00000417("Save ServiceDetail error", 143417),
+    x00000417("Save Or Update ServiceDetail error", 143417),
     x00000418("Update ServiceDetail error", 143418),
     x00000419("idc exit successful.", 143419),
 
 
+
     x00000600("Agent Init Error, Agent Need to exist.", 143600),
     x00000601("IDC/Relay Unregistered", 143601),
+    x00000602("Host exit successful.", 143602),
 
 
     // IDC Network Configuration Error Codes
@@ -58,7 +60,10 @@ public enum SysCode {
     x00000505("Init SysModule、CpuInfo、GpuInfo Error", 143505),
     x00000506("Get remoteServer is null", 143506),
 
-
+    x00000507("Failed to create image", 143507),
+    x00000508("Image with MD5 %s already exists", 143508),
+    x00000509("Update imageInfo fail", 143509),
+    x00000510("Update imageInfo status fail", 143510),
 
 
 

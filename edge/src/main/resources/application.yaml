@@ -1,5 +1,5 @@
 server:
-  port: 8299
+  port: 8099
   shutdown: graceful
 spring:
   application:

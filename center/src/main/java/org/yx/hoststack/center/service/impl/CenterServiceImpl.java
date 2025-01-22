@@ -17,6 +17,7 @@ import org.yx.hoststack.center.apiservice.ApiServiceBase;
 import org.yx.hoststack.center.common.config.channel.ChannelSendConfig;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.redis.util.RedissonUtils;
+import org.yx.hoststack.center.common.req.channel.SendChannelBasic;
 import org.yx.hoststack.center.common.req.channel.SendChannelReq;
 import org.yx.hoststack.center.retry.CenterMessageSender;
 import org.yx.hoststack.center.service.center.CenterService;
@@ -57,10 +58,13 @@ public class CenterServiceImpl implements CenterService {
      * Local lookup Channel
      */
     @Override
-    public Channel findLocalChannel(SendChannelReq request) {
+    public Channel findLocalChannel(SendChannelBasic request) {
         try {
             String id = StringUtil.isBlank(request.getHostId()) ? request.getServiceId() : request.getHostId();
             if (StringUtil.isBlank(id)) {
+                return null;
+            }
+            if (Node.NODE_MAP.get(id) == null) {
                 return null;
             }
             return Node.NODE_MAP.get(id).getChannel();
@@ -132,7 +136,7 @@ public class CenterServiceImpl implements CenterService {
         String remoteUrl = "";
         Map<String, String> requestHeaders = new HashMap<>();
         try {
-            remoteUrl = buildRemoteUrl(sendChannelReq);
+            remoteUrl = buildRemoteUrl(sendChannelReq, channelSendConfig.getSendMsgUrl());
             requestHeaders = prepareRequestHeaders();
 
             String finalRemoteUrl = remoteUrl;
@@ -157,8 +161,15 @@ public class CenterServiceImpl implements CenterService {
 
     }
 
-    private String buildRemoteUrl(SendChannelReq sendChannelReq) {
-        String relaySid = StringUtil.isBlank(sendChannelReq.getHostId()) ? sendChannelReq.getServiceId() : sendChannelReq.getHostId();
+    @Override
+    public String buildRemoteUrl(SendChannelBasic sendChannelBasic, String url) {
+        if (StringUtil.isBlank(url)) {
+            throw new RuntimeException("BuildRemoteUrl URL is null");
+        }
+        String relaySid = StringUtil.isBlank(sendChannelBasic.getHostId()) ? sendChannelBasic.getServiceId() : sendChannelBasic.getHostId();
+        if (StringUtil.isBlank(relaySid)) {
+            throw new RuntimeException("BuildRemoteUrl RelaySid is null");
+        }
         String remoteServer = RedissonUtils.getLocalCache(
                 CenterServer.serverConsistentHash.getShard(relaySid).toString(),
                 relaySid
@@ -167,15 +178,15 @@ public class CenterServiceImpl implements CenterService {
             throw new RuntimeException("BuildRemoteUrl Remote server not found");
         }
         return UriComponentsBuilder.fromUriString("http://" + remoteServer)
-                .path(channelSendConfig.getSendMsgUrl())
+                .path(url)
                 .build()
                 .toUriString();
     }
 
-    private Map<String, String> prepareRequestHeaders() {
+    @Override
+    public Map<String, String> prepareRequestHeaders() {
         Map<String, String> headers = new HashMap<>();
         // Add necessary headers here, possibly from MDC or other sources
-        headers.put("Content-Type", "application/json");
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = null;
         if (attributes != null) {
