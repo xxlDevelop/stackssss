@@ -8,9 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 任务信息表
@@ -25,13 +24,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class JobInfo implements Serializable {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键ID
      */
-    @TableId(type = IdType.INPUT)
+    @TableId(type = IdType.AUTO)
     private String jobId;
 
     /**
@@ -58,14 +56,9 @@ public class JobInfo implements Serializable {
     private String jobStatus;
 
     /**
-     * 任务执行顺序
-     */
-    private Integer runOrder;
-
-    /**
      * 任务执行进度, 范围:[0,100]
      */
-    private Integer jobProgress;
+    private Integer jobProcess;
 
     /**
      * 任务执行目标所属大区标识
@@ -76,11 +69,6 @@ public class JobInfo implements Serializable {
      * 任务执行目标所属分区
      */
     private String region;
-
-    /**
-     * 任务执行目标所属的RELAY标识
-     */
-    private String relay;
 
     /**
      * 任务执行目标所属IDC机房
@@ -113,23 +101,18 @@ public class JobInfo implements Serializable {
     private Long runTime;
 
     /**
-     * 下一级任务ID
+     * 父级任务ID
      */
-    private String nextJobId;
-
-    /**
-     * 根任务ID
-     */
-    private String rootJobId;
+    private String parentJobId;
 
     /**
      * 创建时间
      */
-    private Timestamp createAt;
+    private Date createAt;
 
     /**
      * 最后修改时间
      */
-    private Timestamp lastUpdateAt;
+    private Date lastUpdateAt;
 
 }

@@ -5,12 +5,10 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -18,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Component
 public class ExecutorConfig {
 
-    @Value("${applications.executor.pool-core-size:5}")
+    @Value("${executor.pool.core-size:5}")
     private int corePoolSize;
 
     public int getCorePoolSize() {
@@ -28,7 +26,7 @@ public class ExecutorConfig {
         return corePoolSize;
     }
 
-    @Value("${applications.executor.max-size:15}")
+    @Value("${executor.max-size:15}")
     private int maxPoolSize;
 
     public int getMaxPoolSize() {
@@ -38,7 +36,7 @@ public class ExecutorConfig {
         return maxPoolSize;
     }
 
-    @Value("${applications.executor.capacity:2048}")
+    @Value("${executor.capacity:2048}")
     private int queueCapacity;
 
     public int getQueueCapacity() {
@@ -51,7 +49,7 @@ public class ExecutorConfig {
     /**
      * 允许的空闲时间
      */
-    @Value("${applications.executor.keep-alive:60}")
+    @Value("${executor.keep-alive:60}")
     private int keepAlive;
 
     public int getKeepAlive() {
@@ -76,14 +74,5 @@ public class ExecutorConfig {
         executor.initialize();
         executor.setWaitForTasksToCompleteOnShutdown(true);
         return executor;
-    }
-
-    /**
-     * Asynchronous thread pool configuration class
-     * @author zhangyijian
-     */
-    @Bean("virtualThreadExecutor")
-    public Executor virtualThreadExecutor() {
-        return Executors.newVirtualThreadPerTaskExecutor();
     }
 }

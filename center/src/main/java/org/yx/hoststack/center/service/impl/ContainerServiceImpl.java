@@ -1,20 +1,16 @@
 package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.yx.hoststack.center.common.req.container.ContainerCreateReqDTO;
-import org.yx.hoststack.center.common.req.container.ContainerPageReqDTO;
-import org.yx.hoststack.center.common.resp.comtainer.ContainerCreateRespVO;
-import org.yx.hoststack.center.common.resp.comtainer.ContainerPageDBVO;
-import org.yx.hoststack.center.entity.Container;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import org.yx.hoststack.center.mapper.ContainerMapper;
+import org.yx.hoststack.center.entity.Container;
 import org.yx.hoststack.center.service.ContainerService;
 
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
@@ -23,37 +19,33 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ContainerServiceImpl extends ServiceImpl<ContainerMapper, Container> implements ContainerService {
 
+    
     private final ContainerMapper containerMapper;
 
-    public ContainerServiceImpl(ContainerMapper containerMapper) {
-        this.containerMapper = containerMapper;
-    }
-
     @Override
-    public IPage<ContainerPageDBVO> findPage(ContainerPageReqDTO dto) {
-
-        return containerMapper.getPageList(dto, Page.of(dto == null || dto.getCurrent() == null || dto.getCurrent() <= 0L ? 1L : dto.getCurrent()
-                , dto == null || dto.getSize() == null || dto.getSize() <= 0L ? 10L : dto.getSize()));
-
-    }
-
-    @Override
-    public List<Container> findList(Container params) {
+    public Page<Container> findPage(Container params) {
+        Page<Container> page = new Page<>(1, 10);//TODO 自行处理
         LambdaQueryWrapper<Container> query = Wrappers.lambdaQuery(Container.class);
-        return baseMapper.selectList(query);
+        return containerMapper.selectPage(page, query);
+    }
+
+    @Override
+    public List<Container> findList(Container params){
+        LambdaQueryWrapper<Container> query = Wrappers.lambdaQuery(Container.class);
+        return containerMapper.selectList(query);
     }
 
     @Override
     public Container findById(Long id) {
-        return baseMapper.selectById(id);
+        return containerMapper.selectById(id);
     }
 
     @Override
-    public ContainerCreateRespVO insert(ContainerCreateReqDTO dto) {
-//        return save(dto);
-        return null;
+    public boolean insert(Container container) {
+        return save(container);
     }
 
     @Override
@@ -63,7 +55,7 @@ public class ContainerServiceImpl extends ServiceImpl<ContainerMapper, Container
 
     @Override
     public int delete(Long id) {
-        return baseMapper.deleteById(id);
+        return containerMapper.deleteById(id);
     }
 
 }

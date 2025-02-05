@@ -1,5 +1,10 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,51 +12,54 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * HostAgent GPU信息
+ * AGENT GPU信息
+ *
+ * @author lyc
+ * @since 2024-12-12 18:09:53
  */
 @Data
+@TableName("t_host_gpu")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_host_gpu")
-public class HostGpu {
+public class HostGpu implements Serializable{
+
+    private static final long serialVersionUID=1L;
+
     /**
-     * 主键ID
+     *  主键ID
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * hostId
+     *  HOSTID
      */
     private String hostId;
 
     /**
-     * gpu类型
+     *  GPU类型
      */
     private String gpuType;
 
     /**
-     * 制作厂商
+     *  制作厂商
      */
     private String gpuManufacturer;
 
     /**
-     * 显存
+     *  显存
      */
     private String gpuMem;
 
     /**
-     * bus类型
+     *  BUS类型
      */
     private String gpuBusType;
 
     /**
-     * gpu设备ID
+     *  设备类型
      */
-    private String gpuDeviceId;
+    private String gpuDeviceInfo;
 
-    /**
-     * linux宿主机显卡的PCIe 设备地址，用于显卡直通时指定虚拟机使用的显卡
-     */
-    private String gpuBusId;
 }

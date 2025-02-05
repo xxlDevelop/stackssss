@@ -38,11 +38,6 @@ public class IdcNetConfig implements Serializable{
     private Long idcId;
 
     /**
-     *  机房标识
-     */
-    private String idc;
-
-    /**
      *  内网IP
      */
     private String localIp;
@@ -51,6 +46,26 @@ public class IdcNetConfig implements Serializable{
      *  内网端口
      */
     private Integer localPort;
+
+    /**
+     *  内网网关
+     */
+    private String gateway;
+
+    /**
+     *  子网掩码
+     */
+    private String mask;
+
+    /**
+     *  DNS1
+     */
+    private String dns1;
+
+    /**
+     *  DNS2
+     */
+    private String dns2;
 
     /**
      *  外网IP映射

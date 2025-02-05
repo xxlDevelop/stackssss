@@ -51,8 +51,12 @@ message Coturn {
 //HostInitialize Resp
 message C2E_HostInitializeResp {
   string hostId = 1;
-  string agentType = 2;
-  string devSn = 3;
+  string hostIp = 2;
+  string agentType = 3;
+  string devSn = 4;
+  string version = 5;
+  string resourcePool = 6;
+  string runtimeEnv = 7;
 }
 
 //HostReset

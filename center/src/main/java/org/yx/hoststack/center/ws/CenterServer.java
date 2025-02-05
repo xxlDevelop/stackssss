@@ -1,9 +1,6 @@
 package org.yx.hoststack.center.ws;
 
 import cn.hutool.core.thread.ThreadFactoryBuilder;
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -16,31 +13,19 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.yx.hoststack.center.common.constant.CenterEvent;
-import org.yx.hoststack.center.common.enums.RegisterNodeEnum;
-import org.yx.hoststack.center.common.redis.util.RedissonUtils;
-import org.yx.hoststack.center.entity.*;
-import org.yx.hoststack.center.service.*;
-import org.yx.hoststack.center.ws.common.ConsistentHashing;
-import org.yx.hoststack.center.ws.common.Node;
 import org.yx.hoststack.center.ws.config.CenterServerConfig;
 import org.yx.hoststack.protocol.ws.ResendMessage;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -52,41 +37,6 @@ public class CenterServer implements Runnable {
     private final CenterServerConfig edgeServerConfig;
 
     private final CenterServerChannelInitializer centerServerChannelInitializer;
-
-
-    public static final String REGION_CACHE_KEY = "regionCache";
-    public static final ConcurrentHashMap<String, List<RegionInfo>> globalRegionInfoCacheMap = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, IdcInfo> globalIdcInfoCacheMap = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, RelayInfo> globalRelayInfoCacheMap = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, ServiceDetail> globalServerDetailCacheMap = new ConcurrentHashMap<>();
-
-    private final RegionInfoService regionInfoService;
-    private final IdcInfoService idcInfoService;
-    private final RelayInfoService relayInfoService;
-    private final ServiceDetailService serviceDetailService;
-    private final HostService hostService;
-    private final ContainerService containerService;
-    private final SysModuleService sysModuleService;
-    private final AgentCpuService agentCpuService;
-    private final AgentGpuService agentGpuService;
-    private final AgentSessionService agentSessionService;
-
-    private final NacosDiscoveryProperties nacosDiscoveryProperties;
-
-    public static final ConsistentHashing serverConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing hostConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing sysModuleConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing gpuInfoConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing cpuInfoConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing containerConsistentHash = new ConsistentHashing(1);
-    public static final ConsistentHashing agentSessionConsistentHash = new ConsistentHashing(1);
-
-    public static String address;
-    public static int port;
-    public static Node centerNode;
-
-    @Qualifier("virtualThreadExecutor")
-    private final Executor virtualThreadExecutor;
 
     private int bossThreadCount() {
         return edgeServerConfig.getBossThreadCount() <= 1 ? 1 : edgeServerConfig.getBossThreadCount();
@@ -127,18 +77,12 @@ public class CenterServer implements Runnable {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
                     .p(LogFieldConstants.ACTION, "InitError")
-                    .p(LogFieldConstants.ERR_MSG, ex.getMessage())
                     .e(ex);
             System.exit(0);
         }
     }
 
     private void init() throws InterruptedException {
-        // init project params
-        applicationInit();
-        initShard();
-        initAgent();
-
         int port = edgeServerConfig.getWsPort();
         bossGroup = this.buildBossGroup();
         workerGroup = this.buildWorkerGroup();
@@ -153,7 +97,7 @@ public class CenterServer implements Runnable {
                 .childOption(ChannelOption.SO_SNDBUF, edgeServerConfig.getSendBuf())
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childOption(ChannelOption.SO_REUSEADDR, false)
+                .childOption(ChannelOption.SO_REUSEADDR, true)
                 .childHandler(centerServerChannelInitializer);
 //                    .handler(new LoggingHandler(msgServerConfig.getLogLevel() == 2 ? LogLevel.INFO : LogLevel.DEBUG));
 
@@ -266,176 +210,5 @@ public class CenterServer implements Runnable {
                 .p(LogFieldConstants.EVENT, CenterEvent.CenterWsServer)
                 .p(LogFieldConstants.ACTION, "DestroySuccessfully")
                 .i();
-    }
-
-
-    void applicationInit() {
-        List<RegionInfo> regionInfos = regionInfoService.list();
-
-        globalRegionInfoCacheMap.put(REGION_CACHE_KEY, regionInfos);
-
-        globalIdcInfoCacheMap = idcInfoService.list(new LambdaQueryWrapper<IdcInfo>().select(IdcInfo::getId, IdcInfo::getZone, IdcInfo::getRegion, IdcInfo::getIdc, IdcInfo::getIdcIp)).parallelStream().collect(Collectors.toConcurrentMap(IdcInfo::getIdc, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
-
-        globalRelayInfoCacheMap = relayInfoService.list(new LambdaQueryWrapper<RelayInfo>().select(RelayInfo::getId, RelayInfo::getZone, RelayInfo::getRegion, RelayInfo::getRelay, RelayInfo::getRelayIp)).parallelStream().collect(Collectors.toMap(RelayInfo::getRelay, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
-
-        globalServerDetailCacheMap = serviceDetailService.list().parallelStream().collect(Collectors.toMap(ServiceDetail::getServiceId, x -> x, (key1, key2) -> key2, ConcurrentHashMap::new));
-
-        address = nacosDiscoveryProperties.getIp();
-
-        port = nacosDiscoveryProperties.getPort();
-
-        centerNode = new Node(String.valueOf(RegisterNodeEnum.CENTER) , RegisterNodeEnum.CENTER, null);
-
-    }
-
-    void initAgent() {
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        initAgent(futures);
-        initContainer(futures);
-        initSysModule(futures);
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-    }
-
-    public void initAgent(List<CompletableFuture<Void>> futures) {
-        long count = hostService.count();
-        int pageSize = 1000;
-        long totalPages = (count + pageSize - 1) / pageSize;
-        for (int pageNo = 1; pageNo <= totalPages; pageNo++) {
-            int finalPageNo = pageNo;
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                Page<Host> page = new Page<>(finalPageNo, pageSize);
-
-                hostService.page(page, new LambdaQueryWrapper<Host>()
-                        .select(Host::getHostId, Host::getResourcePool, Host::getRelay, Host::getIdc,
-                                Host::getHostIp, Host::getAk, Host::getSk, Host::getLastHbAt,
-                                Host::getZone, Host::getRegion, Host::getDevSn));
-
-                List<Host> sysModules = page.getRecords();
-
-                sysModules.forEach(host -> {
-                    initGpuInfo(futures, host.getHostId());
-                    initCpuInfo(futures, host.getHostId());
-                    initAgentSession(futures, host.getHostId());
-                    String shardKey = hostConsistentHash.getShard(host.getDevSn()).toString();
-                    if (shardKey != null && !shardKey.isEmpty()) {
-                        RedissonUtils.setLocalCachedMap(shardKey, host.getDevSn(), host);
-                    }
-                });
-
-            }, virtualThreadExecutor);
-            futures.add(future);
-        }
-    }
-
-    public void initContainer(List<CompletableFuture<Void>> futures) {
-        long count = containerService.count();
-        int pageSize = 1000;
-        long totalPages = (count + pageSize - 1) / pageSize;
-        for (int pageNo = 1; pageNo <= totalPages; pageNo++) {
-            int finalPageNo = pageNo;
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                Page<Container> page = new Page<>(finalPageNo, pageSize);
-                containerService.page(page);
-
-                List<Container> containers = page.getRecords();
-
-                containers.forEach(c -> {
-                    initGpuInfo(futures, c.getContainerId());
-                    initCpuInfo(futures, c.getContainerId());
-                    initAgentSession(futures, c.getContainerId());
-                    String shardKey = containerConsistentHash.getShard(c.getDevSn()).toString();
-                    if (shardKey != null && !shardKey.isEmpty()) {
-                        RedissonUtils.setLocalCachedMap(shardKey, c.getContainerId(), c);
-                    }
-                });
-
-            }, virtualThreadExecutor);
-
-            futures.add(future);
-        }
-    }
-
-    public void initSysModule(List<CompletableFuture<Void>> futures) {
-        long count = sysModuleService.count();
-        int pageSize = 1000;
-        long totalPages = (count + pageSize - 1) / pageSize;
-        for (int pageNo = 1; pageNo <= totalPages; pageNo++) {
-            int finalPageNo = pageNo;
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                Page<SysModule> page = new Page<>(finalPageNo, pageSize);
-                sysModuleService.page(page, new LambdaQueryWrapper<SysModule>()
-                        .select(SysModule::getModuleId, SysModule::getModuleName, SysModule::getModuleArch, SysModule::getModuleConfig,
-                                SysModule::getVersion, SysModule::getMd5));
-
-                List<SysModule> sysModules = page.getRecords();
-
-                sysModules.forEach(sys -> {
-                    String hash = String.valueOf(Objects.hash(sys.getModuleArch(), sys.getVersion()));
-                    String shardKey = sysModuleConsistentHash.getShard(hash).toString();
-                    if (shardKey != null && !shardKey.isEmpty()) {
-                        RedissonUtils.setLocalCachedMap(shardKey, hash, sys);
-                    }
-                });
-
-            }, virtualThreadExecutor);
-
-            futures.add(future);
-        }
-    }
-
-    public void initGpuInfo(List<CompletableFuture<Void>> futures, String agentId) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            List<AgentGpu> gpus = agentGpuService.list(new LambdaQueryWrapper<AgentGpu>().eq(AgentGpu::getAgentId, agentId));
-
-            if(!CollectionUtils.isEmpty(gpus)){
-                String shardKey = gpuInfoConsistentHash.getShard(agentId).toString();
-                if (shardKey != null && !shardKey.isEmpty()) {
-                    RedissonUtils.setLocalCachedMap(shardKey, agentId, gpus);
-                }
-            }
-
-        }, virtualThreadExecutor);
-
-        futures.add(future);
-    }
-
-    public void initCpuInfo(List<CompletableFuture<Void>> futures, String agentId) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-           AgentCpu cpu = agentCpuService.getOne(new LambdaQueryWrapper<AgentCpu>().eq(AgentCpu::getAgentId, agentId),false);
-
-            if(!ObjectUtils.isEmpty(cpu)){
-                String shardKey = cpuInfoConsistentHash.getShard(agentId).toString();
-                if (shardKey != null && !shardKey.isEmpty()) {
-                    RedissonUtils.setLocalCachedMap(shardKey, agentId, cpu);
-                }
-            }
-        }, virtualThreadExecutor);
-
-        futures.add(future);
-    }
-
-    public void initAgentSession(List<CompletableFuture<Void>> futures, String agentId) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            AgentSession agentSession = agentSessionService.getOne(new LambdaQueryWrapper<AgentSession>().eq(AgentSession::getAgentId, agentId),false);
-
-            if(!ObjectUtils.isEmpty(agentSession)){
-                String shardKey = agentSessionConsistentHash.getShard(agentId).toString();
-                if (shardKey != null && !shardKey.isEmpty()) {
-                    RedissonUtils.setLocalCachedMap(shardKey, agentId, agentSession);
-                }
-            }
-        }, virtualThreadExecutor);
-
-        futures.add(future);
-    }
-
-    public void initShard(){
-        for (int i = 0; i < 10; i++) { serverConsistentHash.addShard(String.format("host_stack_center:server_shard_%s", i));};
-        for (int i = 0; i < 50; i++) { hostConsistentHash.addShard(String.format("host_stack_center:host_shard_%s", i));};
-        for (int i = 0; i < 5; i++) { sysModuleConsistentHash.addShard(String.format("host_stack_center:sysModule_shard_%s", i));};
-        for (int i = 0; i < 50; i++) { gpuInfoConsistentHash.addShard(String.format("host_stack_center:gpuInfo_shard_%s", i));};
-        for (int i = 0; i < 50; i++) { cpuInfoConsistentHash.addShard(String.format("host_stack_center:cpuInfo_shard_%s", i));};
-        for (int i = 0; i < 50; i++) { containerConsistentHash.addShard(String.format("host_stack_center:container_shard_%s", i));};
-        for (int i = 0; i < 50; i++) { agentSessionConsistentHash.addShard(String.format("host_stack_center:agentSession_shard_%s", i));};
     }
 }

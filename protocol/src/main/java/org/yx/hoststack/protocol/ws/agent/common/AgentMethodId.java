@@ -9,7 +9,7 @@ import java.util.Map;
 // http://192.168.31.17:32080/pages/viewpage.action?pageId=3168224
 @Getter
 public enum AgentMethodId {
-    InitializeMachine("InitializeMachine"),
+    Initialize("Initialize"),
     HeartBeat("HeartBeat"),
     UpdateConfig("UpdateConfig"),
     QueryConfig("QueryConfig"),

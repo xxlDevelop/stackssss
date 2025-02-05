@@ -2,15 +2,15 @@ package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.yx.hoststack.center.entity.JobInfo;
 import org.yx.hoststack.center.mapper.JobInfoMapper;
+import org.yx.hoststack.center.entity.JobInfo;
 import org.yx.hoststack.center.service.JobInfoService;
 
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> implements JobInfoService {
 
-
+    
     private final JobInfoMapper jobInfoMapper;
 
     @Override
@@ -33,7 +33,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
     }
 
     @Override
-    public List<JobInfo> findList(JobInfo params) {
+    public List<JobInfo> findList(JobInfo params){
         LambdaQueryWrapper<JobInfo> query = Wrappers.lambdaQuery(JobInfo.class);
         return jobInfoMapper.selectList(query);
     }

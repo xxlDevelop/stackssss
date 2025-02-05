@@ -4,12 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.yx.hoststack.center.common.req.idc.IdcCreateReq;
 import org.yx.hoststack.center.common.req.idc.IdcListReq;
 import org.yx.hoststack.center.common.req.idc.IdcUpdateReq;
-import org.yx.hoststack.center.common.req.idc.config.IdcConfigSyncReq;
-import org.yx.hoststack.center.common.resp.PageResp;
 import org.yx.hoststack.center.common.resp.idc.CreateIdcInfoResp;
 import org.yx.hoststack.center.common.resp.idc.IdcListResp;
 import org.yx.hoststack.center.entity.IdcInfo;
-import org.yx.lib.utils.util.R;
 
 import java.util.List;
 
@@ -19,18 +16,11 @@ import java.util.List;
  */
 public interface IdcInfoService extends IService<IdcInfo> {
 
-    R<PageResp<IdcListResp>> list(IdcListReq idcListReq);
+    List<IdcListResp> list(IdcListReq idcListReq);
 
     CreateIdcInfoResp create(IdcCreateReq idcCreateReq);
 
     boolean update(IdcUpdateReq idcUpdateReq);
 
-    /**
-     * Sync IDC configurations to IDC server
-     *
-     * @param syncReqList list of sync requests
-     * @return sync result
-     */
-    R<?> syncConfig(List<IdcConfigSyncReq> syncReqList);
 
 }

@@ -3,7 +3,6 @@ package org.yx.hoststack.common;
 import lombok.experimental.UtilityClass;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
-import org.yx.lib.utils.logger.StatisLogger;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -47,20 +46,16 @@ public class TraceHolder {
         long startMs = System.currentTimeMillis();
         try {
             function.run();
-        } catch (Exception ex) {
-            KvLogger.instance(TraceHolder.class)
-                    .p(LogFieldConstants.EVENT, "WatchError")
-                    .e(ex);
         } finally {
             long endMs = System.currentTimeMillis();
-            StatisLogger statisLogger = StatisLogger.instance(TraceHolder.class)
+            KvLogger kvLogger = KvLogger.instance(TraceHolder.class)
                     .p(LogFieldConstants.CostMs, endMs - startMs);
             if (title != null) {
                 for (String key : title.keySet()) {
-                    statisLogger.p(key, title.get(key));
+                    kvLogger.p(key, title.get(key));
                 }
             }
-            statisLogger.i();
+            kvLogger.i();
         }
     }
 }

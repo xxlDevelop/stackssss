@@ -153,18 +153,6 @@ public class RedissonUtils {
      *
      * @param key        cache key
      * @param data       cache data
-     * @param <K>        data Key item
-     * @param <V>        data value item
-     */
-    public static <K, V> void setLocalCachedMap(String key, String subKey, V data) {
-        setLocalCachedMap(key, subKey, data, getLocalCachedMapOptions(key, -1L, -1L));
-    }
-
-    /**
-     * Write to local cache and synchronize Redis and all local caches with the same name
-     *
-     * @param key        cache key
-     * @param data       cache data
      * @param timeToLive ttl
      * @param maxIdle    local ttl
      * @param <K>        data Key item
@@ -184,10 +172,7 @@ public class RedissonUtils {
         cache.put(subKey, data);
         RLocalCachedMap<K, V> localCachedMap = (RLocalCachedMap<K, V>) localCacheMap.computeIfAbsent(key, k -> redissonClient.getLocalCachedMap(params));
         localCachedMap.putAll(cache);
-        long timeToLiveInMillis = params.getTimeToLiveInMillis();
-        if(timeToLiveInMillis > 0){
-            localCachedMap.expire(Duration.ofMillis(timeToLiveInMillis));
-        }
+        localCachedMap.expire(Duration.ofMillis(params.getTimeToLiveInMillis()));
         log.debug("Action:'setLocalCachedMap' msg:'Loading data into cache -> {}'", localCachedMap.getCachedMap());
     }
 

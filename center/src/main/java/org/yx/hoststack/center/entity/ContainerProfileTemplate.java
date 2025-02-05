@@ -1,6 +1,5 @@
 package org.yx.hoststack.center.entity;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * container profile template table entity
+ * 容器模板
  *
  * @author lyc
  * @since 2024-12-12 18:09:53
@@ -25,37 +24,46 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContainerProfileTemplate implements Serializable{
 
-    @Serial
-    private static final long serialVersionUID = 7971224576699871908L;
+    private static final long serialVersionUID=1L;
+
     /**
-     *  ID
+     *  主键ID
      */
     @TableId(type = IdType.AUTO)
     private Long id;
+
     /**
-     * The business types applicable to the image: render/ai
-     */
-    private String bizType;
-    /**
-     * Mirror operating system type: windows/linux/android
-     */
-    private String osType;
-    /**
-     * Mirror virtualization type: docker/kvm
+     *  容器虚拟化类型, KVM或DOCKER
      */
     private String containerType;
+
     /**
-     * Hardware architecture: arm/x86
+     *  容器适用于的业务类型, 包含: RENDER, AI
+     */
+    private String bizType;
+
+    /**
+     *  容器操作系统类型, WINDOWS LINUX或ANDROID
+     */
+    private String osType;
+
+    /**
+     *  硬件架构, ARM/X86
      */
     private String arch;
 
     /**
-     *  Template Content
+     *  模版版本
+     */
+    private String version;
+
+    /**
+     *  模版内容
      */
     private String profile;
 
     /**
-     *  create time
+     *  创建时间戳
      */
     private Date createAt;
 

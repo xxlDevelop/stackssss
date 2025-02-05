@@ -7,10 +7,6 @@ message E2C_EdgeRegisterReq {
   string version = 2;
 }
 
-message E2C_IdcExitReq {
-  string idcSid = 1;
-}
-
 //HostInitialize Req
 message E2C_HostInitializeReq {
   uint64 agentStartTs = 1;
@@ -32,7 +28,7 @@ message E2C_HostInitializeReq {
   string hostId = 17;
   string detailedId = 18;
   uint32 proxy = 19;
-  string xToken = 20;
+  string registerMode = 20;
 }
 message CpuInfo {
   uint32 cpuNum = 1;
@@ -89,16 +85,11 @@ message E2C_HostExitReq {
 
 //JobReport Req
 message E2C_JobReportReq {
-  repeated JobReportItem items = 1;
-}
-message JobReportItem {
-  string traceId = 1;
-  string jobId = 2;
-  bytes jobResult = 3;
-}
-
-// ForwardFailed Notify
-message ForwardFailedNotify {
-  int32 methId = 1;
+  string jobId = 1;
+//  string jobType = 2;
+//  string jobSubType = 3;
+  //string jobStatus = 4;
+  //uint32 progress = 5;
+  bytes jobResult = 2;
 }
 

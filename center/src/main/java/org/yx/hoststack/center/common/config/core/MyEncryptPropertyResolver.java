@@ -1,6 +1,7 @@
 package org.yx.hoststack.center.common.config.core;
 
 import com.ulisesbocchio.jasyptspringboot.EncryptablePropertyResolver;
+import org.springframework.stereotype.Component;
 import org.yx.hoststack.center.common.constant.CenterEvent;
 import org.yx.hoststack.center.common.exception.beans.MyEncryptPropertyResolverException;
 import org.yx.lib.utils.logger.KvLogger;
@@ -13,6 +14,7 @@ import util.AESUtil;
  * @Date : 2024/5/30
  * @Version : 1.0
  */
+@Component
 public class MyEncryptPropertyResolver implements EncryptablePropertyResolver {
 
     private static final String ENC_PREFIX = "ENC#";

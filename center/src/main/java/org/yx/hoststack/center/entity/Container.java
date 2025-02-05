@@ -1,21 +1,15 @@
 package org.yx.hoststack.center.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
-
 /**
- * Container information
+ * 容器信息
  *
  * @author lyc
  * @since 2024-12-12 18:09:53
@@ -25,164 +19,93 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Container implements Serializable {
+public class Container implements Serializable{
 
-    @Serial
-    private static final long serialVersionUID = 4761804766431502509L;
+    private static final long serialVersionUID=1L;
+
     /**
-     * Custom primary key HostId + # + auto-increment sequence number
+     *  容器ID
      */
-    @TableId(value = "container_id", type = IdType.INPUT)
     private String containerId;
 
     /**
-     * Host resource ID to which the container belongs, not null when created via the hoststack platform
+     *  容器IP
      */
-    private String hostId;
+    private String ip;
 
     /**
-     * Auto-increment sequence number; combined with HostId to define a unique primary key
+     *  容器名称
      */
-    private Integer sequenceNumber;
+    private String name;
 
     /**
-     * Image ID, not null when created via the hoststack platform
+     *  标签
+     */
+    private String label;
+
+    /**
+     *  容器运行状态, NORMAL/SHUTDOWN/OFFLINE
+     */
+    private String status;
+
+    /**
+     *  系统镜像ID
      */
     private String imageId;
 
     /**
-     * Image version, not null when created via the hoststack platform
+     *  系统镜像版本号
      */
     private String imageVer;
 
     /**
-     * Host version
+     *  容器所属宿主机资源ID
      */
-    private String agentVersion;
+    private String hostId;
 
     /**
-     * Resource registration mode: host, container, benchmark
+     *  容器运行的业务类型, RENDER/AI
      */
-    private String agentType;
+    private String bizType;
 
     /**
-     * Node start time
-     */
-    private Date startTime;
-
-    /**
-     * Device serial number
-     */
-    private String devSn;
-
-    /**
-     * Operating system type
-     */
-    private String osType;
-
-    /**
-     * Operating system version
-     */
-    private String osVersion;
-
-    /**
-     * Operating system memory, in MB
-     */
-    private String osMem;
-
-    /**
-     * Resource pool type: idc, edge, he
-     */
-    private String resourcePool;
-
-    /**
-     * Current operating system virtualization information: bm (bare metal), docker, vm
-     */
-    private String runtimeEnv;
-
-    /**
-     * Disk information
-     */
-    private String diskInfo;
-
-    /**
-     * Network card information
-     */
-    private String networkCardInfo;
-
-    /**
-     * Zone identifier to which the container belongs
+     *  容器所属大区标识
      */
     private String zone;
 
     /**
-     * Region identifier to which the container belongs
+     *  容器所属国家分区
      */
     private String region;
 
     /**
-     * Relay identifier to which the container belongs
-     */
-    private String relay;
-
-    /**
-     * IDC identifier to which the container belongs
+     *  容器所属机房标识
      */
     private String idc;
 
     /**
-     * Container IP address
+     *  容器的资源池类型 EDGE/IDC
      */
-    private String containerIp;
+    private String resourcePool;
 
     /**
-     * Number of GPUs
+     *  容器操作系统类型, WINDOWS, LINUX, ANDROID
      */
-    private Integer gpuNum;
+    private String osType;
 
     /**
-     * Number of CPUs
+     *  容器化类型: DOCKER/KVM
      */
-    private Integer cpuNum;
+    private String contianerType;
 
     /**
-     * Detailed unique hardware identifier information in key:value format, e.g., "cpuId:123,biosId:456"
+     *  容器创建时间戳
      */
-    private String detailedId;
+    private Date createAt;
 
     /**
-     * Network proxy: 0-No, 1-Yes
-     */
-    private Integer proxy;
-
-    /**
-     * Container provider ID
-     */
-    private String containerProvider;
-
-    /**
-     * Container provider tenant ID
-     */
-    private String providerTenantId;
-
-    /**
-     * Last heartbeat time
+     *  容器最后心跳时间
      */
     private Date lastHbAt;
-
-    /**
-     * Access center Ak
-     */
-    private String ak;
-
-    /**
-     * Access center Sk, AES encrypted
-     */
-    private String sk;
-
-    /**
-     * Creation timestamp
-     */
-    private Timestamp createAt;
 
 }

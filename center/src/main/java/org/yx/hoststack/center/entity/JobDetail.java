@@ -1,5 +1,8 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,11 +11,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.sql.Timestamp;
-
 /**
+ *  
+ *
  * @author lyc
  * @since 2024-12-12 18:09:53
  */
@@ -21,60 +22,54 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class JobDetail implements Serializable {
+public class JobDetail implements Serializable{
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID=1L;
 
     /**
-     * Subtask ID (jobId + "-" + targetId(containerId or volumeId or ...))
+     *  主键ID
      */
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String jobDetailId;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
     /**
-     * jobInfo id
+     *  任务ID
      */
     private String jobId;
 
     /**
-     * Host ID/container ID/storage volume ID to which the task execution target belongs
+     *  任务执行目标所属宿主机ID或者容器ID
      */
     private String jobHost;
 
     /**
-     * Task execution status, wait:  Waiting for execution, processing:  During execution, fail: Execution failed, success: Execution successful
+     *  任务执行状态, WAIT: 等待执行, PROCESSING: 执行中, FAIL:执行失败, SUCCESS:执行成功
      */
     private String jobStatus;
 
     /**
-     * Task execution progress, scope: [0-100]
+     *  任务执行进度, 范围:[0,100]
      */
-    private Integer jobProgress;
+    private Integer jobProcess;
 
     /**
-     * Task parameters
-     */
-    private String jobParams;
-
-    /**
-     * task outcomes
+     *  任务结果
      */
     private String jobResult;
 
     /**
-     * Task running time, in seconds
+     *  任务运行时间, 单位秒
      */
     private Integer runTime;
 
     /**
-     * Create timestamp
+     *  创建时间戳
      */
-    private Timestamp createAt;
+    private Date createAt;
 
     /**
-     * Post repair timestamp
+     *  修后修时间戳
      */
-    private Timestamp lastUpdateAt;
+    private Date lastUpdateAt;
 
 }

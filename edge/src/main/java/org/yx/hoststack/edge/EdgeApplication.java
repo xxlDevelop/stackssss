@@ -1,6 +1,7 @@
 package org.yx.hoststack.edge;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -16,20 +17,17 @@ import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.hoststack.edge.config.EdgeServerConfig;
 import org.yx.hoststack.edge.server.RunMode;
 import org.yx.hoststack.edge.server.ws.EdgeServer;
-import org.yx.lib.utils.crypto.YxCryptoUtils;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 
-/**
- * @author EDY
- */
 @SpringBootApplication
 public class EdgeApplication {
     public static ApplicationContext Context = null;
@@ -51,7 +49,6 @@ public class EdgeApplication {
         // init service info
         EdgeContext.ServiceIp = edgeCommonConfig.getLocalIp();
         EdgeContext.RunMode = edgeCommonConfig.getRunMode();
-        EdgeContext.HttpHost = "http://" + edgeCommonConfig.getLocalIp() + ":" + edgeCommonConfig.getServerPort();
         if (EdgeContext.RunMode.equals(RunMode.IDC)) {
             EdgeContext.IdcServiceId = DigestUtils.md5Hex(edgeCommonConfig.getLocalIp().getBytes(StandardCharsets.UTF_8));
         } else {

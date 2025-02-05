@@ -2,10 +2,8 @@ package org.yx.hoststack.center.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -87,13 +85,11 @@ public class IdcInfo implements Serializable{
     /**
      *  LOGSVC内网服务地址
      */
-    @TableField(value = "local_logsvc_http_svc")
     private String localLogSvcHttpSvc;
 
     /**
      *  LOGSVC公网服务地址
      */
-    @TableField(value = "net_logsvc_https_svc")
     private String netLogSvcHttpsSvc;
 
     /**
@@ -116,17 +112,4 @@ public class IdcInfo implements Serializable{
      */
     private Date lastUpdateAt;
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        IdcInfo idcInfo = (IdcInfo) o;
-        return Objects.equals(zone, idcInfo.zone) && Objects.equals(region, idcInfo.region) && Objects.equals(idc, idcInfo.idc) && Objects.equals(idcIp, idcInfo.idcIp);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(zone, region, idc, idcIp);
-    }
 }

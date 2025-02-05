@@ -9,21 +9,14 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class EdgeCommonConfig {
-    @Value("${server.port:8080}")
-    private Integer serverPort;
-
     @Value("${runMode}")
     private String runMode;
-
     @Value("${localIp}")
     private String localIp;
 
-    @Value("${notSendJobNotifySavePath:/data/host-stack/edge/notify}")
-    private String notSendJobNotifySavePath;
+    @Value("${edgeAk}")
+    private String edgeAk;
+    @Value("${edgeSk}")
+    private String edgeSk;
 
-    @Value("${notSendJobNotifyFileMaxSize:2}")
-    private int notSendJobNotifyFileMaxSize;
-
-    @Value("${adminTid:10000}")
-    private Integer adminTid;
 }

@@ -1,6 +1,7 @@
 package org.yx.hoststack.center;
 
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -14,6 +15,7 @@ import java.util.Locale;
 @SpringBootApplication
 @ServletComponentScan
 @EnableAsync
+@MapperScan("org.yx.hoststack.center.mapper")
 public class CenterApplication {
 
     public static void main(String[] args) {
@@ -22,4 +24,5 @@ public class CenterApplication {
         ConfigurableApplicationContext context = springApplication.run(args);
         context.getBean(CenterServer.class).start();
     }
+
 }

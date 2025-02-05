@@ -8,16 +8,14 @@ import java.util.Map;
 
 @Getter
 public enum ProtoMethodId {
-    ForwardingToCenter(100),
-    ForwardingToIdc(101),
-    ForwardingFailed(105),
+    TransferToCenter(100),
+    TransferToIdc(101),
     EdgeRegister(10000),
     Ping(10001),
     Pong(10002),
     EdgeConfigSync(10003),
     RegionConfigSync(10004),
     IdcNetConfig(10005),
-    IdcExit(10009),
     HostInitialize(10200),
     HostRest(10201),
     HostHeartbeat(10202),

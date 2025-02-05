@@ -14,7 +14,6 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.yx.hoststack.edge.config.EdgeCommonConfig;
 import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 
 import java.net.URI;
@@ -27,7 +26,6 @@ public class EdgeClientChannelInitializer extends ChannelInitializer<Channel> {
     private String upWsAddr;
 
     private final EdgeClientMsgHandler edgeClientMsgHandler;
-    private final EdgeCommonConfig edgeCommonConfig;
 
     @Override
     protected void initChannel(Channel channel) throws URISyntaxException {
@@ -35,8 +33,7 @@ public class EdgeClientChannelInitializer extends ChannelInitializer<Channel> {
         p.addLast(new HttpClientCodec());
         p.addLast(new HttpObjectAggregator(8192));
         p.addLast(new WebSocketClientProtocolHandler(WebSocketClientHandshakerFactory
-                .newHandshaker(new URI(upWsAddr), WebSocketVersion.V13,
-                        null, false, new DefaultHttpHeaders().add("connectType", edgeCommonConfig.getRunMode()))));
+                .newHandshaker(new URI(upWsAddr), WebSocketVersion.V13, null, false, new DefaultHttpHeaders())));
         p.addLast(new ProtobufDecoder(CommonMessageWrapper.CommonMessage.getDefaultInstance()));
         p.addLast(new ProtobufEncoder());
         p.addLast(edgeClientMsgHandler);

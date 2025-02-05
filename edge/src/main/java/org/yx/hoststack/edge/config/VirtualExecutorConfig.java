@@ -13,18 +13,19 @@ import java.util.stream.IntStream;
 @Configuration
 @ConditionalOnProperty(value = "spring.threads.virtual.enabled", havingValue = "true")
 public class VirtualExecutorConfig {
-    @Value("${spring.threads.virtual.warmUp:false}")
+    @Value("${spring.threads.virtual.needWarmUp:false}")
     private boolean needWarmUp;
 
     @Value("${spring.threads.virtual.warmUpThread:10000}")
     private int warmUpThread;
 
-    private static final String TASK_NAME = "v-executor-";
+
+    private static final String TASK_NAME = "edge-v-executor-";
 
     @Bean("edgeExecutor")
-    public Executor edgeVirtualExecutor() {
-        ThreadFactory factory = Thread.ofVirtual().name(TASK_NAME, 0).factory();
-        ExecutorService executorService = Executors.newThreadPerTaskExecutor(factory);
+    public Executor edgeVirtualExecutor() throws InterruptedException {
+        ThreadFactory factory = Thread.ofVirtual().name(TASK_NAME).factory();
+        ExecutorService executor = Executors.newThreadPerTaskExecutor(factory);
         if (needWarmUp) {
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, "EdgeVirtualExecutor")
@@ -32,12 +33,9 @@ public class VirtualExecutorConfig {
                     .p("WarmUpCount", warmUpThread)
                     .i();
             long start = System.currentTimeMillis();
-            IntStream.range(0, warmUpThread).forEach(i -> executorService.execute(() -> {
+            IntStream.range(0, warmUpThread).forEach(i -> executor.execute(() -> {
             }));
-            try {
-                executorService.awaitTermination(60, TimeUnit.SECONDS);
-            } catch (Exception ignored) {
-            }
+            executor.awaitTermination(60, TimeUnit.SECONDS);
             long end = System.currentTimeMillis();
             KvLogger.instance(this)
                     .p(LogFieldConstants.EVENT, "EdgeVirtualExecutor")
@@ -45,6 +43,6 @@ public class VirtualExecutorConfig {
                     .p("UsedMs", (end - start))
                     .i();
         }
-        return executorService;
+        return executor;
     }
 }

@@ -30,18 +30,10 @@ public class HostHbConsumer implements Runnable {
                 } else {
                     TimeUnit.MILLISECONDS.sleep(10);
                 }
-            } catch (InterruptedException interruptedException) {
-                Thread.currentThread().interrupt();
-                KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_HB)
-                        .p(LogFieldConstants.ERR_MSG, interruptedException.getMessage())
-                        .e(interruptedException);
             } catch (Exception e) {
                 KvLogger.instance(this)
-                        .p(LogFieldConstants.EVENT, EdgeEvent.WORK_QUEUE_CONSUMER)
-                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.CONSUMER_HOST_HB)
-                        .p(LogFieldConstants.ERR_MSG, e.getMessage())
+                        .p(LogFieldConstants.EVENT, EdgeEvent.WorkQueueConsumer)
+                        .p(LogFieldConstants.ACTION, EdgeEvent.Action.WorkQueueConsumer_ConsumerHostHb)
                         .e(e);
             }
         }

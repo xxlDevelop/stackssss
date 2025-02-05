@@ -28,8 +28,6 @@ message ImageCreate {
   string imageName = 2;
   string imageVer = 3;
   string downloadUrl = 4;
-  string md5 = 5;
-  string bucket = 6;
 }
 
 message ImageDelete {
@@ -37,8 +35,7 @@ message ImageDelete {
 }
 message ImageDeleteTarget {
   string imageId = 1;
-  string bucket= 2;
-  string jobDetailId = 3;
+  string jobDetailId = 2;
 }
 
 message VolumeCreate {
@@ -46,10 +43,8 @@ message VolumeCreate {
   string volumeType = 2;
   string diskType = 3;
   string sourceUrl = 4;
-  string md5 = 5;
-  string hostId = 6;
-  string snapshotName = 7;
-  repeated VolumeTarget target = 8;
+  string hostId = 5;
+  repeated VolumeTarget target = 6;
 }
 message VolumeTarget {
   string volumeId = 1;
@@ -58,9 +53,7 @@ message VolumeTarget {
 
 message VolumeDelete {
   string hostId = 1;
-  string diskType = 2;
-  string volumeType = 3;
-  repeated VolumeTarget target = 4;
+  repeated VolumeTarget target = 2;
 }
 
 message VolumeMount {
@@ -82,15 +75,13 @@ message VolumeUnMount {
 message UnMountInfo {
   string volumeId = 1;
   string cid = 2;
-  string mountType = 3;
-  string jobDetailId = 4;
+  string jobDetailId = 3;
 }
 
 message VolumeUpgrade {
   string hostId = 1;
   string sourceUrl = 2;
-  string md5 = 3;
-  repeated VolumeUpgradeDetail target = 4;
+  repeated VolumeUpgradeDetail target = 3;
 }
 message VolumeUpgradeDetail {
   string originVolumeId = 1;
@@ -128,7 +119,7 @@ message ContainerUpdateProfile {
 
 message ContainerUpgrade {
   string hostId = 1;
-  string vmType = 2;
+  string containerType = 2;
   ImageOfContainerCreate image = 3;
   repeated ContainerTarget target = 4;
 }
@@ -156,13 +147,12 @@ message ModuleCreate {
 }
 
 message ModuleUpgrade {
-  string moduleName = 1;
-  string version = 2;
-  string downloadUrl = 3;
-  string md5 = 4;
-  repeated ModuleTarget target = 5;
+  string version = 1;
+  string downloadUrl = 2;
+  string md5 = 3;
+  repeated ModuleTarget target = 4;
 }
 message ModuleTarget {
-  string hostId = 1;
+  string moduleId = 1;
   string jobDetailId = 2;
 }
