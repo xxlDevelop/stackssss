@@ -1,6 +1,7 @@
 package org.yx.hoststack.center.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import org.yx.hoststack.center.entity.OssConfig;
 import org.apache.ibatis.annotations.Mapper;
 /**
@@ -13,4 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OssConfigMapper extends BaseMapper<OssConfig> {
 
+    @Select("SELECT * FROM t_oss_config WHERE region = #{region}")
+    OssConfig findByRegion(String region);
 }

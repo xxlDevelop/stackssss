@@ -12,6 +12,8 @@ import java.util.Objects;
 @Data
 @SuperBuilder
 public class SendChannelReq extends SendChannelBasic {
+    private String traceId;
+
     @NotNull(message = "msg cannot be null")
     private byte[] msg;
 

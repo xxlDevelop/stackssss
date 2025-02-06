@@ -26,7 +26,7 @@ public class JobNotifyToCenterConsumer implements Runnable {
                 List<AgentCommonMessage<?>> agentCommonMessages = Lists.newArrayList();
                 messageQueues.getJobNotifyToCenterQueue().drainTo(agentCommonMessages, 50);
                 if (!agentCommonMessages.isEmpty()) {
-                    EdgeClientConnector.getInstance().sendJobNotifyReport(agentCommonMessages, UUID.fastUUID().toString(), "", null,
+                    EdgeClientConnector.getInstance().sendJobNotifyReport(agentCommonMessages, UUID.fastUUID().toString(), null,
                             () -> messageQueues.getJobNotifyToDiskQueue().addAll(agentCommonMessages));
                 } else {
                     TimeUnit.MILLISECONDS.sleep(10);

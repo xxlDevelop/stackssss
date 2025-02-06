@@ -1,11 +1,13 @@
 package org.yx.hoststack.center.common.req.idc;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class IdcCreateReq {
 
     @NotBlank
@@ -14,6 +16,8 @@ public class IdcCreateReq {
     private String region;
     @NotBlank
     private String idcIp;
+    @NotBlank
+    private String idc;
     @NotBlank
     private String localHsIdcHttpSvc;
     @NotBlank

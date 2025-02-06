@@ -2,4 +2,83 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.yx.hoststack.center.mapper.VolumeMapper">
 
+    <select id="selectMountInfoByCidAndVolumeId" resultType="org.yx.hoststack.center.jobs.cmd.volume.MountVolumeCmdData$MountVolumeInfo">
+        SELECT v.volume_id            as volumeId,
+               vmr.base_volume_id     as baseVolumeId,
+               vmr.mount_container_id as cid,
+               v.disk_type            as mountType
+        FROM t_volume v
+                 LEFT JOIN
+             t_volume_mount_rel vmr ON v.volume_id = vmr.volume_id
+        WHERE vmr.mount_container_id = #{cid}
+          AND v.volume_id = #{volumeId}
+    </select>
+    <select id="selectUnmountInfoByCidAndVolumeId" resultType="org.yx.hoststack.center.jobs.cmd.volume.UnMountVolumeCmdData$UnMountVolumeInfo">
+        SELECT
+            v.volume_id as volumeId,
+            vmr.mount_container_id as cid,
+            v.disk_type as mountType
+        FROM
+            t_volume v
+                LEFT JOIN
+            t_volume_mount_rel vmr ON v.volume_id = vmr.volume_id
+        WHERE
+            vmr.mount_container_id = #{cid}
+          AND v.volume_id = #{volumeId}
+    </select>
+    <select id="selectVolumeList" resultType="org.yx.hoststack.center.common.resp.volume.VolumeListResp">
+        SELECT
+        v.volume_id as volumeId,
+        v.volume_size as volumeSize,
+        v.disk_type as diskType,
+        v.volume_type as volumeType,
+        UNIX_TIMESTAMP(v.create_at) * 1000 as createAt,
+        UNIX_TIMESTAMP(vmr.mount_at) * 1000 as mountAt,
+        vmr.volume_host as volumeHost,
+        CASE WHEN vmr.id IS NOT NULL THEN 'mount' ELSE 'unmount' END as status
+        FROM t_volume v
+        LEFT JOIN t_volume_mount_rel vmr ON v.volume_id = vmr.volume_id
+        <where>
+            <if test="req.volumeId != null and req.volumeId != ''">
+                AND v.volume_id = #{req.volumeId}
+            </if>
+            <if test="req.diskType != null and req.diskType != ''">
+                AND v.disk_type = #{req.diskType}
+            </if>
+            <if test="req.volumeType != null and req.volumeType != ''">
+                AND v.volume_type = #{req.volumeType}
+            </if>
+            <if test="req.vmHost != null and req.vmHost != ''">
+                AND vmr.volume_host = #{req.vmHost}
+            </if>
+        </where>
+        ORDER BY v.create_at DESC
+    </select>
+    <!-- Query volume mount relations with pagination -->
+    <select id="selectVolumeMountRelList" resultType="org.yx.hoststack.center.common.resp.volume.VolumeMountRelResp">
+        SELECT
+        v.volume_id as volumeId,
+        vmr.base_volume_id as baseVolumeId,
+        v.volume_size as volumeSize,
+        v.disk_type as diskType,
+        vmr.volume_host as vmHost,
+        vmr.mount_container_id as cid,
+        UNIX_TIMESTAMP(v.create_at) * 1000 as createAt,
+        UNIX_TIMESTAMP(vmr.mount_at) * 1000 as mountAt
+        FROM t_volume v
+        LEFT JOIN t_volume_mount_rel vmr ON v.volume_id = vmr.volume_id
+        <where>
+            <if test="req.vmHost != null and req.vmHost != ''">
+                AND vmr.volume_host = #{req.vmHost}
+            </if>
+            <if test="req.volumeId != null and req.volumeId != ''">
+                AND v.volume_id = #{req.volumeId}
+            </if>
+            <if test="req.cid != null and req.cid != ''">
+                AND vmr.mount_container_id = #{req.cid}
+            </if>
+        </where>
+        ORDER BY vmr.mount_at DESC, v.create_at DESC
+    </select>
+
 </mapper>

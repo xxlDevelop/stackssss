@@ -20,6 +20,8 @@ import org.yx.lib.utils.logger.LogFieldConstants;
 import org.yx.lib.utils.util.R;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Supplier;
+
 @Service
 @RequiredArgsConstructor
 public class FileHandler {
@@ -31,12 +33,16 @@ public class FileHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request.bodyToMono(String.class)
                                 .flatMap(bodyStr -> {
+                                    String imageId = request.queryParam("imageId").orElse("");
+                                    String imageVer = request.queryParam("imageVer").orElse("");
                                     String traceId = request.headers().firstHeader("traceId");
                                     JSONObject body = JSON.parseObject(bodyStr);
                                     String jobId = body.getString("jobId");
                                     String status = body.getString("status");
                                     int code = body.getIntValue("code");
                                     String msg = body.getString("msg");
+                                    String md5 = body.getString("md5");
+                                    String idcStoragePath = body.getString("idcStoragePath");
 
                                     KvLogger.instance(this)
                                             .p(LogFieldConstants.EVENT, EdgeEvent.EDGE_WS_SERVER)
@@ -49,15 +55,22 @@ public class FileHandler {
                                             .p(HostStackConstants.REGION, EdgeContext.Region)
                                             .p(HostStackConstants.RUN_MODE, EdgeContext.RunMode)
                                             .p(HostStackConstants.JOB_ID, jobId)
+                                            .p("ImageId", imageId)
                                             .p("Status", status)
                                             .i();
-                                    AgentCommonMessage<?> jobReport = AgentCommonMessage.builder()
+                                    AgentCommonMessage<JSONObject> jobReport = AgentCommonMessage.<JSONObject>builder()
                                             .jobId(jobId)
                                             .status(status)
                                             .progress(100)
                                             .code(code)
                                             .msg(msg)
                                             .traceId(traceId)
+                                            .data(new JSONObject()
+                                                    .fluentPut("imageId", imageId)
+                                                    .fluentPut("imageVer", imageVer)
+                                                    .fluentPut("idcStoragePath", idcStoragePath)
+                                                    .fluentPut("netStoragePath", "")
+                                                    .fluentPut("md5", md5))
                                             .build();
                                     messageQueues.getJobNotifyToCenterQueue().add(jobReport);
                                     return Mono.just(R.ok());

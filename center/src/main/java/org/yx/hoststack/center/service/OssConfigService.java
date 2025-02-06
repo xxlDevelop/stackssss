@@ -2,6 +2,7 @@ package org.yx.hoststack.center.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.yx.hoststack.center.common.dto.OssConfigDetail;
 import org.yx.hoststack.center.entity.OssConfig;
 
 import java.util.List;
@@ -23,5 +24,7 @@ public interface OssConfigService extends IService<OssConfig> {
     boolean update(OssConfig ossConfig);
 
     int delete(Long id);
+
+    OssConfigDetail getOssConfigByRegion(String region);
 
 }

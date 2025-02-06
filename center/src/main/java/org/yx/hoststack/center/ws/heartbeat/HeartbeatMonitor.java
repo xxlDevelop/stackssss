@@ -91,17 +91,17 @@ public class HeartbeatMonitor {
     }
 
     public void updateHeartbeat(String serviceId, RegisterNodeEnum type, Consumer<Long> timeoutCallback) {
-        if (RegisterNodeEnum.HOST.equals(type)) {
-            containerQueue.removeIf(task -> serviceId.equals(task.getServiceId()));
-
-            containerQueue.offer(new HeartbeatTask(serviceId, hostHbInterval + 2, type, timeoutCallback));
-        } else if (RegisterNodeEnum.HEARTBEAT.equals(type)) {
-            updateQueue.offer(new HeartbeatTask(serviceId, hostHbInterval + 1, type, timeoutCallback));
-        } else {
-            serverQueue.removeIf(task -> serviceId.equals(task.getServiceId()));
-
-            serverQueue.offer(new HeartbeatTask(serviceId, (serverHbInterval * 2) + 1, type, timeoutCallback));
-        }
+//        if (RegisterNodeEnum.HOST.equals(type)) {
+//            containerQueue.removeIf(task -> serviceId.equals(task.getServiceId()));
+//
+//            containerQueue.offer(new HeartbeatTask(serviceId, hostHbInterval + 2, type, timeoutCallback));
+//        } else if (RegisterNodeEnum.HEARTBEAT.equals(type)) {
+//            updateQueue.offer(new HeartbeatTask(serviceId, hostHbInterval + 1, type, timeoutCallback));
+//        } else {
+//            serverQueue.removeIf(task -> serviceId.equals(task.getServiceId()));
+//
+//            serverQueue.offer(new HeartbeatTask(serviceId, (serverHbInterval * 2) + 1, type, timeoutCallback));
+//        }
     }
 
 

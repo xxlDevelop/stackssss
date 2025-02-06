@@ -1,16 +1,20 @@
 package org.yx.hoststack.edge.client;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.crypto.digest.MD5;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
+import org.yx.hoststack.common.syscode.EdgeSysCode;
+import org.yx.hoststack.edge.client.controller.jobs.JobCacheData;
 import org.yx.hoststack.edge.common.EdgeContext;
 import org.yx.hoststack.edge.common.SendMsgCallback;
 import org.yx.hoststack.edge.queue.message.HostHeartMessage;
-import org.yx.hoststack.protocol.ws.agent.common.CommonMessage;
+import org.yx.hoststack.edge.server.RunMode;
+import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.hoststack.protocol.ws.agent.req.HostHeartbeatReq;
 import org.yx.hoststack.protocol.ws.agent.req.HostInitializeReq;
 import org.yx.hoststack.protocol.ws.server.E2CMessage;
-import org.yx.hoststack.common.syscode.EdgeSysCode;
 import org.yx.hoststack.protocol.ws.server.JobResult;
 import org.yx.hoststack.protocol.ws.server.ProtoMethodId;
 import org.yx.lib.utils.util.StringPool;
@@ -38,13 +42,15 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
 
     public void edgeRegister() {
         sendMsg(buildSendMessage(ProtoMethodId.EdgeRegister.getValue(),
-                E2CMessage.E2C_EdgeRegisterReq.newBuilder()
-                        .setServiceIp(EdgeContext.ServiceIp)
-                        .setVersion(EdgeContext.ProjectVersion)
-                        .build().toByteString(), UUID.fastUUID().toString()), null, null);
+                        E2CMessage.E2C_EdgeRegisterReq.newBuilder()
+                                .setServiceIp(EdgeContext.ServiceIp)
+                                .setVersion(EdgeContext.ProjectVersion)
+                                .setServiceType(EdgeContext.RunMode)
+                                .build().toByteString(), EdgeContext.RunMode.equals(RunMode.IDC) ? EdgeContext.IdcServiceId : EdgeContext.RelayServiceId),
+                null, null);
     }
 
-    public void hostInitialize(String hostId, HostInitializeReq hostInitializeReq, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
+    public void hostInitialize(String hostId, String hostToken, HostInitializeReq hostInitializeReq, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
         List<E2CMessage.GpuInfo> gpuInfoList = Lists.newArrayList();
         for (HostInitializeReq.GpuInfo gpuInfo : hostInitializeReq.getGpuList()) {
             gpuInfoList.add(E2CMessage.GpuInfo.newBuilder()
@@ -80,9 +86,9 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
                 .setHostId(hostId)
                 .setDetailedId(hostInitializeReq.getDetailedId())
                 .setProxy(hostInitializeReq.getProxy())
-                .setRegisterMode(hostInitializeReq.getRegisterMode())
                 .addAllGpuList(gpuInfoList)
                 .addAllNetCardList(netCardInfoList)
+                .setXToken(hostToken)
                 .build();
         sendMsg(buildSendMessage(ProtoMethodId.HostInitialize.getValue(), hostInitialize.toByteString(), traceId), successCallback, failCallback);
     }
@@ -131,30 +137,65 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
         sendMsg(buildSendMessage(ProtoMethodId.HostExit.getValue(), hostExitReq.toByteString(), UUID.fastUUID().toString()), null, null);
     }
 
-    public void sendJobNotifyReport(CommonMessage<?> agentReport, String traceId, SendMsgCallback successCallback, SendMsgCallback failCallback) {
-        String jobDetailId = agentReport.getJobId();
-        String jobId = jobDetailId.split(StringPool.DASH)[0];
-        String jobStatus = agentReport.getStatus();
-        int jobProgress = agentReport.getProgress();
-        int jobCode = agentReport.getCode();
-        String jobMessage = agentReport.getMsg();
-
-        E2CMessage.E2C_JobReportReq jobReportReq = E2CMessage.E2C_JobReportReq.newBuilder()
-                .setJobId(jobId)
-                .setJobResult(JobResult.JobTargetResult.newBuilder()
-                        .addTargetResult(JobResult.TargetResult.newBuilder()
-                                .setJobDetailId(jobDetailId)
-                                .setStatus(jobStatus)
-                                .setProgress(jobProgress)
-                                .setCode(jobCode)
-                                .setMsg(jobMessage)
-                                .setOutput("")
-                                .build())
-                        .build().toByteString())
+    public void sendIdcExit(String idcId) {
+        E2CMessage.E2C_IdcExitReq idcExitReq = E2CMessage.E2C_IdcExitReq.newBuilder()
+                .setIdcSid(idcId)
                 .build();
-        sendMsg(buildResultMessage(ProtoMethodId.JobReport.getValue(), jobCode, jobMessage, jobReportReq.toByteString(), traceId),
-                successCallback, failCallback);
+        sendMsg(buildSendMessage(ProtoMethodId.IdcExit.getValue(), idcExitReq.toByteString(), UUID.fastUUID().toString()), null, null);
+    }
 
+    public void sendJobNotifyReport(List<AgentCommonMessage<?>> agentReportList, String traceId,
+                                    SendMsgCallback successCallback, SendMsgCallback failCallback) {
+        E2CMessage.E2C_JobReportReq.Builder jobReportReqBuilder = E2CMessage.E2C_JobReportReq.newBuilder();
+        for (AgentCommonMessage<?> agentReport : agentReportList) {
+            String jobFullId = agentReport.getJobId();
+            JobCacheData jobCacheData = jobCacheService.getJob(jobFullId);
+            String jobId = "";
+            String jobDetailId = "";
+            String jobType = "";
+            String jobSubType = "";
+
+            if (jobCacheData != null) {
+                jobId = jobCacheData.getJobId();
+                jobDetailId = jobCacheData.getJobDetailId();
+                jobType = jobCacheData.getJobType();
+                jobSubType = jobCacheData.getJobSubType();
+            } else {
+                if (jobFullId.contains(StringPool.DASH)) {
+                    jobDetailId = agentReport.getJobId();
+                    jobId = jobDetailId.split(StringPool.DASH)[0];
+                } else {
+                    jobDetailId = "";
+                    jobId = agentReport.getJobId();
+                }
+            }
+            String jobStatus = agentReport.getStatus();
+            int jobProgress = agentReport.getProgress();
+            int jobCode = agentReport.getCode();
+            String jobMessage = agentReport.getMsg();
+            String jobTraceId = agentReport.getTraceId();
+
+            jobReportReqBuilder.addItems(
+                    E2CMessage.JobReportItem.newBuilder()
+                            .setTraceId(jobTraceId)
+                            .setJobId(jobId)
+                            .setJobType(jobType)
+                            .setJobSubType(jobSubType)
+                            .setJobResult(JobResult.JobTargetResult.newBuilder()
+                                    .addTargetResult(JobResult.TargetResult.newBuilder()
+                                            .setJobDetailId(jobDetailId)
+                                            .setStatus(jobStatus)
+                                            .setProgress(jobProgress)
+                                            .setCode(jobCode)
+                                            .setMsg(StringUtil.isBlank(jobMessage) ? "" : jobMessage)
+                                            .setOutput(agentReport.getData() == null ? "" : JSON.toJSONString(agentReport.getData()))
+                                            .build())
+                                    .build().toByteString())
+                            .build());
+        }
+
+        sendMsg(buildResultMessage(ProtoMethodId.JobReport.getValue(), EdgeSysCode.Success.getValue(), "", jobReportReqBuilder.build().toByteString(), traceId),
+                successCallback, failCallback);
     }
 
     public void sendResultToUpstream(int methodId, int code, String msg, ByteString payload, String traceId) {
@@ -163,18 +204,22 @@ public class EdgeClientConnector extends EdgeClientConnectorBase {
 
     public void sendJobFailedToUpstream(String jobId, String jobDetailId,
                                         int code, String errorMsg, String traceId) {
-        E2CMessage.E2C_JobReportReq.Builder jobReportReqBuilder = E2CMessage.E2C_JobReportReq.newBuilder()
-                .setJobId(jobId);
+        E2CMessage.E2C_JobReportReq.Builder jobReportReqBuilder = E2CMessage.E2C_JobReportReq.newBuilder();
         if (StringUtil.isNotBlank(jobDetailId)) {
-            jobReportReqBuilder.setJobResult(JobResult.JobTargetResult.newBuilder()
-                    .addTargetResult(JobResult.TargetResult.newBuilder()
-                            .setJobDetailId(jobDetailId)
-                            .setStatus("fail")
-                            .setProgress(0)
-                            .setCode(code)
-                            .setMsg(errorMsg)
-                            .build())
-                    .build().toByteString());
+            jobReportReqBuilder.addItems(
+                    E2CMessage.JobReportItem.newBuilder()
+                            .setTraceId(traceId)
+                            .setJobId(jobId)
+                            .setJobResult(JobResult.JobTargetResult.newBuilder()
+                                    .addTargetResult(JobResult.TargetResult.newBuilder()
+                                            .setJobDetailId(jobDetailId)
+                                            .setStatus("fail")
+                                            .setProgress(0)
+                                            .setCode(code)
+                                            .setMsg(errorMsg)
+                                            .build())
+                                    .build().toByteString())
+                            .build());
         }
         sendMsg(buildResultMessage(ProtoMethodId.JobReport.getValue(),
                 EdgeSysCode.NotFoundAgentSession.getValue(), EdgeSysCode.NotFoundAgentSession.getMsg(),

@@ -3,7 +3,7 @@ package org.yx.hoststack.edge.server.ws.controller.manager;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 import org.yx.hoststack.edge.server.ws.controller.IEdgeServerController;
-import org.yx.hoststack.protocol.ws.agent.common.CommonMessage;
+import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.hoststack.protocol.ws.agent.common.AgentMethodId;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class EdgeServerControllerManager {
         return Optional.ofNullable(CONTROLLER_MAP.get(AgentMethodId.find(methodId)));
     }
 
-    public void execute(IEdgeServerController controller, ChannelHandlerContext ctx, CommonMessage<?> message) {
+    public void execute(IEdgeServerController controller, ChannelHandlerContext ctx, AgentCommonMessage<?> message) {
         controller.handle(ctx, message);
     }
 }

@@ -35,7 +35,7 @@ public class ServiceDetail implements Serializable{
     /**
      *  IDCID或者中继节点ID
      */
-    private Long edgeId;
+    private String edgeId;
 
     /**
      *   
@@ -60,7 +60,7 @@ public class ServiceDetail implements Serializable{
     /**
      *  是否健康
      */
-    private String healthy;
+    private Boolean healthy;
 
     /**
      *  最后心跳时间

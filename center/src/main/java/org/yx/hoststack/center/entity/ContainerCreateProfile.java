@@ -56,11 +56,6 @@ public class ContainerCreateProfile implements Serializable {
     private Long profileTemplateId;
 
     /**
-     * 操作系统类型：windows 、linux
-     */
-    private String osType;
-
-    /**
      * 内存大小
      */
     private String memory;

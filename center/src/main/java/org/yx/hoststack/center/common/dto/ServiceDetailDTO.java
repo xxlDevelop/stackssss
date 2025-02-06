@@ -23,9 +23,15 @@ public class ServiceDetailDTO implements Serializable {
 
     private String serviceId = "";
 
+    private String hostId = "";
+
     private String idcSid = "";
 
     private String relaySid = "";
+
+    private String idc = "";
+    
+    private String relay = "";
 
     private String type;
 

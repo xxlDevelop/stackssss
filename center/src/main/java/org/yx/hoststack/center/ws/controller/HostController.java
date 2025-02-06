@@ -523,97 +523,97 @@ public class HostController {
      * @param message CommonMessage
      */
     private void ping(ChannelHandlerContext ctx, CommonMessageWrapper.CommonMessage message) {
-        try {
-            ByteString payload = message.getBody().getPayload();
-            CommonMessageWrapper.Header header = message.getHeader();
-            String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
-            E2CMessage.E2C_HostHeartbeatReq hostHeartbeatReq = E2CMessage.E2C_HostHeartbeatReq.parseFrom(payload);
-            List<E2CMessage.HostHbData> hbData = hostHeartbeatReq.getHbDataList();
-            if (CollectionUtils.isEmpty(hbData)) {
-                sendErrorResponse(ctx, message, x00000412.getValue(), x00000412.getMsg());
-            }
-
-            Node node = findNodeByServiceId(serviceId);
-            hbData.forEach(x -> {
-                String hostId = x.getHostId();
-                if (!ObjectUtils.isEmpty(node)) {
-                    node.addOrUpdateNode(x.getHostId(), RegisterNodeEnum.HOST, ctx.channel());
-                }
-                AgentTypeEnum agentType = AgentTypeEnum.fromString(x.getAgentType());
-                AgentSession session = agentSessionCacheMap.get(x.getHostId());
-                session.setCpuUsage(x.getHostStatus().getCpuUsage());
-                session.setMemoryUsage(x.getHostStatus().getMemoryUsage());
-                session.setGpuUsage(x.getHostStatus().getGpuUsage());
-                session.setGpuFanSpeed(x.getHostStatus().getGpuFanSpeed());
-                session.setGpuTemperature(x.getHostStatus().getGpuTemperature());
-                switch (agentType) {
-                    case HOST:
-                        Host host = hostCurrentMap.get(x.getHostId());
-                        session.setContainerCount(Integer.parseInt(x.getVmStatusList().parallelStream().filter(y -> y.getRunning()).count() + ""));
-                        session.setAgentIp(host.getHostIp());
-                        session.setResourcePool(host.getResourcePool());
-
-                        if (ObjectUtils.isEmpty(host)) {
-                            host.setLastHbAt(new Date());
-                            hostCurrentMap.put(x.getHostId(), host);
-                            String hostShardKey = hostConsistentHash.getShard(hostId).toString();
-                            RedissonUtils.setLocalCachedMap(hostShardKey, hostId, host);
-                            monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(x.getHostId(), AgentTypeEnum.HOST));
-                            monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(x.getHostId(), AgentTypeEnum.HOST));
-                        }
-                        List<E2CMessage.VmStatus> vmStatusList = x.getVmStatusList();
-                        if (!CollectionUtils.isEmpty(vmStatusList)) {
-                            ConcurrentHashMap<String, Boolean> runningAgentMap = vmStatusList.stream().collect(Collectors.toMap(E2CMessage.VmStatus::getCid, E2CMessage.VmStatus::getRunning, (key1, key2) -> key2, ConcurrentHashMap::new));
-                            if (!ObjectUtils.isEmpty(runningAgentMap)) {
-                                Iterator<Map.Entry<String, Boolean>> iterator = runningAgentMap.entrySet().iterator();
-                                while (iterator.hasNext()) {
-                                    Map.Entry<String, Boolean> entry = iterator.next();
-                                    String containerId = entry.getKey();
-                                    Container container = containerCurrentMap.get(containerId);
-                                    AgentSession containerAgentSession = agentSessionCacheMap.get(containerId);
-                                    BeanUtils.copyProperties(session, containerAgentSession);
-                                    containerAgentSession.setAgentIp(container.getContainerIp());
-                                    containerAgentSession.setResourcePool(container.getResourcePool());
-
-                                    containerCurrentMap.put(containerId, container);
-                                    String containerShardKey = containerConsistentHash.getShard(containerId).toString();
-                                    RedissonUtils.setLocalCachedMap(containerShardKey, containerId, container);
-
-                                    agentSessionCacheMap.put(containerId, containerAgentSession);
-                                    if (entry.getValue()) {
-                                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(containerId, AgentTypeEnum.CONTAINER));
-                                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(containerId, AgentTypeEnum.CONTAINER));
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case CONTAINER, BENCHMARK:
-                        String containerId = x.getHostId();
-                        Container container = containerCurrentMap.get(containerId);
-                        session.setAgentIp(container.getContainerIp());
-                        session.setResourcePool(container.getResourcePool());
-
-                        if (container != null) {
-                            container.setLastHbAt(new Date());
-                            containerCurrentMap.put(hostId, container);
-                            String containerShardKey = containerConsistentHash.getShard(containerId).toString();
-                            RedissonUtils.setLocalCachedMap(containerShardKey, containerId, container);
-                        }
-                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(containerId, AgentTypeEnum.CONTAINER));
-                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(containerId, AgentTypeEnum.CONTAINER));
-                        break;
-                }
-                agentSessionCacheMap.put(x.getHostId(), session);
-
-
-            });
-
-            EdgeController.sendSuccessCommonMessage(ctx, message);
-
-        } catch (Exception ex) {
-            sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
-        }
+//        try {
+//            ByteString payload = message.getBody().getPayload();
+//            CommonMessageWrapper.Header header = message.getHeader();
+//            String serviceId = !StringUtils.isEmpty(header.getIdcSid()) ? header.getIdcSid() : header.getRelaySid();
+//            E2CMessage.E2C_HostHeartbeatReq hostHeartbeatReq = E2CMessage.E2C_HostHeartbeatReq.parseFrom(payload);
+//            List<E2CMessage.HostHbData> hbData = hostHeartbeatReq.getHbDataList();
+//            if (CollectionUtils.isEmpty(hbData)) {
+//                sendErrorResponse(ctx, message, x00000412.getValue(), x00000412.getMsg());
+//            }
+//
+//            Node node = findNodeByServiceId(serviceId);
+//            hbData.forEach(x -> {
+//                String hostId = x.getHostId();
+//                if (!ObjectUtils.isEmpty(node)) {
+//                    node.addOrUpdateNode(x.getHostId(), RegisterNodeEnum.HOST, ctx.channel());
+//                }
+//                AgentTypeEnum agentType = AgentTypeEnum.fromString(x.getAgentType());
+//                AgentSession session = agentSessionCacheMap.get(x.getHostId());
+//                session.setCpuUsage(x.getHostStatus().getCpuUsage());
+//                session.setMemoryUsage(x.getHostStatus().getMemoryUsage());
+//                session.setGpuUsage(x.getHostStatus().getGpuUsage());
+//                session.setGpuFanSpeed(x.getHostStatus().getGpuFanSpeed());
+//                session.setGpuTemperature(x.getHostStatus().getGpuTemperature());
+//                switch (agentType) {
+//                    case HOST:
+//                        Host host = hostCurrentMap.get(x.getHostId());
+//                        session.setContainerCount(Integer.parseInt(x.getVmStatusList().parallelStream().filter(y -> y.getRunning()).count() + ""));
+//                        session.setAgentIp(host.getHostIp());
+//                        session.setResourcePool(host.getResourcePool());
+//
+//                        if (ObjectUtils.isEmpty(host)) {
+//                            host.setLastHbAt(new Date());
+//                            hostCurrentMap.put(x.getHostId(), host);
+//                            String hostShardKey = hostConsistentHash.getShard(hostId).toString();
+//                            RedissonUtils.setLocalCachedMap(hostShardKey, hostId, host);
+//                            monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(x.getHostId(), AgentTypeEnum.HOST));
+//                            monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(x.getHostId(), AgentTypeEnum.HOST));
+//                        }
+//                        List<E2CMessage.VmStatus> vmStatusList = x.getVmStatusList();
+//                        if (!CollectionUtils.isEmpty(vmStatusList)) {
+//                            ConcurrentHashMap<String, Boolean> runningAgentMap = vmStatusList.stream().collect(Collectors.toMap(E2CMessage.VmStatus::getCid, E2CMessage.VmStatus::getRunning, (key1, key2) -> key2, ConcurrentHashMap::new));
+//                            if (!ObjectUtils.isEmpty(runningAgentMap)) {
+//                                Iterator<Map.Entry<String, Boolean>> iterator = runningAgentMap.entrySet().iterator();
+//                                while (iterator.hasNext()) {
+//                                    Map.Entry<String, Boolean> entry = iterator.next();
+//                                    String containerId = entry.getKey();
+//                                    Container container = containerCurrentMap.get(containerId);
+//                                    AgentSession containerAgentSession = agentSessionCacheMap.get(containerId);
+//                                    BeanUtils.copyProperties(session, containerAgentSession);
+//                                    containerAgentSession.setAgentIp(container.getContainerIp());
+//                                    containerAgentSession.setResourcePool(container.getResourcePool());
+//
+//                                    containerCurrentMap.put(containerId, container);
+//                                    String containerShardKey = containerConsistentHash.getShard(containerId).toString();
+//                                    RedissonUtils.setLocalCachedMap(containerShardKey, containerId, container);
+//
+//                                    agentSessionCacheMap.put(containerId, containerAgentSession);
+//                                    if (entry.getValue()) {
+//                                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(containerId, AgentTypeEnum.CONTAINER));
+//                                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(containerId, AgentTypeEnum.CONTAINER));
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        break;
+//                    case CONTAINER, BENCHMARK:
+//                        String containerId = x.getHostId();
+//                        Container container = containerCurrentMap.get(containerId);
+//                        session.setAgentIp(container.getContainerIp());
+//                        session.setResourcePool(container.getResourcePool());
+//
+//                        if (container != null) {
+//                            container.setLastHbAt(new Date());
+//                            containerCurrentMap.put(hostId, container);
+//                            String containerShardKey = containerConsistentHash.getShard(containerId).toString();
+//                            RedissonUtils.setLocalCachedMap(containerShardKey, containerId, container);
+//                        }
+//                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HEARTBEAT, expirationTime -> heartbeat(containerId, AgentTypeEnum.CONTAINER));
+//                        monitor.updateHeartbeat(x.getHostId(), RegisterNodeEnum.HOST, expirationTime -> offline(containerId, AgentTypeEnum.CONTAINER));
+//                        break;
+//                }
+//                agentSessionCacheMap.put(x.getHostId(), session);
+//
+//
+//            });
+//
+//            EdgeController.sendSuccessCommonMessage(ctx, message);
+//
+//        } catch (Exception ex) {
+//            sendErrorResponse(ctx, message, x00000500.getValue(), x00000500.getMsg());
+//        }
     }
 
     public static String convertToHex(int regionId) {

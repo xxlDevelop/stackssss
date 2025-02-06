@@ -12,6 +12,9 @@ server:
   shutdown: graceful
 
 spring:
+  main:
+    # Since virtual threads are daemon threads, if all JVM threads are virtual threads, the JVM will exit directly. Therefore, the official recommendation is to enable the following properties to prevent the main thread from exiting the JVM
+    keep-alive: true
   cloud:
     config:
       allow-override: true
@@ -54,30 +57,29 @@ spring:
 #          max-wait: -1
 #          max-idle: 50
 #          min-idle: 50
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath*:mappers/**/*.xml,classpath*:mappers/*.xml
+  global-config:
+    # Close the mybatis plus startup icon
+    banner: false
 
-applications:
-  # webSocket服务端配置
-  server:
-    wsPort: 8899
-    bossThreadCount: 1
-    workThreadCount: 3
-    soBacklog: 1024
-    recBuf: 524288
-    sendBuf: 524288
-    logLevel: 2
-    enableIdl: true
-    readIdle: 60
-    writeIdle: 60
-    allIdle: 120
-    retryNumber: 3
-  # 线程配置
-  executor:
-    pool-core-size: 4
-    max-size: 15
-    capacity: 2048
-    keep-alive: 60
-
-
+#okhttp:
+#  enable: true
+#  # [OPS-MODIFY] Socket connection timeout (seconds)
+#  connect-timeout: 5
+#  # [OPS-MODIFY] Socket read timeout (seconds)
+#  read-timeout: 15
+#  # [OPS-MODIFY] Socket write timeout (seconds)
+#  write-timeout: 5
+#  # [OPS-MODIFY] Maximum number of idle connections
+#  max-idle-connections: 10
+#  # [OPS-MODIFY] Maximum survival time of idle connections (seconds)
+#  keep-alive-duration: 3
+#  # [OPS-MODIFY] retry when the connection failure
+#  retry-on-connection-failure: false
 
 logging:
   level:

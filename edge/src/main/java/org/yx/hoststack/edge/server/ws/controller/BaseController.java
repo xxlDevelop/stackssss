@@ -5,7 +5,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
-import org.yx.hoststack.protocol.ws.agent.common.CommonMessage;
+import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 import org.yx.hoststack.protocol.ws.agent.common.MessageType;
 
 public class BaseController {
@@ -15,7 +15,7 @@ public class BaseController {
 
     protected void sendAgentResult(String method, String hostId, String traceId, int code, String message, Object data, ChannelHandlerContext clientContext) {
         clientContext.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(
-                CommonMessage.builder()
+                AgentCommonMessage.builder()
                         .type(MessageType.RESPONSE)
                         .method(method)
                         .hostId(hostId)

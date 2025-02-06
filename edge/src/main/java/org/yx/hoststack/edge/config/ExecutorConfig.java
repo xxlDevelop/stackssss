@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -17,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @ConditionalOnProperty(value = "spring.threads.virtual.enabled", havingValue = "false")
 public class ExecutorConfig {
 
-    @Value("${executor.pool.core-size:5}")
+    @Value("${executor.core-size:5}")
     private int corePoolSize;
 
     public int getCorePoolSize() {
@@ -60,20 +59,19 @@ public class ExecutorConfig {
         return keepAlive;
     }
 
-
-    private static final String TASK_NAME = "edge-executor-";
+    private static final String TASK_NAME = "executor-";
 
     @Bean("edgeExecutor")
     public Executor edgeExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(getCorePoolSize() * 2);
-        executor.setMaxPoolSize(getMaxPoolSize() * 3 + 1);
-        executor.setQueueCapacity(getQueueCapacity());
-        executor.setThreadNamePrefix(TASK_NAME);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setKeepAliveSeconds(getKeepAlive());
-        executor.initialize();
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        return executor;
+        ThreadPoolTaskExecutor  threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(getCorePoolSize() * 2);
+        threadPoolTaskExecutor.setMaxPoolSize(getMaxPoolSize() * 3 + 1);
+        threadPoolTaskExecutor.setQueueCapacity(getQueueCapacity());
+        threadPoolTaskExecutor.setThreadNamePrefix(TASK_NAME);
+        threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        threadPoolTaskExecutor.setKeepAliveSeconds(getKeepAlive());
+        threadPoolTaskExecutor.initialize();
+        threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+        return threadPoolTaskExecutor;
     }
 }

@@ -143,7 +143,7 @@ public class JobReNotifyService {
                     if (!contentList.isEmpty()) {
                         List<List<AgentCommonMessage<?>>> batchList = ListUtil.batchList(contentList, 100);
                         for (List<AgentCommonMessage<?>> messageList : batchList) {
-                            EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), "", null,
+                            EdgeClientConnector.getInstance().sendJobNotifyReport(messageList, UUID.fastUUID().toString(), null,
                                     () -> notSendMessageList.addAll(messageList));
                         }
                         if (notSendMessageList.isEmpty()) {

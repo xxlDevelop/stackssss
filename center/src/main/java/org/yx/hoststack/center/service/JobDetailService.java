@@ -2,6 +2,7 @@ package org.yx.hoststack.center.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.yx.hoststack.center.common.enums.JobStatusEnum;
 import org.yx.hoststack.center.entity.JobDetail;
 
 import java.util.List;
@@ -24,4 +25,5 @@ public interface JobDetailService extends IService<JobDetail> {
 
     int delete(Long id);
 
+    long countByStatus(String jobId, List<String> jobStatus);
 }

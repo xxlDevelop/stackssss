@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.yx.hoststack.protocol.ws.agent.common.CommonMessage;
+import org.yx.hoststack.protocol.ws.agent.common.AgentCommonMessage;
 
 @Builder
 @Data
@@ -13,5 +13,5 @@ import org.yx.hoststack.protocol.ws.agent.common.CommonMessage;
 public class SessionReSendData {
 
     private int centerMethId;
-    private CommonMessage<?> message;
+    private AgentCommonMessage<?> message;
 }

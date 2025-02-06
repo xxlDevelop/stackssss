@@ -1,7 +1,11 @@
 package org.yx.hoststack.center.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,128 +13,151 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AGENT信息表,存储HOSTAGENT和CONTAINERAGENT信息
- *
- * @author lyc
- * @since 2024-12-12 18:09:53
+ * Agent信息表,存储hostAgent和containerAgent信息
+ * @author Lee666
  */
 @Data
-@TableName("t_host")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Host implements Serializable{
-
-    private static final long serialVersionUID=1L;
-
+@TableName("t_host")
+public class Host implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -3393744176451974020L;
     /**
-     *  HOSTAGENT唯一标识
+     * hostAgent唯一标识
      */
+    @TableId(value = "host_id", type = IdType.INPUT)
     private String hostId;
 
     /**
-     *  HOST版本号
+     * agent版本号
      */
-    private String hostVersion;
+    private String agentVersion;
 
     /**
-     *  节点启动时间
+     * 资源注册模式：host，container，benchmark
+     */
+    private String agentType;
+
+    /**
+     * 节点启动时间
      */
     private Date startTime;
 
     /**
-     *  设备编码
+     * 设备编码
      */
     private String devSn;
 
     /**
-     *  操作系统类型
+     * 操作系统类型
      */
     private String osType;
 
     /**
-     *  操作系统版本
+     * 操作系统版本
      */
     private String osVersion;
 
     /**
-     *  操作系统内存
+     * 操作系统内存
      */
     private String osMem;
 
     /**
-     *  磁盘信息
+     * 资源池类型，idc、edge、he
+     */
+    private String resourcePool;
+
+    /**
+     * 当前操作系统虚拟化信息：bm （裸金属），docker ，vm
+     */
+    private String runtimeEnv;
+
+    /**
+     * 磁盘信息
      */
     private String diskInfo;
 
     /**
-     *  网卡信息
+     * 网卡信息
      */
     private String networkCardInfo;
 
     /**
-     *  HOST所属大区标识
+     * host所属大区标识
      */
     private String zone;
 
     /**
-     *  HOST所属分区标识
+     * host所属分区标识
      */
     private String region;
 
     /**
-     *  HOST所属IDC机房
+     * host所属relay标识
+     */
+    private String relay;
+
+    /**
+     * host所属IDC标识
      */
     private String idc;
 
     /**
-     *  HOSTIP地址
+     * hostIP地址
      */
     private String hostIp;
 
     /**
-     *  GPU数量
+     * gpu数量
      */
     private Integer gpuNum;
 
     /**
-     *  CPU数量
+     * cpu数量
      */
     private Integer cpuNum;
 
     /**
-     *  BAREMETAL提供者ID
+     * 详细的硬件唯一标识信息，采用key:value格式，例如“cpuId:123,biosId:456”
+     */
+    private String detailedId;
+
+    /**
+     * 网络代理 0-否，1-是
+     */
+    private Integer proxy;
+
+    /**
+     * BareMetal提供者ID
 
      */
     private String baremetalProvider;
 
     /**
-     *  BAREMETAL所属租户ID
+     * BareMetal提供者所属租户ID
      */
-    private Long tenantId;
+    private Long providerTenantId;
 
     /**
-     *  最后心跳时间
+     * 最后心跳时间
      */
     private Date lastHbAt;
 
     /**
-     *  访问中心的AK
+     * 访问中心的Ak
      */
     private String ak;
 
     /**
-     *  访问中心的SK, AES加密
+     * 访问中心的Sk, AES加密
      */
     private String sk;
 
     /**
-     *  CHECKER公钥
-     */
-    private String checkerPublicKey;
-
-    /**
-     *  创建时间戳
+     * 创建时间戳
      */
     private Date createAt;
 

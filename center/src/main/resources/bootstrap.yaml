@@ -32,4 +32,4 @@ management:
       discovery:
         enabled: false
 
-LogPath: ${LogDir:logs}
+LogPath: ${LogDir:/data/logs/host-stack/center}

@@ -31,7 +31,7 @@ public class ContainerNetConfig implements Serializable {
     /**
      * 容器ID
      */
-    private String cid;
+    private String containerId;
 
     /**
      *  机房标识

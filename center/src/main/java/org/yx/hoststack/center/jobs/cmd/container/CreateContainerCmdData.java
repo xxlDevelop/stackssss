@@ -14,6 +14,7 @@ public class CreateContainerCmdData {
     private String vmType;
     private Image image;
     private String profileTemplate;
+    private Long profileTemplateId;
     private List<ContainerProfileInfo> profileInfoList;
 
     @Getter

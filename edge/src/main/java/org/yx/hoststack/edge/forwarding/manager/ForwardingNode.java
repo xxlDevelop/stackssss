@@ -76,7 +76,7 @@ public class ForwardingNode {
             if (future.isDone() && future.cause() != null) {
                 kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_TO_IDC_FAIL)
                         .p(LogFieldConstants.ERR_MSG, future.cause().getMessage())
-                        .p(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
+                        .pl(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
                         .p("ForwardResult", EdgeSysCode.SendMsgFailed.getValue())
                         .e(future.cause());
                 ForwardingReSendMap.putResendMessage(context.channel(), message);
@@ -85,7 +85,7 @@ public class ForwardingNode {
                         .p("ForwardResult", 0);
                 if (message.getHeader().getMethId() == ProtoMethodId.Ping.getValue() ||
                         message.getHeader().getMethId() == ProtoMethodId.Pong.getValue() || kvLogger.isDebug()) {
-                    kvLogger.p(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
+                    kvLogger.pl(LogFieldConstants.ReqData, Base64.encode(message.toByteArray()))
                             .d();
                 } else {
                     kvLogger.i();
@@ -98,9 +98,7 @@ public class ForwardingNode {
         if (checkHbScheduler != null) {
             checkHbScheduler.shutdownNow();
         }
-        if (context.channel().isOpen()) {
-            context.close();
-        }
+        context.close();
         KvLogger.instance(this)
                 .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
                 .p(LogFieldConstants.ACTION, EdgeEvent.Action.FORWARDING_NODE_DESTROY)

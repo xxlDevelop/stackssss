@@ -12,10 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobCmd<T> {
-    private String zone;
-    private String region;
-    private String idc;
-    private String relay;
     private long tenantId;
     private JobTypeEnum jobType;
     private JobSubTypeEnum jobSubType;

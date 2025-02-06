@@ -2,6 +2,7 @@ package org.yx.hoststack.edge.server.ws.session;
 
 import com.google.common.collect.Maps;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.HashedWheelTimer;
 import org.springframework.stereotype.Service;
 import org.yx.hoststack.edge.client.EdgeClientConnector;
 
@@ -12,31 +13,44 @@ import java.util.stream.Collectors;
 
 @Service
 public class SessionManager {
-    private final Map<String, Session> sessionMap = Maps.newHashMap();
-
+    private final Map<String, Session> sessionMap = Maps.newConcurrentMap();
+    private final HashedWheelTimer hashedWheelTimer = new HashedWheelTimer();
 
     /**
      * create session
      * @param context               ChannelHandlerContext
+     * @param hostId                HostId
      * @param sessionType           Host or Container
      * @param sessionTimeout        SessionTimeout
-     * @param sessionHbInterval     SessionHbInterval
      * @return Session
      */
-    public Session createSession(ChannelHandlerContext context, SessionType sessionType, int sessionTimeout, int sessionHbInterval) {
-        String sessionId = context.channel().id().toString();
-        Session session = sessionMap.get(sessionId);
+    public Session createSession(ChannelHandlerContext context, String hostId, SessionType sessionType, int sessionTimeout) {
+        Session session = sessionMap.get(hostId);
         if (session == null) {
             if (sessionType == SessionType.Host) {
-                session = new HostAgentSession(context, sessionTimeout, sessionHbInterval);
+                session = new HostAgentSession(context, hostId, sessionTimeout, hashedWheelTimer);
             } else {
-                session = new ContainerAgentSession(context, sessionTimeout, sessionHbInterval);
+                session = new ContainerAgentSession(context, hostId, sessionTimeout, hashedWheelTimer);
             }
             session.initialize0();
-            sessionMap.put(sessionId, session);
+            sessionMap.put(hostId, session);
         }
         return session;
     }
+
+//    public Session createSessionTest(String sessionId, SessionType sessionType, int sessionTimeout) {
+//        Session session = sessionMap.get(sessionId);
+//        if (session == null) {
+//            if (sessionType == SessionType.Host) {
+//                session = new HostAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
+//            } else {
+//                session = new ContainerAgentSession(null, sessionId, sessionTimeout, hashedWheelTimer);
+//            }
+//            session.initialize0();
+//            sessionMap.put(sessionId, session);
+//        }
+//        return session;
+//    }
 
     public Session getSession(String sessionId) {
         return sessionMap.get(sessionId);
@@ -47,14 +61,14 @@ public class SessionManager {
     }
 
     public void closeSession(Session target) {
-        Session session = sessionMap.remove(target.getSessionId());
+        Session session = getSession(target.getSessionId());
         if (session != null) {
-            target.destroy();
-            sessionMap.remove(target.getSessionId());
             // send host exit
             String hostId = session.getAttr(SessionAttrKeys.AgentId).toString();
             String agentType = session.getAttr(SessionAttrKeys.AgentType).toString();
             EdgeClientConnector.getInstance().sendHostExit(hostId, agentType);
+            target.destroy();
+            sessionMap.remove(target.getSessionId());
         }
     }
 
@@ -62,7 +76,13 @@ public class SessionManager {
         return sessionMap.values().stream().filter(session -> session.getSessionType() == sessionType).collect(Collectors.toList());
     }
 
-    public void closeAll() {
+    public List<Session> getSessions(List<String> sessionIds) {
+        return sessionMap.values().stream().filter(session -> sessionIds.contains(session.getSessionId())).collect(Collectors.toList());
+    }
+
+
+    public void destroy() {
+        hashedWheelTimer.stop();
         sessionMap.values().forEach(Session::destroy);
         sessionMap.clear();
     }

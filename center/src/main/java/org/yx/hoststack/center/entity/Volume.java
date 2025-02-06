@@ -1,15 +1,17 @@
 package org.yx.hoststack.center.entity;
 
-import java.io.Serializable;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.sql.Timestamp;
+
 /**
- * 存储卷
+ * volume
  *
  * @author lyc
  * @since 2024-12-12 18:09:53
@@ -19,33 +21,43 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Volume implements Serializable{
+public class Volume implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
-     *  存储卷标识
+     * ID
      */
     private String volumeId;
 
     /**
-     *  数据卷稀疏尺寸大小, 单位:KB
+     * Sparse size of data volume, unit: KB
      */
     private Long volumeSize;
 
     /**
-     *  数据卷磁盘类型, LOCAL:本地磁盘, REMOTE: 网络磁盘
+     * Data volume disk type, LOCAL: Local disk, REMOTE:  Network disk
      */
     private String diskType;
 
     /**
-     *  磁盘存储所属资源的唯一标识, 本地磁盘类型时, 该字段是BAREMETAL资源ID, 网络磁盘时, 该字段是分布式存储系统CEPH
+     * Storage volume type: base or user
      */
-    private String volumeHost;
+    private String volumeType;
 
     /**
-     *  创建时间戳
+     * The metadata address to be downloaded when creating a non empty storage volume
      */
-    private Date createAt;
+    private String downloadUrl;
+
+    /**
+     * Create timestamp
+     */
+    private Timestamp createAt;
+
+    private String md5;
+    private String snapshotName;
+    private String hostId;
 
 }

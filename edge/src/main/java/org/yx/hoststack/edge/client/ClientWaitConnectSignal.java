@@ -2,7 +2,6 @@ package org.yx.hoststack.edge.client;
 
 import org.yx.lib.utils.util.CountDownLatch2;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ClientWaitConnectSignal {

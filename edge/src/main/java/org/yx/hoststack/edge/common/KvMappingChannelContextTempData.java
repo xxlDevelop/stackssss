@@ -3,9 +3,7 @@ package org.yx.hoststack.edge.common;
 import cn.hutool.core.thread.ThreadFactoryBuilder;
 import com.google.common.collect.Maps;
 import io.netty.channel.ChannelHandlerContext;
-import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
-import org.yx.hoststack.edge.server.ws.session.event.SessionTimeoutEvent;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
@@ -21,7 +19,7 @@ public class KvMappingChannelContextTempData {
     private final ScheduledExecutorService checkContextTimeoutData;
 
     public KvMappingChannelContextTempData() {
-        checkContextTimeoutData = Executors.newScheduledThreadPool(1,
+        checkContextTimeoutData = Executors.newSingleThreadScheduledExecutor(
                 ThreadFactoryBuilder.create().setNamePrefix("checkChannelContextTempDataTimeoutData").build());
         checkContextTimeoutData.scheduleAtFixedRate(() -> {
             long curTs = System.currentTimeMillis();
@@ -29,8 +27,8 @@ public class KvMappingChannelContextTempData {
                 long addTs = TEMP_DATA_ADD_TIME.get(key);
                 if ((addTs + 120 * 1000) <= curTs) {
                     KvLogger.instance(this)
-                            .p(LogFieldConstants.EVENT, EdgeEvent.Business)
-                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.ClearTempContextMapping)
+                            .p(LogFieldConstants.EVENT, EdgeEvent.BUSINESS)
+                            .p(LogFieldConstants.ACTION, EdgeEvent.Action.CLEAR_TEMP_CONTEXT_MAPPING)
                             .p("TempDataKey", key)
                             .i();
                     remove(key);
@@ -54,9 +52,8 @@ public class KvMappingChannelContextTempData {
         return TEMP_DATA.get(key);
     }
 
-    @PreDestroy
     public void destroy() {
-        if (checkContextTimeoutData != null && !checkContextTimeoutData.isShutdown()) {
+        if (checkContextTimeoutData != null) {
             checkContextTimeoutData.shutdown();
         }
     }

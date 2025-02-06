@@ -1,8 +1,14 @@
 package org.yx.hoststack.center.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.yx.hoststack.center.common.constant.RequestMappingBase;
+import org.yx.hoststack.center.common.req.relay.RelayListReq;
+import org.yx.hoststack.center.common.req.relay.RelayUpdateReq;
+import org.yx.hoststack.center.common.resp.PageResp;
+import org.yx.hoststack.center.common.resp.relay.RelayListResp;
 import org.yx.hoststack.center.entity.RelayInfo;
 import org.yx.hoststack.center.service.RelayInfoService;
 import org.yx.lib.utils.util.R;
@@ -16,7 +22,7 @@ import java.util.List;
  * @since 2024-12-09 15:15:18
  */
 @RestController
-@RequestMapping("/relayInfo")
+@RequestMapping(RequestMappingBase.admin + RequestMappingBase.relay)
 @RequiredArgsConstructor
 public class RelayInfoController {
 
@@ -70,16 +76,9 @@ public class RelayInfoController {
         return R.ok(result);
     }
 
-    /**
-     * 修改
-     *
-     * @param relayInfo
-     * @return
-     */
-    @PutMapping
-    public R<Boolean> update(@RequestBody RelayInfo relayInfo) {
-        boolean result = relayInfoService.update(relayInfo);
-        return R.ok(result);
+    @PostMapping("/update")
+    public R<?> updateRelay(@RequestBody @Valid RelayUpdateReq relayUpdateReq) {
+        return relayInfoService.updateRelay(relayUpdateReq);
     }
 
     /**
@@ -93,5 +92,12 @@ public class RelayInfoController {
         int result = relayInfoService.delete(id);
         return R.ok(result);
     }
+
+
+    @PostMapping("/list")
+    public R<PageResp<RelayListResp>> listRelay(@RequestBody @Valid RelayListReq relayListReq) {
+        return relayInfoService.listRelay(relayListReq);
+    }
+
 
 }

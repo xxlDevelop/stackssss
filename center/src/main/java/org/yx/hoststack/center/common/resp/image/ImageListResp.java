@@ -29,7 +29,7 @@ public class ImageListResp {
         this.bizType = imageInfo.getBizType();
         this.resourcePool = imageInfo.getResourcePool();
         this.osType = imageInfo.getOsType();
-        this.contianerType = imageInfo.getContianerType();
+        this.contianerType = imageInfo.getContainerType();
         this.storagePath = imageInfo.getStoragePath();
         this.downloadUrl = imageInfo.getDownloadUrl();
         this.label = imageInfo.getLabel();

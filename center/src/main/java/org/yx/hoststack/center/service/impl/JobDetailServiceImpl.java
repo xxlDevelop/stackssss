@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.yx.hoststack.center.common.enums.JobStatusEnum;
 import org.yx.hoststack.center.mapper.JobDetailMapper;
 import org.yx.hoststack.center.entity.JobDetail;
 import org.yx.hoststack.center.service.JobDetailService;
 
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 
 /**
@@ -22,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JobDetailServiceImpl extends ServiceImpl<JobDetailMapper, JobDetail> implements JobDetailService {
 
-    
+
     private final JobDetailMapper jobDetailMapper;
 
     @Override
@@ -33,7 +36,7 @@ public class JobDetailServiceImpl extends ServiceImpl<JobDetailMapper, JobDetail
     }
 
     @Override
-    public List<JobDetail> findList(JobDetail params){
+    public List<JobDetail> findList(JobDetail params) {
         LambdaQueryWrapper<JobDetail> query = Wrappers.lambdaQuery(JobDetail.class);
         return jobDetailMapper.selectList(query);
     }
@@ -58,4 +61,10 @@ public class JobDetailServiceImpl extends ServiceImpl<JobDetailMapper, JobDetail
         return jobDetailMapper.deleteById(id);
     }
 
+    @Override
+    public long countByStatus(String jobId, List<String> jobStatus) {
+        return this.count(Wrappers.lambdaQuery(JobDetail.class)
+                .eq(JobDetail::getJobId, jobId)
+                .in(JobDetail::getJobStatus, jobStatus));
+    }
 }

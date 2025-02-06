@@ -19,6 +19,7 @@ import org.yx.hoststack.protocol.ws.server.CommonMessageWrapper;
 import org.yx.lib.utils.logger.KvLogger;
 import org.yx.lib.utils.logger.LogFieldConstants;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -51,6 +52,7 @@ public class ForwardingNodeMgr {
                     CommonMessageWrapper.CommonMessage reSendCommonMessage = resendMessage.getData();
                     try {
                         if (!resendChannel.isActive() || !resendChannel.isOpen() || !resendChannel.isWritable()) {
+                            resendChannel.close();
                             ForwardingReSendMap.remove(resendMessageId);
                             continue;
                         }
@@ -73,7 +75,7 @@ public class ForwardingNodeMgr {
                                     kvLogger.p(LogFieldConstants.ACTION, EdgeEvent.Action.RE_SEND_MSG_FAILED)
                                             .p(LogFieldConstants.ERR_MSG, retryFuture.cause().getMessage())
                                             .p(LogFieldConstants.Code, EdgeSysCode.SendMsgFailed.getValue())
-                                            .p(LogFieldConstants.ReqData, Base64.encode(reSendCommonMessage.toByteArray()))
+                                            .pl(LogFieldConstants.ReqData, Base64.encode(reSendCommonMessage.toByteArray()))
                                             .e(retryFuture.cause());
                                 } else if (retryFuture.isDone() && retryFuture.isSuccess()) {
                                     ForwardingReSendMap.remove(resendMessageId);
@@ -81,7 +83,7 @@ public class ForwardingNodeMgr {
                                             .p(LogFieldConstants.Code, 0)
                                             .i();
                                     if (kvLogger.isDebug()) {
-                                        kvLogger.p(LogFieldConstants.ReqData, Base64.encode(reSendCommonMessage.toByteArray())).d();
+                                        kvLogger.pl(LogFieldConstants.ReqData, Base64.encode(reSendCommonMessage.toByteArray())).d();
                                     }
                                 }
                             });
@@ -109,7 +111,6 @@ public class ForwardingNodeMgr {
     }
 
     public ForwardingNode createForwardingNode(String nodeId, int hbInterval, ChannelHandlerContext context) {
-        KvLogger.instance(this).p("idcSessionTimeoutidcSessionTimeoutidcSessionTimeoutidcSessionTimeout", idcSessionTimeout).i();
         ForwardingNode node = new ForwardingNode(nodeId, context, idcSessionTimeout, hbInterval);
         node.registerTimeoutEvent(this::forwardingNodeTimeout);
         FORWARDING_NODE_MAP.put(node.getNodeId(), node);
@@ -129,11 +130,20 @@ public class ForwardingNodeMgr {
         removeForwardingNode(forwardingNode.getNodeId());
     }
 
+    public void closeAll() {
+        FORWARDING_NODE_MAP.values().forEach(ForwardingNode::destroy);
+        FORWARDING_NODE_MAP.clear();
+    }
+
     public void destroy() {
         if (reSendScheduler != null) {
             reSendScheduler.shutdown();
         }
         FORWARDING_NODE_MAP.values().forEach(ForwardingNode::destroy);
         FORWARDING_NODE_MAP.clear();
+    }
+
+    public Collection<ForwardingNode> nodes() {
+        return FORWARDING_NODE_MAP.values();
     }
 }

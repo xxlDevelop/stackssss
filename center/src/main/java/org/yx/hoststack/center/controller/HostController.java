@@ -3,6 +3,7 @@ package org.yx.hoststack.center.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.yx.hoststack.center.common.req.host.HostReq;
 import org.yx.hoststack.center.entity.Host;
 import org.yx.hoststack.center.service.HostService;
 import org.yx.lib.utils.util.R;
@@ -25,12 +26,14 @@ public class HostController {
     /**
      * 分页查询
      *
-     * @param params
+     * @param req
      * @return
      */
-    @PostMapping("/findPage")
-    public R<Page<Host>> findPage(@RequestBody Host params) {
-        Page<Host> result = hostService.findPage(params);
+    @PostMapping("/list")
+    public R<Page<Host>> findPage(@RequestBody HostReq req) {
+        Host host = new Host();
+        host.setProviderTenantId(req.getTenantId());
+        Page<Host> result = hostService.findPage(host);
         return R.ok(result);
     }
 

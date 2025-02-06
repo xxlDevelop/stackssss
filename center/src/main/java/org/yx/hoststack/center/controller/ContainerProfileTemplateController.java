@@ -1,11 +1,16 @@
 package org.yx.hoststack.center.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.yx.lib.utils.util.R;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.yx.hoststack.center.common.req.container.ContainerProfileTemplatePageReqDTO;
+import org.yx.hoststack.center.common.resp.comtainer.ContainerProfileTemplateSimpleVO;
+import org.yx.hoststack.center.common.resp.comtainer.wrappers.ContainerProfileTemplateSimpleVOWrapper;
 import org.yx.hoststack.center.entity.ContainerProfileTemplate;
 import org.yx.hoststack.center.service.ContainerProfileTemplateService;
+import org.yx.lib.utils.util.R;
 
 import java.util.List;
 
@@ -16,22 +21,21 @@ import java.util.List;
  * @since 2024-12-09 15:15:18
  */
 @RestController
-@RequestMapping("/containerProfileTemplate")
+@RequestMapping("/v1/container/profile")
 @RequiredArgsConstructor
 public class ContainerProfileTemplateController {
 
     private final ContainerProfileTemplateService containerProfileTemplateService;
 
     /**
-     * 分页查询
+     * query container template page list
      *
-     * @param params
-     * @return
+     * @param params request
+     * @return result
      */
-    @PostMapping("/findPage")
-    public R<Page<ContainerProfileTemplate>> findPage(@RequestBody ContainerProfileTemplate params) {
-        Page<ContainerProfileTemplate> result = containerProfileTemplateService.findPage(params);
-        return R.ok(result);
+    @PostMapping("/list")
+    public R<IPage<ContainerProfileTemplateSimpleVO>> findPage(@Valid @Validated @RequestBody ContainerProfileTemplatePageReqDTO params) {
+        return R.ok(ContainerProfileTemplateSimpleVOWrapper.build().pageVO(containerProfileTemplateService.findPage(params)));
     }
 
     /**

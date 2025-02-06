@@ -2,27 +2,27 @@ package org.yx.hoststack.center.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.yx.hoststack.center.mapper.AgentSessionMapper;
-import org.yx.hoststack.center.entity.AgentSession;
-import org.yx.hoststack.center.service.AgentSessionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
+import org.springframework.stereotype.Service;
+import org.yx.hoststack.center.entity.AgentSession;
+import org.yx.hoststack.center.entity.ContainerDeployTaskDetail;
+import org.yx.hoststack.center.mapper.AgentSessionMapper;
+import org.yx.hoststack.center.mapper.ContainerDeployTaskDetailMapper;
+import org.yx.hoststack.center.service.AgentSessionService;
+import org.yx.hoststack.center.service.ContainerDeployTaskDetailService;
 
-/**
- * @author lyc
- * @since 2024-12-19 19:27:24
- */
+import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AgentSessionServiceImpl extends ServiceImpl<AgentSessionMapper, AgentSession> implements AgentSessionService {
 
-    private AgentSessionMapper agentSessionMapper;
+
+    private final AgentSessionMapper agentSessionMapper;
 
     @Override
     public Page<AgentSession> findPage(AgentSession params) {

@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.yx.hoststack.edge.server.http.handler.FileHandler;
 import org.yx.hoststack.edge.server.http.handler.HealthHandler;
 
 
@@ -17,6 +18,8 @@ public class RouterFunctionConfig {
 
     private final HealthHandler healthHandler;
 
+    private final FileHandler fileHandler;
+
     @Bean
     public RouterFunction<ServerResponse> routingFunction() {
         RouterFunctions.Builder globalRouterBuilder = RouterFunctions.route();
@@ -24,6 +27,7 @@ public class RouterFunctionConfig {
                 .path("host-stack-edge", baseUrlBuilder -> baseUrlBuilder
                         .nest(RequestPredicates.accept(MediaType.APPLICATION_JSON), builder -> builder
                                 .GET("/ops/health", healthHandler::health)
+                                .POST("/file/distribute/notify", fileHandler::distributeNotify)
                         )
                         .filter((request, next) -> next.handle(request))
                 )

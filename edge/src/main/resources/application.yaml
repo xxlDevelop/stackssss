@@ -19,5 +19,5 @@ spring:
 
 logging:
   level:
-    root: INFO
-    org.yx.lib.utils.logger.KvLogger: INFO
+    root: DEBUG
+    org.yx.lib.utils.logger.KvLogger: DEBUG

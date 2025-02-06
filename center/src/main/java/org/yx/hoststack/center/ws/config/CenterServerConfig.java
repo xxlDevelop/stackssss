@@ -9,28 +9,28 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class CenterServerConfig {
-    @Value("${server.wsPort:12121}")
+    @Value("${applications.applications.server.wsPort:8801}")
     private Integer wsPort;
-    @Value("${server.bossThreadCount:1}")
+    @Value("${applications.applications.server.bossThreadCount:1}")
     private int bossThreadCount;
-    @Value("${server.workThreadCount:3}")
+    @Value("${applications.applications.server.workThreadCount:3}")
     private int workThreadCount;
-    @Value("${server.soBacklog:1024}")
+    @Value("${applications.server.soBacklog:1024}")
     private int backlog;
-    @Value("${server.recBuf:524288}")//512KB
+    @Value("${applications.server.recBuf:524288}")//512KB
     private int recBuf;
-    @Value("${server.sendBuf:524288}")//512KB
+    @Value("${applications.server.sendBuf:524288}")//512KB
     private int sendBuf;
-    @Value("${server.logLevel:2}")
+    @Value("${applications.server.logLevel:2}")
     private int logLevel;
-    @Value("${server.enableIdle:false}")
+    @Value("${applications.server.enableIdle:false}")
     private boolean enableIdle;
-    @Value("${server.readIdle:60}")
+    @Value("${applications.server.readIdle:60}")
     private int readIdle;
-    @Value("${server.writeIdle:60}")
+    @Value("${applications.server.writeIdle:60}")
     private int writeIdle;
-    @Value("${server.allIdle:120}")
+    @Value("${applications.server.allIdle:120}")
     private int allIdle;
-    @Value("${server.retryNumber:3}")
+    @Value("${applications.server.retryNumber:3}")
     private int retryNumber;
 }
